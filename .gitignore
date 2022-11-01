@@ -1,0 +1,13 @@
+*.png
+*.ico
+migrations/
+pypip_pkgs/
+*.msi
+*.svg
+*.pyc
+*.csv
+*.xlsx
+*.deb
+*.h5
+*.exe
+~/
