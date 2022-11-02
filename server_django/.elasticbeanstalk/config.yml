@@ -2,6 +2,10 @@ branch-defaults:
   default:
     environment: server-django-dev
     group_suffix: null
+environment-defaults:
+  server-django-dev:
+    branch: null
+    repository: null
 global:
   application_name: server_django
   branch: null

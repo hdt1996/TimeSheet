@@ -1,0 +1,2 @@
+.ebextensions contains config files that run after deployment
+	Install postgres-devel dependency via yum for psycopg2 which is specified in requirements.txt
