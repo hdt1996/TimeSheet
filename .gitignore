@@ -11,4 +11,5 @@ __pycache__/
 *.deb
 *.h5
 *.exe
+*/.env
 ~/
