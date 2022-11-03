@@ -17,5 +17,6 @@ from django.urls import path
 from .views import *
 
 urlpatterns = [
-    path('emp_mgmt',EmployeeAdminView.as_view())
+    path('emp_mgmt',EmployeeAdminView.as_view()),
+    path('billables',BillablesView.as_view())
 ]

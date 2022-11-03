@@ -216,3 +216,64 @@ class EmployeeAdminView(APIView):
         except Exception as e:
             #TODO send email to IT Software team of severe server error to fix asap
             return Response({"Error: Server Error. Notifying admins"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+class BillablesView(APIView):
+    """ Aside from the get request, all other crud options can only perform on one entry at at a time """
+    permission_classes = (permissions.AllowAny,) 
+    @method_decorator(csrf_protect, name = "get")
+    def get(self, request):
+        table_query = Billables.objects.all()
+        serialized_query=BillablesGETSerializer(instance = table_query, many = True)
+        return Response(serialized_query.data, status = status.HTTP_200_OK)
+    @method_decorator(csrf_exempt,name="post")
+    def post(self, request):
+        req_body = request.data
+        if not isinstance(req_body,dict):
+            return Response({"Error":"Data not compatible to database entries"}, status = status.HTTP_403_FORBIDDEN)
+        serialized_data = BillablesPOSTSerializer(data = req_body, many = False) #False to serialize single object only. req_body contains fields-value pairs to create entry (Different from get's implementation)
+        if not serialized_data.is_valid():
+            #TODO send email to IT Software team for logging purposes of all requests
+            return Response({'Error':'Input data is not valid'}, status = status.HTTP_403_FORBIDDEN)
+        data = dict(serialized_data.data)
+        Billables.objects.create(**data)
+        return Response(data, status = status.HTTP_200_OK)
+    @method_decorator(csrf_exempt,name="put")
+    def put(self, request):
+        req_body = request.data
+        if not isinstance(req_body,dict):
+            return Response({"Error":"Data not compatible to database entries"}, status = status.HTTP_403_FORBIDDEN)
+        serialized_data = BillablesPOSTSerializer(data = req_body, many = False) #False to serialize single object only. req_body contains fields-value pairs to create entry (Different from get's implementation)
+        if not serialized_data.is_valid():
+            #TODO send email to IT Software team for logging purposes of all requests
+            return Response({'Error':'Input data is not valid'}, status = status.HTTP_403_FORBIDDEN)
+        data = dict(serialized_data.data)
+        id = data.pop("id")
+        table_query = Billables.objects.filter(id = id)
+        if len(table_query) == 0:
+            return Response({'Error':'Entry by ID does not exist'}, status = status.HTTP_403_FORBIDDEN)
+        # using id is always safe to assume that only one or no entries exist since it is a primary key
+        table_query.update(**data)
+        return Response(data, status = status.HTTP_200_OK)
+        
+    @method_decorator(csrf_exempt,name="delete")
+    def delete(self, request):
+        if request.headers.get('selectors') == None:
+            return Response({'Selector_Error':'No Search Parameters passed in to find entry to delete'}, status = status.HTTP_403_FORBIDDEN)
+        try:
+            selectors =  json.loads(request.headers.get('selectors')) #Fetch options should contain 'selectors' key with value being dictionary --> example {'operator':'greater','value':10}
+        except:
+            # request header's 'selectors' should be JSON parsable to dictionary.
+            return Response({}, status = status.HTTP_403_FORBIDDEN) 
+    
+        #False to serialize single object only. req_body contains fields-value pairs to create entry (Different from get's implementation)
+        if not "id" in selectors:
+            return Response({'Error':'Must Pass in ID for Deletion'}, status = status.HTTP_403_FORBIDDEN)
+        id = selectors.pop("id")
+        table_query = Billables.objects.filter(id = id)
+        if len(table_query) == 0:
+            return Response({'Error':'Entry by ID does not exist'}, status = status.HTTP_403_FORBIDDEN)
+        # using id is always safe to assume that only one or no entries exist since it is a primary key
+        table_query.delete()
+        return Response({'DELETE':'Success'}, status = status.HTTP_200_OK)
