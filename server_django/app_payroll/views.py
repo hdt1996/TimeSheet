@@ -16,8 +16,8 @@ QUERY_OPTIONS = \
     'greater-equal':'__gte',
     'lesser':'__lt',
     'lesser-equal':'__lte',
-    'startswith':'__name__startswith',
-    'contains':'__name__contains',
+    'startswith':'__startswith',
+    'contains':'__contains',
     'in':'__in',
     'equal':''
 }
@@ -53,6 +53,8 @@ class EmployeeAdminView(APIView):
             for field in selectors:
                 if field in fixed_selectors: # if any field in selectors matches those in fixed_selectors, this is not allowed. Only fields not matching keys in fixed_selectors pass this
                     return Response({'Error':'Custom field passed into non-custom field'}, status = status.HTTP_403_FORBIDDEN)
+                if field not in allowed_fields and allowed_fields != "*":
+                    return Response({'Selector_Error':'Disallowed field passed in'}, status = status.HTTP_403_FORBIDDEN)
 
             sel_dict = {} # initialize kwargs object to use in Django's table.objects.filter(**kwargs). Will be using ORM statements from QUERY_OPTIONS global
 
@@ -66,8 +68,6 @@ class EmployeeAdminView(APIView):
                 value = selectors[field]['value']
                 if oper in QUERY_OPTIONS:
                     sel_dict[f"{field}{QUERY_OPTIONS[oper]}"] = value
-                if field not in allowed_fields:
-                    return Response({'Error':'Disallowed field passed in'}, status = status.HTTP_403_FORBIDDEN)
             
             table_query = Employees.objects.filter(**sel_dict)
 
@@ -75,6 +75,10 @@ class EmployeeAdminView(APIView):
                 return Response({'Empty':'No Data'}, status = status.HTTP_200_OK)
 
             serialized_query = EmployeeGETSerializer(instance = table_query, many = True) #many argument to specify that we are serializing multiple objects/entries from table
+            
+            if response_fields == "*":
+                return Response(serialized_query.data, status = status.HTTP_200_OK)
+
             response_data = []
             for entry in serialized_query.data:
                 obj_dict = {}
@@ -130,7 +134,8 @@ class EmployeeAdminView(APIView):
             for field in selectors:
                 if field in fixed_selectors:
                     return Response({'Selector_Error':'Custom field passed into non-custom field'}, status = status.HTTP_403_FORBIDDEN)
-
+                if field not in allowed_fields and allowed_fields != "*":
+                    return Response({'Selector_Error':'Disallowed field passed in'}, status = status.HTTP_403_FORBIDDEN)
             sel_dict = {}
 
             for field in fixed_selectors:
@@ -143,8 +148,7 @@ class EmployeeAdminView(APIView):
                 value = selectors[field]['value']
                 if oper in QUERY_OPTIONS:
                     sel_dict[f"{field}{QUERY_OPTIONS[oper]}"] = value
-                if field not in allowed_fields:
-                    return Response({'Selector_Error':'Disallowed field passed in'}, status = status.HTTP_403_FORBIDDEN)
+
 
             table_query = Employees.objects.filter(**sel_dict)
 
@@ -186,7 +190,8 @@ class EmployeeAdminView(APIView):
             for field in selectors:
                 if field in fixed_selectors:
                     return Response({'Error':'Custom field passed into non-custom field'}, status = status.HTTP_403_FORBIDDEN)
-
+                if field not in allowed_fields and allowed_fields != "*":
+                    return Response({'Selector_Error':'Disallowed field passed in'}, status = status.HTTP_403_FORBIDDEN)
             sel_dict = {}
 
             for field in fixed_selectors:
@@ -199,8 +204,6 @@ class EmployeeAdminView(APIView):
                 value = selectors[field]['value']
                 if oper in QUERY_OPTIONS:
                     sel_dict[f"{field}{QUERY_OPTIONS[oper]}"] = value
-                if field not in allowed_fields:
-                    return Response({'Selector_Error':'Unallowed field passed in'}, status = status.HTTP_403_FORBIDDEN)
 
             table_query = Employees.objects.filter(**sel_dict)
 

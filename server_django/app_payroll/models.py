@@ -55,8 +55,32 @@ class Employees(models.Model): #Summary: Table in PSQL database containing emplo
         verbose_name = 'Employee'
         verbose_name_plural = 'Employees'
         app_label = 'app_payroll'
+        
 
-class Timesheet(models.Model):
+
+class Billables(models.Model):
+    employee = models.ForeignKey(Employees, on_delete=models.PROTECT, blank=True, null=True )
+    description = models.TextField(max_length=2000, null=True, blank=True, default=None)
+    bill_rate = models.DecimalField(null=True, blank=True, default=None, max_digits=10,decimal_places=2)
+    total_time = models.DecimalField(null=True, blank=True, default=None, max_digits=10,decimal_places=2)
+    total_bill = models.DecimalField(null=True, blank=True, default=None, max_digits=20,decimal_places=2)
+
+    def getTotalMinutes(self):
+        lineitems=self.billlineitem_set.all()
+        total= sum([item.num_minutes for item in lineitems])
+        return total
+        
+    class Meta:
+        verbose_name = 'Billables'
+        verbose_name_plural = 'Billables'
+        app_label = 'app_payroll'
+        
+class BillLineItem(models.Model):
+    timesheet = models.ForeignKey(Billables, on_delete=models.PROTECT, blank=True, null=True )
+    num_minutes=models.DecimalField(null=True, blank=True, default=None, max_digits=4,decimal_places=2)
+    time_of_day = models.DateTimeField()
+    
+class EmpTimeSheet(models.Model):
 
     employee = models.ForeignKey(Employees, on_delete=models.PROTECT, blank=True, null=True )
     start_diff = models.DecimalField(null=True, blank=True, default=None, max_digits=4,decimal_places=2) #in minutes
@@ -72,7 +96,7 @@ class Timesheet(models.Model):
         else:
             return True
     class Meta:
-        verbose_name = 'Timesheet'
-        verbose_name_plural = 'Timesheet'
+        verbose_name = 'EmpTimeSheet'
+        verbose_name_plural = 'EmpTimeSheet'
         app_label = 'app_payroll'
 

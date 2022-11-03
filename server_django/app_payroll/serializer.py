@@ -4,16 +4,16 @@ from .models import *
 class EmployeeGETSerializer(ModelSerializer):
     class Meta:
         model = Employees
-        fields = ('id', 'name')
+        fields = '__all__'
 class EmployeePOSTSerializer(ModelSerializer):
     class Meta:
         model = Employees
-        fields = ('field_1', 'field_3', 'field_2')
+        fields = '__all__'
 class EmployeePUTSerializer(ModelSerializer):
     class Meta:
         model = Employees
-        fields = ('field_1', 'field_10')
+        fields = '__all__'
 class EmployeeDELETESerializer(ModelSerializer):
     class Meta:
         model = Employees
-        fields = ('field_1', 'field_10')
+        fields = '__all__'
