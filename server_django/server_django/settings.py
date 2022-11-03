@@ -27,7 +27,7 @@ SECRET_KEY = dconfig('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['server-django-dev.us-west-2.elasticbeanstalk.com']
+ALLOWED_HOSTS = ['server-django-dev.us-west-2.elasticbeanstalk.com','localhost','172.31.10.81']
 
 
 # Application definition
