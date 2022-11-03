@@ -1,0 +1,4 @@
+Note:
+
+The commands running BEFORE deployment to persist from STAGING to CURRENT requires commands to be called in STAGING directory
+

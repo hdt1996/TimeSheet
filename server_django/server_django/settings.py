@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 from decouple import config as dconfig
+import os
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -79,7 +81,7 @@ DATABASES = {
         'NAME': 'ebdb',
         'USER': 'postgres',
         'PASSWORD': '12345678',
-        'HOST': 'awseb-e-mvemdpgwby-stack-awsebrdsdatabase-tufw8x70qip5.cjeea81gbwzu.us-west-2.rds.amazonaws.com',
+        'HOST': 'awseb-e-mvemdpgwby-stack-awsebrdsdatabase-qd8nmimooaib.cjeea81gbwzu.us-west-2.rds.amazonaws.com',
         'PORT': '5432',
     }
 }
@@ -119,8 +121,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = 'static/'
-
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR,'static')
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
