@@ -22,28 +22,6 @@ QUERY_OPTIONS = \
     'equal':''
 }
 
-@method_decorator(ensure_csrf_cookie, name = "post")
-class LoginView(APIView):
-    serializer_class = UserSerializer
-    permission_classes = (permissions.AllowAny,)
-    def post(self,request):
-        serialized_login = self.serializer_class(data = request.data, many = False)
-        if not serialized_login.is_valid():
-            return Response({'Error': 'Invalid Credentials'}, status = status.HTTP_403_FORBIDDEN)
-        username=serialized_login.data.get('username')
-        password=serialized_login.data.get('password')
-        if not request.session.exists(request.session.session_key):
-            request.session.create()
-        user_query=User.objects.filter(username=username)
-        if len(user_query) == 0:
-            return Response({'Error': 'Invalid Credentials'}, status = status.HTTP_403_FORBIDDEN)
-        user = auth.authenticate(username=username, password=password)
-        if user is not None:
-            auth.login(request, user)
-            return Response({'Success':'Authenticated'}, status = status.HTTP_200_OK)
-        else:
-            return Response({'Error': 'Invalid Credentials'}, status = status.HTTP_403_FORBIDDEN)
-
 class EmployeeAdminView(APIView): 
     """ !!!! This view should be used cautiously by only root admins. A mistake without a backup may cause unintended bulk updates or deletions !!! """
     permission_classes = (permissions.AllowAny,) # Controls user/group access to CRUD options
