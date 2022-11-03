@@ -39,6 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'corsheaders',
+    'app_payroll'
 ]
 
 MIDDLEWARE = [
@@ -79,8 +82,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'ebdb',
-        'USER': 'postgres',
-        'PASSWORD': '12345678',
+        'USER': dconfig('PSQL_USER'),
+        'PASSWORD': dconfig('PSQL_PASS'),
         'HOST': 'awseb-e-mvemdpgwby-stack-awsebrdsdatabase-qd8nmimooaib.cjeea81gbwzu.us-west-2.rds.amazonaws.com',
         'PORT': '5432',
     }
