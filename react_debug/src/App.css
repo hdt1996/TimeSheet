@@ -37,19 +37,43 @@
   }
 }
 
+#Billables #row
+{
+  height:22em;
+  overflow-y:scroll;
+  background-color: white;
+  display:flex;
+}
 
+.Billables-Column{
+  flex:1;
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  padding:1em;
+  padding-top:0em;
+}
 
-
+.Billables-Description{
+  flex:3;
+}
 .App-Home{
   background-color: #a4d7bd;
   min-height: 100vh;
   min-width: 100vw;
   display:flex;
   flex-direction: column;
+  padding:.5em;
 }
 .App-Home-Title{
   flex:1;
-  max-height:4em;
+  max-height:3em;
+  background-color: lightblue;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size:1.5em
 }
 .App-Home-Body{
   flex:1;
@@ -57,23 +81,117 @@
   flex-direction: row;
   background-color: rgb(126, 191, 162);
 }
-.App-Home-Body #left_menu{
+.App-Home-Body #side_menu{
   border-style: dashed;
   flex:10;
+  min-width:10em;
+  max-width:25em;
+  display:flex;
+  flex-direction: column;
 }
 
-.App-Home-Body #main{
+.App-Home-Body #EmpMgmt{
   border-style: dashed;
   display:flex;
   flex-direction: column;
   flex:30;
 }
-
-
-.Comp-Table{
+.App-Home-Body #Billables{
+  border-style: dashed;
+  display:flex;
+  flex-direction: column;
+  flex:30;
+}
+.Comp-SideMenu
+{
   flex:1;
+  display:flex;
+  flex-direction: column;
+}
+
+.Comp-SideMenu div:hover
+{
+  background-color: rgb(152, 184, 173) !important;
+  font-size:1.05em;
+  cursor:pointer;
+}
+
+.Comp-SideMenu #lighter
+{
+  display:flex;
+  flex:1;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(179, 212, 201);
+}
+
+.Comp-SideMenu #darker
+{
+  display:flex;
+  flex:1;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(165, 203, 190);
+}
+.Comp-SideMenu div #link
+{
+  text-decoration: none;
+  color:black;
+  flex:1;
+  height:100%;
+  display:flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.Comp-Query{
+  display:flex;
+  flex:1;
+  max-height:3em;
   background-color: rgb(234, 244, 246);
 }
+
+.Comp-Query #Filter{
+  width:50px;
+  background-color: transparent;
+  border:none;
+}
+
+.Comp-Query #Filter:active{
+  width:50px;
+  background-color: transparent;
+  font-size:.85em;
+}
+.Comp-Query #Filter:focus{
+  width:50px;
+  background-color: transparent;
+  outline: none;
+}
+.Comp-Query #Filter:hover{
+  background-color: gainsboro;
+  cursor:pointer;
+  user-select: none;
+  font-weight: bold;
+}
+
+.Comp-Query div{
+  display:flex;
+  justify-content: center;
+  align-items: center;
+}
+.Comp-Query div input:first-child{
+  width:70%;
+}
+.Comp-Query div input{
+  width:25%;
+}
+.Comp-Table{
+  flex:1;
+  overflow-y:scroll;
+  background-color: rgb(234, 244, 246);
+}
+
 
 
 

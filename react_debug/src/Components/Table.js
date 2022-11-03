@@ -1,16 +1,20 @@
 import {DataGrid} from '@mui/x-data-grid'
-function Table({config={
-    num_rows:2,
-    num_cols:3,
-    col_titles:['Column1','Column2','Column3'], 
-    values:[{Column1:0,Column2:1,Column3:2},{Column1:0,Column2:1,Column3:2}],
-    col_width:150}
-    })
+function Table({
+    config=
     {
+        num_rows:2,
+        num_cols:3,
+        col_titles:['Column1','Column2','Column3'], 
+        db_columns:['DBColumn1','DBColumn2','DBColumn3'],
+        values:[{Column1:0,Column2:1,Column3:2},{Column1:0,Column2:1,Column3:2}],
+        col_width:150}
+    })
+{
     
     let num_rows = config['num_rows'];
     let num_cols = config['num_cols'];
     let col_titles = config['col_titles'];
+    let db_columns = config['db_columns'];
     let values = config['values'];
     if(col_titles){num_cols = col_titles.length};
     if(values){num_rows=values.length};
@@ -36,7 +40,7 @@ function Table({config={
         data['id']=i+1;
         for(let c = 0; c < num_cols; c++)
         {
-            data[`col${c+1}`] = values[i][col_titles[c]];
+            data[`col${c+1}`] = values[i][db_columns[c]];
         };
 
         rows[i]=data;
@@ -52,7 +56,7 @@ function Table({config={
             checkboxSelection
         />
     );
-  }
+}
   
-  export default Table;
+export default Table;
   

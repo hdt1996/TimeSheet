@@ -1,6 +1,9 @@
-import logo from './logo.svg';
+import React, { useState, useEffect } from 'react';
 import Navbar from './Components/Navbar';
-import Table from './Components/Table';
+import SideMenu from './Components/SideMenu';
+import EmpMgmt from './Apps/EmpMgmt';
+import Billables from './Apps/Billables';
+import {BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import './App.css';
 
@@ -12,31 +15,29 @@ function App() {
     'dropdowns':['Departments','Payroll','Accounting','Administration','Sales']
   };
 
-  let tbl_config=
+
+  let [MenuLinks,setMenuLinks]=useState(
   {
-    num_rows:2,
-    num_cols:6,
-    col_titles:['Employee ID','Department','Clocked In','Lunch In','Lunch Out','Clocked Out'], 
-    values:[{}],
-    col_width:125
-  };
+      "Admin Employee Management":'/payroll/emp_mgmt/',
+      "Employee TimeSheet":'/payroll/timesheet/',
+      "Training":'/payroll/training'
+  });
 
 
   return (
     <div className="App-Home">
       <Navbar config={nav_config}></Navbar>
       <div className = "App-Home-Body">
-        <div id="left_menu">
-
+        <div id="side_menu">
+          <SideMenu MenuLinks = {MenuLinks} setMenuLinks = {setMenuLinks}/>
         </div>
-
-        <div id="main">
-          <div className="App-Home-Title"></div>
-          <div className="Comp-Table">
-            <Table config={tbl_config}></Table>
-          </div>
-            
-        </div>
+        <BrowserRouter>
+          <Routes>
+            <Route path = "/payroll"/>
+            <Route path = "/payroll/emp_mgmt/" element={<EmpMgmt/>}/>
+            <Route path = "/payroll/timesheet/" element={<Billables/>}/>
+          </Routes>
+        </BrowserRouter>
       </div>
     </div>
   );
