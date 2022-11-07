@@ -17,6 +17,7 @@ from django.urls import path
 from .views import *
 
 urlpatterns = [
-    path('emp_mgmt',EmployeeAdminView.as_view()),
-    path('billables',BillablesView.as_view())
+    path('employees/',EmployeeAdminView.as_view()),
+    path('timesheet/',TimeSheetView.as_view()),
+    path('timesheet/lineitems/',LineItemsView.as_view())
 ]

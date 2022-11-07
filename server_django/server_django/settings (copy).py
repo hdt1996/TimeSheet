@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config as dconfig
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -21,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'abc'
+SECRET_KEY = dconfig('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -99,10 +100,10 @@ WSGI_APPLICATION = 'server_django.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'storedb',
-        'USER': 'postgres',
-        'PASSWORD': "MrPho1219@",
-        'HOST': '192.168.1.86',
+        'NAME': 'ebdb',
+        'USER': postgres    #dconfig('PSQL_USER'),
+        'PASSWORD': password   #dconfig('PSQL_PASS'),
+        'HOST': '192.168.1.86'     #'awseb-e-mvemdpgwby-stack-awsebrdsdatabase-qd8nmimooaib.cjeea81gbwzu.us-west-2.rds.amazonaws.com',
         'PORT': '5432',
     }
 }

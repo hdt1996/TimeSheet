@@ -19,7 +19,8 @@ from .views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('user/authenticated?/',CheckAuth.as_view()),
+    path('user/authenticated/',CheckAuth.as_view()),
+    path('user/create/',CreateLoginView.as_view()),
     path('user/login/',LoginView.as_view()),
     path('user/logout/',LogoutView.as_view()),
     path('user/getCSRF/',GetCSRFToken.as_view()),

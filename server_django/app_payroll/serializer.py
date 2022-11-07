@@ -1,4 +1,5 @@
 ﻿from rest_framework.serializers import ModelSerializer
+import rest_framework.serializers as serializers
 from .models import *
 
 class EmployeeGETSerializer(ModelSerializer):
@@ -18,19 +19,38 @@ class EmployeeDELETESerializer(ModelSerializer):
         model = Employees
         fields = '__all__'
 
-class BillablesGETSerializer(ModelSerializer):
+class TimeSheetGETSerializer(ModelSerializer):
+    employee = EmployeeGETSerializer(required=True)
     class Meta:
-        model = Employees
+        model = TimeSheet
         fields = '__all__'
-class BillablesPOSTSerializer(ModelSerializer):
+class TimeSheetPOSTSerializer(ModelSerializer):
     class Meta:
-        model = Employees
+        model = TimeSheet
         fields = '__all__'
-class BillablesPUTSerializer(ModelSerializer):
+class TimeSheetPUTSerializer(ModelSerializer):
     class Meta:
-        model = Employees
+        model = TimeSheet
         fields = '__all__'
-class BillablesDELETESerializer(ModelSerializer):
+class TimeSheetDELETESerializer(ModelSerializer):
     class Meta:
-        model = Employees
+        model = TimeSheet
+        fields = '__all__'
+
+class LineItemsGETSerializer(ModelSerializer):
+    timesheet = TimeSheetGETSerializer(required = True)
+    class Meta:
+        model = LineItems
+        fields = '__all__'
+class LineItemsPOSTSerializer(ModelSerializer):
+    class Meta:
+        model = LineItems
+        fields = '__all__'
+class LineItemsPUTSerializer(ModelSerializer):
+    class Meta:
+        model = LineItems
+        fields = '__all__'
+class LineItemsDELETESerializer(ModelSerializer):
+    class Meta:
+        model = LineItems
         fields = '__all__'
