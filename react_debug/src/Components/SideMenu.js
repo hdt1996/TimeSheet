@@ -4,8 +4,7 @@ function SideMenu({
     {
         "Menu_Item1":"/",
         "Menu_Item2":"/"
-    },
-    setMenuLinks
+    }
     })
 
     

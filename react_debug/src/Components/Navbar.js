@@ -1,13 +1,23 @@
+import Login from "./Login";
+import CreateLogin from "./CreateLogin";
+import ForgotLogin from "./ForgotLogin";
+import CloseIcon from '@mui/icons-material/Close';
+import React, { useState, useEffect} from 'react';
 function Navbar({config={'title':'Title','sections':['Section1','Section2','Section3'],'dropdowns':['Dropdown1','Dropdown2','Dropdown3']}}) {
   let title = config['title'];
   let sections = config['sections'];
   let dropdowns = config['dropdowns'];
+  let [RenderLogin,setRenderLogin] = useState(false);
+  let [RenderCreate, setRenderCreate] = useState(false);
+  let [RenderForgot, setRenderForgot] = useState(false);
+
+  useEffect(()=>
+  {
+  }, [RenderLogin, RenderCreate, RenderForgot]);
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <a className="navbar-brand" href="#">{title}</a>
-      <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span className="navbar-toggler-icon"></span>
-      </button>
+
 
       <div className="collapse navbar-collapse" id="navbarSupportedContent">
         <ul className="navbar-nav mr-auto">
@@ -41,6 +51,33 @@ function Navbar({config={'title':'Title','sections':['Section1','Section2','Sect
           <input className="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"></input>
           <button className="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
         </form>
+
+        <div id="SignIn">
+          {
+            RenderLogin?
+            <div id="NavBar-Login">
+              <CloseIcon id="Close" onClick={() =>{setRenderLogin(false)}}/>
+              <Login setRenderLogin={setRenderLogin} setRenderCreate={setRenderCreate} setRenderForgot={setRenderForgot}></Login>
+            </div>
+            :
+            RenderCreate?
+            <div id="NavBar-Login">
+              <CloseIcon id="Close" onClick={() =>{setRenderCreate(false)}}/>
+              <CreateLogin setRenderLogin={setRenderLogin} setRenderCreate={setRenderCreate} setRenderForgot={setRenderForgot}></CreateLogin>
+            </div>
+            :
+            RenderForgot?
+            <div id="NavBar-Login">
+              <CloseIcon id="Close" onClick={() =>{setRenderForgot(false)}}/>
+              <ForgotLogin setRenderLogin={setRenderLogin} setRenderCreate={setRenderCreate} setRenderForgot={setRenderForgot}></ForgotLogin>
+            </div>
+            :
+            <button id="Button" onClick={() => {setRenderLogin(true)}}>
+              Sign In
+            </button>
+          }
+
+        </div>
       </div>
     </nav>
   );

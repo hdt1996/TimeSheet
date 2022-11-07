@@ -37,26 +37,133 @@
   }
 }
 
-#Billables #row
-{
-  height:22em;
-  overflow-y:scroll;
-  background-color: white;
-  display:flex;
+
+.Hidden{
+  visibility: hidden !important;
+}
+.TimeSheet-Locked{
+  background-color: rgb(195, 195, 201);
+  pointer-events: none;
+  user-select: none !important;
 }
 
-.Billables-Column{
+#TimeSheet #row
+{
+  height:26em;
+  overflow-y:hidden;
+  background-color: rgb(194, 233, 200);
+  display:flex;
+}
+#TimeSheet #footer{
+  display:flex;
+  max-height:4em;
+}
+
+#TimeSheet #submission-time{
+  flex:1;
+  max-width:20em;
+  background-color: rgb(191, 231, 217);
+  border-bottom-left-radius: .45em;
+}
+#TimeSheet #submission-time #Row
+{
+  display:flex;
+  align-items: center;
+  height:100%;
+  flex:1;
+  border: solid black .125em;
+  border-radius:.45em;
+  background-color: #a8b7af;
+  font-weight:400;
+}
+#TimeSheet #submission-time #Row div:first-child{
+  flex:.5
+}
+#TimeSheet #submission-time #Row div{
+  flex:2;
+  display:flex;
+  justify-content: center;
+  border-radius: .45em;
+}
+
+#TimeSheet #submit-button{
+  display:flex;
+  flex:1;
+  justify-content: flex-end;
+  background-color:rgb(191, 231, 217);
+  border-bottom-right-radius: 1em;
+}
+#TimeSheet #submit-button button{
+  width:fit-content;
+  padding-left:.5em;
+  padding-right:.5em;
+  margin-left:.5em;
+  font-size:1.25em;
+  background-color: #a8b7af;
+  border:solid black .1em;
+  border-radius: .3em;
+}
+
+#TimeSheet #submit-button button:hover{
+  cursor:pointer;
+  background-color:rgb(196, 210, 204);
+}
+.TimeSheet-Totals #Date{
+  display:flex;
+  flex-direction: row;
+}
+
+.TimeSheet-Totals #Date #Value{
+  flex:1;
+  width:10em;
+}
+.TimeSheet-Totals #Date #Value::placeholder{
+  font-size:.8em;
+  opacity: 1;
+}
+.TimeSheet-Totals #Date #Icon{
+  height:100%;
+  width:1.5em;
+}
+.TimeSheet-Totals{
   flex:1;
   display:flex;
   flex-direction: column;
   align-items: center;
   padding:1em;
   padding-top:0em;
+
+}
+#TimeSheet #Form{
+  flex:1;
+  background-color: rgb(191, 231, 217);
+  padding:1em;
+
 }
 
-.Billables-Description{
-  flex:3;
+.TextField{
+  background-color: white;
 }
+.TimeSheet-Description{
+  flex:3;
+  min-width:25em;
+  padding-right:2.5em;
+}
+
+.FloatingCalendar{
+  position:absolute;
+  z-index:2;
+}
+
+.react-datepicker{
+  position:absolute;
+  background-color: white;
+  border:solid black .1em;
+  border-radius:.5em;
+  z-index:2;
+  top:2em;
+}
+
 .App-Home{
   background-color: #a4d7bd;
   min-height: 100vh;
@@ -67,8 +174,8 @@
 }
 .App-Home-Title{
   flex:1;
-  max-height:3em;
-  background-color: lightblue;
+  max-height:2.5em;
+  background-color: rgb(113, 190, 162);
   display:flex;
   justify-content: center;
   align-items: center;
@@ -82,7 +189,6 @@
   background-color: rgb(126, 191, 162);
 }
 .App-Home-Body #side_menu{
-  border-style: dashed;
   flex:10;
   min-width:10em;
   max-width:25em;
@@ -91,13 +197,11 @@
 }
 
 .App-Home-Body #EmpMgmt{
-  border-style: dashed;
   display:flex;
   flex-direction: column;
   flex:30;
 }
-.App-Home-Body #Billables{
-  border-style: dashed;
+.App-Home-Body #TimeSheet{
   display:flex;
   flex-direction: column;
   flex:30;
@@ -154,21 +258,32 @@
 
 .Comp-Query #Filter{
   width:50px;
+  position:relative;
   background-color: transparent;
   border:none;
 }
 
-.Comp-Query #Filter:active{
-  width:50px;
-  background-color: transparent;
-  font-size:.85em;
+.Comp-Query #Filter path{
+  pointer-events: none;
 }
-.Comp-Query #Filter:focus{
-  width:50px;
+.Comp-Query #Filter button{
+  position:absolute;
+  top:-1.9em;
+  left:1em;
+  width:5em;
+  font-size: 1.25em;
+  border-radius:.5em;
+}
+.Comp-Query #Filter button:active{
+  width:5em;
+  background-color: transparent;
+}
+.Comp-Query #Filter button:focus{
+  width:5em;
   background-color: transparent;
   outline: none;
 }
-.Comp-Query #Filter:hover{
+.Comp-Query #Filter button:hover{
   background-color: gainsboro;
   cursor:pointer;
   user-select: none;
@@ -190,8 +305,403 @@
   flex:1;
   overflow-y:scroll;
   background-color: rgb(234, 244, 246);
+  display:flex;
+  flex-direction: column;
+}
+
+
+.Comp-Table .Buttons{
+  display:flex;
+  position:relative;
+  height:3em;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.Comp-Table .Buttons svg{
+  height:100%;
+  width:1.5em;
+  margin-left:1em;
+}
+.Comp-Table .Buttons #AddComponent{
+  position:absolute;
+  top:0;
+  right:0;
+  height:fit-content;
+  border: solid rgba(24, 24, 36, 0.523) .5em;
+  border-bottom-right-radius: 1em;
+  border-bottom-left-radius: 1em;
+  z-index:1;
+}
+.Comp-Table .Buttons #AddComponent #Close{
+  position:absolute;
+  height:1.5em;
+  top:0;
+  right:0;
+  z-index: 1;
+  border:solid rgba(106, 10, 10, 0.433) .1em;
+}
+.Comp-Table .Buttons #Confirm{
+  position:absolute;
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  top:100%;
+  right:0;
+  background-color: rgb(131, 192, 150);
+  padding:1em;
+  border-radius:.5em;
+  z-index:1;
+  border:solid black .125em;
+}
+.Comp-Table .Buttons #Confirm div{
+  display:flex;
+  flex-direction: row;
+  margin-top:.5em;
+}
+.Comp-Table .Buttons #Confirm div button{
+  border-radius: .5em;
+  width:5em;
+  margin:.5em;
+}
+
+.Comp-Table .Buttons #Confirm div button:hover{
+  background-color: rgb(51, 51, 140);
+  color:white;
+  cursor:pointer;
+}
+.Comp-Table .Buttons svg:hover{
+  background-color: rgb(188, 184, 184);
+  cursor:pointer;
+}
+.Comp-Table::-webkit-scrollbar {display:none;}
+
+.Comp-Table .Nested-Table{
+  background-color: rgb(196, 226, 213) !important;
+  border: solid rgba(128, 128, 128, 0.455) 1em;
+  border-radius:1em;
+}
+
+
+#Comp-PostForm #lighter{
+  background-color:rgb(191, 231, 217);
+}
+#Comp-PostForm #darker{
+  background-color:rgb(192, 222, 212);
+}
+
+.Comp-PostForm-Row{
+  padding-top:.75em;
+  padding-bottom:.75em;
+  border-bottom:solid rgba(0, 0, 0, 0.226) .1em;
+  justify-content: center;
+  align-items: center;
+}
+
+.Comp-PostForm-Row #index{
+  max-width:3em;
+}
+.Comp-PostForm-Row #delete{
+  background-color: transparent !important;
+  z-index:2;
+}
+.Comp-PostForm-Row #delete #icon{
+  width:fit-content;
+  height:1.5em;
+  pointer-events: none;
+}
+
+.Comp-PostForm-Row #delete #icon path{
+  pointer-events: none;
+}
+.Comp-PostForm-Row #delete:hover{
+  cursor:pointer;
+  background-color: rgba(185, 175, 175, 0.487);
+}
+.Comp-PostForm-Add{
+  position:relative;
+  left:1em;
+  display:flex;
+  justify-content: flex-end;
+  align-items: center;
+  height:2.5em;
+}
+.Comp-PostForm-Add #button{
+  height:100%;
+  background-color: transparent !important;
+  width:auto;
+}
+.Comp-PostForm-Add #button:hover{
+  cursor:pointer;
+  background-color: rgba(185, 175, 175, 0.487);
+}
+.Comp-PostForm-Time:hover{
+  background-color: blue;
+}
+
+.Comp-CreateLogin .Input .Col #Date div{
+  width:fit-content;
+}
+
+.Comp-CreateLogin .Input .Col #Date input::placeholder{
+  font-size:1em !important;
+}
+.Comp-CreateLogin .Input .Col #Date{
+  display:flex;
+  position:relative;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  position:relative;
+  width:100%;
+}
+
+.Comp-CreateLogin .Input .Col #Date #Value{
+  width:14em;
+  position:relative;
+}
+.Comp-CreateLogin .Input .Col #Date #Icon{
+  height:100%;
+  width:1.5em;
+  position:relative;
+  top:-.15em;
+}
+.Comp-CreateLogin #Date #Value::placeholder{
+  font-size:.8em;
+  opacity: 1;
+}
+
+.Comp-CreateLogin{
+  background-color: rgb(231, 232, 243);
+  width:50em;
+  height:48em;
+  display:flex;
+  flex-direction: column;
+  border-radius: .5em;
+  border:solid black .1em;
+  padding:2em;
+}
+.Comp-CreateLogin .Input .Col{
+  flex:1;
+  display:flex;
+  flex-direction: column;
+  padding:1em;
+  padding-left:2em;
+  padding-right:2em;
+  align-items: center;
+}
+
+.Comp-CreateLogin .Input{
+  display:flex;
+  flex-direction: row;
+}
+.Comp-CreateLogin .Input .Col div{
+  flex:1;
+  font-weight: bold;
+  width:100%;
+}
+
+.Comp-CreateLogin .Input .Col #Password{
+  display:flex;
+  align-items: center;
+}
+
+.Comp-CreateLogin button{
+  width:100%;
+  background-color: rgb(215, 215, 237);
+  border-radius: .25em;
+  font-size:1.5em;
+}
+.Comp-CreateLogin .Input input{
+  margin-bottom:1em;
+  margin-top:.5em;
+}
+
+.Comp-CreateLogin div a{
+  font-weight: normal;
+}
+.Comp-CreateLogin div a:hover{
+  cursor:pointer;
+  font-weight: bold;
+}
+
+
+.Comp-Login{
+  background-color: rgb(231, 232, 243);
+  width:25em;
+  height:25em;
+  display:flex;
+  flex-direction: column;
+  border-radius: .5em;
+  border:solid black .1em;
+}
+.Comp-Login #Row{
+  flex:1;
+  display:flex;
+  flex-direction: column;
+  padding:1em;
+  padding-left:2em;
+  padding-right:2em;
+  align-items: center;
+}
+.Comp-Login #Row button{
+  width:100%;
+  background-color: rgb(215, 215, 237);
+  border-radius: .25em;
+}
+.Comp-Login #Row input{
+  margin-bottom:1em;
+  margin-top:.5em;
+}
+.Comp-Login #Row div{
+  font-weight: bold;
+  width:100%;
+}
+.Comp-Login #Row #Password{
+  display:flex;
+  align-items: center;
+}
+.Comp-Login #Row #Password div{
+  flex:1;
+}
+
+.Comp-Login #Row div a{
+  font-weight: normal;
+  padding:.25em;
+}
+.Comp-Login #Row div a:hover{
+  cursor:pointer;
+  font-weight: bold;
+}
+
+.Comp-Create{
+  background-color: rgb(231, 232, 243);
+  width:25em;
+  height:50em;
+  display:flex;
+  flex-direction: column;
+  border-radius: .5em;
+  border:solid black .1em;
+}
+.Comp-Create #Row{
+  flex:1;
+  display:flex;
+  flex-direction: column;
+  padding:2em;
+  align-items: center;
+}
+.Comp-Create #Row button{
+  width:100%;
+  background-color: rgb(215, 215, 237);
+  border-radius: .25em;
+}
+.Comp-Create #Row input{
+  margin-bottom:1em;
+}
+.Comp-Create #Row div{
+  font-weight: bold;
+  width:100%;
+}
+.Comp-Create #Row #Password{
+  display:flex;
+  align-items: center;
+}
+.Comp-Create #Row #Password div{
+  flex:1;
+}
+
+.Comp-Create #Row div a{
+  font-weight: normal;
+  padding:.25em;
+}
+.Comp-Create #Row div a:hover{
+  cursor:pointer;
+  font-weight: bold;
 }
 
 
 
+.Comp-Forgot{
+  background-color: rgb(231, 232, 243);
+  width:25em;
+  height:25em;
+  display:flex;
+  flex-direction: column;
+  border-radius: .5em;
+  border:solid black .1em;
+}
+.Comp-Forgot #Row{
+  flex:1;
+  display:flex;
+  flex-direction: column;
+  padding:2em;
+  align-items: center;
+}
+.Comp-Forgot #Row button{
+  width:100%;
+  background-color: rgb(215, 215, 237);
+  border-radius: .25em;
+}
+.Comp-Forgot #Row input{
+  margin-bottom:1em;
+}
+.Comp-Forgot #Row div{
+  font-weight: bold;
+  width:100%;
+}
+.Comp-Forgot #Row #Password{
+  display:flex;
+  align-items: center;
+}
+.Comp-Forgot #Row #Password div{
+  flex:1;
+}
 
+.Comp-Forgot #Row div a{
+  font-weight: normal;
+  padding:.25em;
+}
+.Comp-Forgot #Row div a:hover{
+  cursor:pointer;
+  font-weight: bold;
+}
+
+
+#navbarSupportedContent #SignIn{
+  margin-left:5em;
+}
+#navbarSupportedContent #SignIn #Button{
+  border-radius: .5em;
+  width:5em;
+  height:2.3em;
+  background-color: rgb(199, 242, 199);
+}
+#navbarSupportedContent #SignIn button:hover{
+  background-color: rgb(177, 233, 177);
+  cursor:pointer;
+}
+
+#NavBar-Login{
+  position:absolute;
+  top:3.5em;
+  right:0;
+  z-index: 5;
+}
+
+#NavBar-Login #Close{
+  background-color: rgb(225, 62, 62);
+  position:absolute;
+  top:-1.9em;
+  border-radius: 50%;
+  height:1.5em;
+  width:1.5em;
+  right:.5em;
+  padding:.125em;
+  border:solid black .1em;
+}
+
+#NavBar-Login #Close:hover{
+  background-color:rgb(240, 83, 83);
+  cursor:pointer;
+}
