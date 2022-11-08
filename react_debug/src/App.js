@@ -12,6 +12,8 @@ import './App.css';
 
 
 function App() {
+
+
   let nav_config=
   {
     'title':'Accrualify',
@@ -23,8 +25,8 @@ function App() {
   let [MenuLinks,setMenuLinks]=useState(
   {
     "Employee Reports":'/payroll/employee_search/',
-    "Timesheet Reports":'/payroll/timeSheet_search/',
-    "Timesheet Entry":'/payroll/timeSheet_create/',
+    "Timesheet Reports":'/payroll/timesheet_search/',
+    "Timesheet Entry":'/payroll/timesheet_create/',
   });
   async function checkAuthenticated()
   {
@@ -50,9 +52,9 @@ function App() {
         </div>
         <BrowserRouter>
           <Routes>
-            <Route path = "/payroll/employee_search/" element={<EmployeeSearch endpoint="/payroll/api/employees/" />}/>
-            <Route path = "/payroll/timeSheet_create/" element={<TimeSheetCreate endpoint="/payroll/api/timesheet/" />}/>
-            <Route path = "/payroll/timeSheet_search/" element = {<TimeSheetSearch endpoint="/payroll/api/timesheet/" />}/>
+            <Route path = "/payroll/employee_search/" element={<EmployeeSearch endpoint="/api/payroll/employees/" />}/>
+            <Route path = "/payroll/timesheet_create/" element={<TimeSheetCreate endpoint="/api/payroll/timesheet/" />}/>
+            <Route path = "/payroll/timesheet_search/" element = {<TimeSheetSearch endpoint="/api/payroll/timesheet/" />}/>
           </Routes>
         </BrowserRouter>
       </div>

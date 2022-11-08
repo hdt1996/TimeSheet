@@ -27,7 +27,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && mv build ../server_django && cd ../server_django && rm -r frontend_react/build && rm -r static && mv build/static . && mv build frontend_react",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
