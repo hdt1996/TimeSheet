@@ -1,7 +1,7 @@
 import {DataGrid} from '@mui/x-data-grid'
 import React, {useState,useEffect, useRef} from 'react';
 import Query from './Query';
-import { Delete,Add, ConstructionOutlined } from '@mui/icons-material';
+import { Delete,Add, ConstructionOutlined, CurrencyYenOutlined } from '@mui/icons-material';
 import Fetcher from '../Utilities/Fetcher';
 import CloseIcon from '@mui/icons-material/Close';
 
@@ -33,25 +33,30 @@ function Table(
     let [Selected_IDs,setSelected_IDs] = useState([]);
     let SelectedRows = useRef([]);
     let DeleteSuccess = useRef(false);
+    let CurrentDetailID = useRef(null);
 
     let handleRowClicked = null;
     if(Object.keys(config.DetailTblConfig).length !== 0)
     {
         handleRowClicked = (e) =>
         {
-            if(Object.keys(DetailTblConfig).length !== 0)
+            setShowRowDetail(false);
+            if(ShowRowDetail && CurrentDetailID.current === e.row['col1'])
+            {
+                CurrentDetailID.current = null;
+            }
+            else
             {
                 let currentDetailTblConfig = {...DetailTblConfig};
                 currentDetailTblConfig.start_query={"timesheet":{"operator":"equal","value":e.row['col1'] }};
                 setDetailTblConfig(currentDetailTblConfig);
-                setShowRowDetail(true);
+                CurrentDetailID.current = e.row['col1'];
             };
         };
     };
 
     function handleSelectionModel(ids)
     {
-        console.log(ids);
         setSelected_IDs(ids)//e is row id, we can use to parse through original rows object to get information
     };
 
@@ -60,7 +65,6 @@ function Table(
         if(Selected_IDs.length > 0)
         {
             setShowConfirmDel(true);
-            console.log("SET")
         }
     }
     async function handleSelectedDelete(ids)
@@ -87,9 +91,6 @@ function Table(
             DeleteSuccess.current=true;
             setShowConfirmDel(false);
         };
-
-        //curr_config["values"]=data;
-        //setConfig(curr_config);
     };
 
     let num_rows = config['num_rows'];
@@ -163,8 +164,18 @@ function Table(
             filter_element.click();
             DeleteSuccess.current = false;
             SelectAllBox.click();
+            setShowRowDetail(false);
         };
     },[Selected_IDs,ShowConfirmDel]);
+
+    useEffect(() =>
+    {
+        if(CurrentDetailID.current)
+        {
+            setShowRowDetail(true);
+        };
+
+    },[DetailTblConfig])
 
     return ( //First map is column titles; Second map is for data rows/columns
         <div id={`Table-N${nestedTblIndex}`} className={`Comp-Table ${className}`}>
@@ -186,7 +197,7 @@ function Table(
                     ShowAdd?
                     <div id="AddComponent">
                         <CloseIcon id="Close" onClick={() =>{setShowAdd(false)}}/>
-                        <AddComponent endpoint="/payroll/api/timesheet/"/>
+                        <AddComponent endpoint={config.endpoint}/>
                     </div>:
                     null
                 }

@@ -32,6 +32,7 @@ function PostForm(
     //Before we insert, we need to update the placeholder which is the actual programmatic index of the rows
     //List starts with zero but on the frontend we use 1 as starting point
     let updated_placeholder = parseInt(new_clone.getAttribute('placeholder'))+1; //Initial clone has placeholder of 0, we increment
+
     new_clone.setAttribute('placeholder',updated_placeholder) //update
     new_clone.querySelector("#index").innerHTML = updated_placeholder + 1; //The index shown is the placeholder plus one since we do not start from zero
     new_clone.setAttribute("id",alternative_shades[ColorIndex]);
@@ -42,7 +43,7 @@ function PostForm(
     let clone_input_elements = new_clone.querySelectorAll("#form-control-db") //This id was assigned for easy search
     for(let i = 0; i < clone_input_elements.length; i++)
     {
-      clone_input_elements[i].onkeyup=(e)=>{inputChange(e)}; //We subtract because we need indice start from 0 for POST data but starting from 1 for display
+      clone_input_elements[i].onkeyup=(e)=>{inputChange(e, true)}; //We subtract because we need indice start from 0 for POST data but starting from 1 for display
       clone_input_elements[i].value = "";
     };
 
@@ -111,7 +112,7 @@ function PostForm(
                   let db_attrib = db_columns[cindex];
                   return (
                     <Col id="col" key = {cindex}>
-                      <Form.Control onKeyUp = {(e) =>{inputChange(e, rindex)}} db = {db_attrib} id="form-control-db" placeholder={c} />
+                      <Form.Control onKeyUp = {(e) =>{inputChange(e, true)}} db = {db_attrib} id="form-control-db" placeholder={c} />
                     </Col>
                   )
                 })

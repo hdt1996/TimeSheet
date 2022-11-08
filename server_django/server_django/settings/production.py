@@ -124,7 +124,9 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
+REST_FRAMEWORK = {
+    'COERCE_DECIMAL_TO_STRING': False,
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/

@@ -1,6 +1,6 @@
 import React, { useState, useEffect} from 'react';
 import Table from '../Components/Table';
-import Query from '../Components/Query';
+import CreateLogin from '../Components/CreateLogin'
 function EmployeeSearch({endpoint})
 {
     let [TblConfig,setTblConfig]=useState(
@@ -28,7 +28,7 @@ function EmployeeSearch({endpoint})
         Admin Employee Management
         </div>
         <div className="Comp-Table">
-            <Table config={TblConfig} setConfig={setTblConfig} nestedTblIndex = {0}></Table>
+            <Table config={TblConfig} setConfig={setTblConfig} nestedTblIndex = {0} AddComponent={CreateLogin}></Table>
         </div>
     </div>
     );

@@ -36,7 +36,6 @@ function CreateLogin({setRenderLogin, setRenderCreate, setRenderForgot}) {
         let currPassChar = PassChar.current
         let newPassChar = currPassChar[1]+diff;
         let index_offset = currPassChar[1]-currPassChar[0];
-        console.log(diff);
         if(diff > 0)
         {
             mod_chars = value.slice(currPassChar[0],newPassChar);
@@ -76,7 +75,6 @@ function CreateLogin({setRenderLogin, setRenderCreate, setRenderForgot}) {
         e.target.value = hidden_pass.join('');
         PassChar.current = [newPassChar,newPassChar];
         Password.current = curr_password;
-        console.log(curr_password)
     };
 
     function handleMouseUp()
@@ -118,12 +116,16 @@ function CreateLogin({setRenderLogin, setRenderCreate, setRenderForgot}) {
         let data = await response.json();
         if(!data["Error"])
         {
-            alert(`Successfully Created User Entry ${data['User'].id}\nSuccessfully Created Employee Entry ${data['Employee'].id}`);
+            alert(`Successfully Created User Entry ${data['User'].id}\nSuccessfully Created Employee Entry ${data['Employee'].id}\nReady to close`);
             Password.current=[];
             Username.current=null;
-            return setRenderCreate(false);
-        };
-        alert(data['Error']);
+            if(setRenderCreate){setRenderCreate(false)};
+        }
+        else
+        {
+            alert(data['Error']);
+        }
+
     };
 
     let renderCalendar = () =>
@@ -189,7 +191,7 @@ function CreateLogin({setRenderLogin, setRenderCreate, setRenderForgot}) {
                         <div>Job Title</div>
                         <Form.Control onChange = {(e) => {JobTitle.current=e.target.value}} placeholder="Enter employee's job title"></Form.Control>
                         <div>Hourly or Salary</div>
-                        <Form.Control onChange = {(e) => {HourlyorSalary.current=e.target.value}} placeholder="Choose hourly or salary"></Form.Control>
+                        <Form.Control onChange = {(e) => {HourlyorSalary.current=e.target.value}} placeholder="Enter 0 or 1 (Salary or Hourly)"></Form.Control>
                         <div>Pay Rate (Hourly per 40-Hour Week)</div>
                         <Form.Control onChange = {(e) => {PayRate.current=e.target.value}} placeholder="Enter employee's pay rate"></Form.Control>
                         <div>Start date</div>
@@ -215,13 +217,20 @@ function CreateLogin({setRenderLogin, setRenderCreate, setRenderForgot}) {
                 </div>
                 <br></br>
                 <button type="button" id="button" onClick={()=>{sendSignIn()}} >Create Account</button>
-                <br></br>
-                <div>
-                    <a onClick = {() => {console.log("Clicked to Recover");setRenderForgot(true);setRenderCreate(false);}}>Go to forgot username or password?</a>
-                </div>
-                <div>
-                    <a onClick = {() => {console.log("Clicked to Create");setRenderLogin(true);setRenderCreate(false);}}>Go back to login</a>
-                </div>
+                {
+                    setRenderLogin && setRenderForgot?
+                    <>
+                    <br></br>
+                    <div>
+                        <a onClick = {() => {console.log("Clicked to Recover");setRenderForgot(true);setRenderCreate(false);}}>Go to forgot username or password?</a>
+                    </div>
+                    <div>
+                        <a onClick = {() => {console.log("Clicked to Create");setRenderLogin(true);setRenderCreate(false);}}>Go back to login</a>
+                    </div>
+                    </>
+                    :null
+                }
+
         </Form>
     );
   }

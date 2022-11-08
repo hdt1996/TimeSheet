@@ -31,13 +31,21 @@ function TimeSheetCreate({endpoint})
     useEffect(()=>
     {
     },[TimeSheetData,BillingLineData,CurrentDate,ActiveCalendar,SubmissionTime,TextDisabled,ModeLabel]);
-    function handleTimeSheetInputs(e)
+
+    function handleTimeSheetInputs(e, calculate = false)
     {
+        if(calculate)
+        {
+            let total_time_element = document.querySelector('input[placeholder="total_time"]');
+            let total_bill_element = document.querySelector('input[placeholder="total_bill"]');
+            let bill_rate_element = document.querySelector('input[placeholder="bill_rate"]');
+            total_bill_element.value = parseFloat(total_time_element.value) *  parseFloat(bill_rate_element.value);
+        }
         let key = e.target.getAttribute("placeholder");
         let currTimeSheetData = TimeSheetData.current;
         currTimeSheetData[key] = e.target.value;
     };
-    function handleBillLineInputs(e)
+    function handleBillLineInputs(e, calculate = false)
     {
         let row_index = getParentIntAttrib(e,'placeholder',2)
         let currentBillLineData = BillingLineData.current;
@@ -45,6 +53,16 @@ function TimeSheetCreate({endpoint})
         if(!currentBillLineData[row_index])
         {
             currentBillLineData[row_index] = {};
+        }
+
+        if(calculate && db_field === 'num_minutes' && !isNaN(parseFloat(e.target.value)))
+        {
+            let total_time_element = document.querySelector('input[placeholder="total_time"]');
+            let total_bill_element = document.querySelector('input[placeholder="total_bill"]');
+            let bill_rate_element = document.querySelector('input[placeholder="bill_rate"]');
+            let parsed_val = parseFloat(e.target.value);
+            total_time_element.value = parseFloat(total_time_element.value)  - currentBillLineData[row_index][db_field] + parsed_val;
+            total_bill_element.value = parseFloat(total_time_element.value) *  parseFloat(bill_rate_element.value);
         }
         currentBillLineData[row_index][db_field] = e.target.value;
     };
@@ -110,7 +128,6 @@ function TimeSheetCreate({endpoint})
             };
             id_str = id_str.join(', ');
             freezeTimeSheet('Updated',`Updated: Timesheet Entry ${data['TimeSheet'].id}\nDeleted: Timesheet Entries ${id_str}`);
-
         }
     }
     async function postData()
@@ -201,7 +218,7 @@ function TimeSheetCreate({endpoint})
                         id = "Value"
                         placeholder={CurrentDate}
                         margin="normal"
-                        disabled = {TextDisabled}
+                        disabled = {true}
                         className={TextDisabled?"TimeSheet-Locked":"TextField"}
                     />
                     <DateRangeIcon id = "Icon" onClick ={() => {renderCalendar()}} ></DateRangeIcon>
@@ -232,25 +249,26 @@ function TimeSheetCreate({endpoint})
                     label="Billing Rate"
                     placeholder="bill_rate"
                     margin="normal"
-                    onChange={(e)=>{handleTimeSheetInputs(e)}}
+                    defaultValue={0}
+                    onChange={(e)=>{handleTimeSheetInputs(e, true)}}
                     disabled = {TextDisabled}
-                    className={TextDisabled?"TimeSheet-Locked":"TextField"}
+                    className={TextDisabled?"TimeSheet-Locked Edited":"TextField Edited"}
                 />
                 <TextField
                     label="Total Time"
                     placeholder="total_time"
                     margin="normal"
-                    onChange={(e)=>{handleTimeSheetInputs(e)}}
-                    disabled = {TextDisabled}
-                    className={TextDisabled?"TimeSheet-Locked":"TextField"}
+                    defaultValue={0}
+                    disabled = {true}
+                    className={TextDisabled?"TimeSheet-Locked Edited":"TextField Edited"}
                 />
                 <TextField
                     label="Total Bill"
                     placeholder="total_bill"
                     margin="normal"
-                    onChange={(e)=>{handleTimeSheetInputs(e)}}
-                    disabled = {TextDisabled}
-                    className={TextDisabled?"TimeSheet-Locked":"TextField"}
+                    defaultValue={0}
+                    disabled = {true}
+                    className={TextDisabled?"TimeSheet-Locked Edited":"TextField Edited"}
                 />
             </div>
 

@@ -66,9 +66,9 @@ class Employees(models.Model): #Summary: Table in PSQL database containing emplo
 class TimeSheet(models.Model):
     employee = models.ForeignKey(Employees, on_delete=models.PROTECT, blank=True, null=True )
     description = models.TextField(max_length=2000, null=True, blank=True)
-    bill_rate = models.DecimalField(null=True, blank=True, max_digits=10,decimal_places=2)
-    total_time = models.DecimalField(null=True, blank=True, max_digits=10,decimal_places=2)
-    total_bill = models.DecimalField(null=True, blank=True, max_digits=20,decimal_places=2)
+    bill_rate = models.DecimalField(default = 0, max_digits=10,decimal_places=2)
+    total_time = models.DecimalField(default = 0, max_digits=10,decimal_places=2)
+    total_bill = models.DecimalField(default = 0, max_digits=20,decimal_places=2)
     date = models.DateTimeField()
     date_added = models.DateTimeField(auto_now_add=True, auto_now=False) 
     date_modified = models.DateTimeField(auto_now=True) 
@@ -90,7 +90,7 @@ class TimeSheet(models.Model):
         
 class LineItems(models.Model):
     timesheet = models.ForeignKey(TimeSheet, on_delete=models.CASCADE, blank=True, null=True )
-    num_minutes=models.DecimalField(null=True, blank=True, default=None, max_digits=4,decimal_places=2)
+    num_minutes=models.DecimalField(default=0, max_digits=8,decimal_places=2) 
     memo = models.TextField(max_length=100, null=True, blank=True, default='')
     date_added = models.DateTimeField(auto_now_add=True, auto_now=False) 
     date_modified = models.DateTimeField(auto_now=True) 

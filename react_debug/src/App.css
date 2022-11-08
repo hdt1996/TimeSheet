@@ -141,6 +141,10 @@
 
 }
 
+.Edited input{
+  display:flex;
+  text-align: end;
+}
 .TextField{
   background-color: white;
 }
@@ -331,7 +335,9 @@
   border: solid rgba(24, 24, 36, 0.523) .5em;
   border-bottom-right-radius: 1em;
   border-bottom-left-radius: 1em;
-  z-index:1;
+  z-index:5;
+  width:fit-content;
+  display:flex;
 }
 .Comp-Table .Buttons #AddComponent #Close{
   position:absolute;
@@ -505,6 +511,13 @@
 .Comp-CreateLogin .Input .Col #Password{
   display:flex;
   align-items: center;
+}
+.Comp-CreateLogin .Input .Col #Password div{
+  position:relative;
+  height:inherit;
+}
+.Comp-CreateLogin .Input .Col #Password div svg{
+  height:1em;
 }
 
 .Comp-CreateLogin button{

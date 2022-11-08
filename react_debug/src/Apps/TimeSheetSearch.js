@@ -69,7 +69,7 @@ function TimeSheetSearch({endpoint})
             db_columns:['id','num_minutes','memo','date_added','date_modified','timesheet'],
             values:[],
             col_width:150,
-            endpoint:"/payroll/api/timesheet/lineitems/",
+            endpoint:"/api/payroll/timesheet/lineitems/",
             start_query:{"id":{"operator":null,"value":null}},
             extract_config:
             {

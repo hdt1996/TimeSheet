@@ -42,18 +42,15 @@ class CreateLoginView(APIView):
                 auth.password_validation.validate_password(password)
             except Exception as e:
                 return Response({'Error':e})
-
+            serialized_employee = EmployeePOSTSerializer(data=employee_data, many = False)
+            if serialized_employee.is_valid() == False:
+                print(serialized_employee.errors)
+                return Response({'Error':'Invalid Data'},status=status.HTTP_403_FORBIDDEN)
             new_user = User.objects.create(username=username)
             new_user.set_password(password)
             new_user.save()
-
-            serialized_employee = EmployeePOSTSerializer(data=employee_data, many = False)
-            if serialized_employee.is_valid() == False:
-                return Response({'Error':'Invalid Data'},status=status.HTTP_403_FORBIDDEN)
-
             employee_data['user']=new_user
             new_employee = Employees.objects.create(**employee_data)
-
             serialized_employee_response = EmployeeGETSerializer(instance = new_employee, many=False)
             serialized_user_response = UserSerializer(instance = new_user, many = False)
             return Response({'User':serialized_user_response.data,"Employee":serialized_employee_response.data},status=status.HTTP_200_OK)

@@ -371,43 +371,56 @@ class TimeSheetView(APIView):
 
         if not isinstance(timesheet_data,dict):
             return Response({"Error":"Request body not valid"}, status = status.HTTP_403_FORBIDDEN)
+
+        # Use new_TimeSheet variable for TimeSheet timesheet ID to foreign key
+        if not isinstance(line_item_data,list):
+            return Response({"Error":"Request body not valid"}, status = status.HTTP_403_FORBIDDEN)
+
         serialized_timesheet = TimeSheetPOSTSerializer(data = timesheet_data, many = False) #False to serialize single object only. TimeSheet_data contains fields-value pairs to create entry (Different from get's implementation)
+
         if not serialized_timesheet.is_valid():
             #TODO send email to IT Software team for logging purposes of all requests
             print(serialized_timesheet.errors)
             return Response({'Error':'Data invalid by serializer'}, status = status.HTTP_403_FORBIDDEN)
+
+        serialized_items = LineItemsPOSTSerializer(data = line_item_data, many = True)
+        if not serialized_items.is_valid():
+            #TODO send email to IT Software team for logging purposes of all requests
+            print(serialized_items.errors)
+            return Response({'Error':'Data invalid by serializer'}, status = status.HTTP_403_FORBIDDEN)
+        
         data = dict(serialized_timesheet.data)
         emp_id = timesheet_data.get('employee')
         if emp_id == None:
             return Response({'Error':'Employee ID is required to proceed with this endpoint'}, status = status.HTTP_403_FORBIDDEN)  
+            
         if not emp_id.isdigit():
             return Response({'Error':'Employee ID must be a number'}, status = status.HTTP_403_FORBIDDEN)  
-        employee_query = Employees.objects.filter(id=int(emp_id))      
+
+        employee_query = Employees.objects.filter(id=int(emp_id)) 
+
         if len(employee_query) > 0:
             employee = employee_query[0]
             data['employee'] = employee
             new_timesheet = TimeSheet.objects.create(**data)
         else:
             new_timesheet = TimeSheet.objects.create(**data)
+            
 
-        serialized_timesheet = dict(TimeSheetGETSerializer(instance = new_timesheet).data) #Ready to be sent as JSON
 
-        # Set up Billings Lines
-        # Use new_TimeSheet variable for TimeSheet timesheet ID to foreign key
-        if not isinstance(line_item_data,list):
-            return Response({"Error":"Request body not valid"}, status = status.HTTP_403_FORBIDDEN)
         line_item_objects=[]
         for item in line_item_data:
-            serialized_item = LineItemsPOSTSerializer(data = item, many = False) #False to serialize single object only. TimeSheet_data contains fields-value pairs to create entry (Different from get's implementation)
-            if not serialized_item.is_valid():
-                #TODO send email to IT Software team for logging purposes of all requests
-                print(serialized_item.errors)
-                return Response({'Error':'Data invalid by serializer'}, status = status.HTTP_403_FORBIDDEN)
-            line_item_dict = dict(serialized_item.data)
-            line_item_dict['timesheet'] = new_timesheet
-            new_entry = LineItems.objects.create(**line_item_dict)
+            item['timesheet'] = new_timesheet
+            new_entry = LineItems.objects.create(**item)
             line_item_objects.append(new_entry)
         serialized_line_items = LineItemsGETSerializer(instance = line_item_objects, many = True).data
+
+        new_timesheet.total_time = new_timesheet.getTotalMinutes()
+        print(new_timesheet.total_time, type(new_timesheet.total_time))
+        print(new_timesheet.bill_rate, type(new_timesheet.bill_rate))
+        new_timesheet.total_bill = new_timesheet.total_time * new_timesheet.bill_rate
+        new_timesheet.save()
+        serialized_timesheet = dict(TimeSheetGETSerializer(instance = new_timesheet).data) #Ready to be sent as JSON
         return Response({"TimeSheet":serialized_timesheet,"LineItems":serialized_line_items}, status = status.HTTP_200_OK)
 
     @method_decorator(csrf_exempt,name="put")
@@ -438,22 +451,20 @@ class TimeSheetView(APIView):
             return Response({"Error":"Request body not valid"}, status = status.HTTP_403_FORBIDDEN)
         line_objects=[]
         existing_ids=[]
+        serialized_items = LineItemsPUTSerializer(data = line_item_data, many = True)
+        if not serialized_items.is_valid():
+            #TODO send email to IT Software team for logging purposes of all requests
+            print(serialized_items.errors)
+            return Response({'Error':'Data invalid by serializer'}, status = status.HTTP_403_FORBIDDEN)
+
         for item in line_item_data:
             line_item_id = item.pop("id")
-            
-            serialized_item = LineItemsPUTSerializer(data = item, many = False) #False to serialize single object only. TimeSheet_data contains fields-value pairs to create entry (Different from get's implementation)
-
-            if not serialized_item.is_valid():
-                #TODO send email to IT Software team for logging purposes of all requests
-                print(serialized_item.errors)
-                return Response({'Error':'Data invalid by serializer'}, status = status.HTTP_403_FORBIDDEN)
-            item_data = dict(serialized_item.data)
-            item_data['timesheet'] = timesheet_entry
+            item['timesheet'] = timesheet_entry
             line_query= LineItems.objects.filter(id=line_item_id)
             if len(line_query) == 0:
-                line_obj = LineItems.objects.create(**item_data)
+                line_obj = LineItems.objects.create(**item)
             else:
-                line_query.update(**item_data) 
+                line_query.update(**item) 
                 line_obj = line_query[0]
             existing_ids.append(line_obj.id)
             line_objects.append(line_obj) 
@@ -466,7 +477,6 @@ class TimeSheetView(APIView):
         if len(deleted_lines_query) > 0:
             deleted_lines_query.delete()
         line_items_response = LineItemsGETSerializer(instance = line_objects, many = True)
-        print(line_items_response.data)
         return Response({"TimeSheet":timesheet_response.data, "LineItems":line_items_response.data, "DeletedLineItems":deleted_lines_response}, status = status.HTTP_200_OK)
         
     @method_decorator(csrf_exempt,name="delete")
