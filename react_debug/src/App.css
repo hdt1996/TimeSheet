@@ -526,6 +526,11 @@
   border-radius: .25em;
   font-size:1.5em;
 }
+
+.Comp-CreateLogin button:hover{
+  background-color: rgb(177, 233, 177);
+  cursor:pointer;
+}
 .Comp-CreateLogin .Input input{
   margin-bottom:1em;
   margin-top:.5em;
@@ -689,10 +694,6 @@
   width:5em;
   height:2.3em;
   background-color: rgb(199, 242, 199);
-}
-#navbarSupportedContent #SignIn button:hover{
-  background-color: rgb(177, 233, 177);
-  cursor:pointer;
 }
 
 #NavBar-Login{
