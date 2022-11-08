@@ -1,14 +1,12 @@
 branch-defaults:
   default:
-    environment: server-django-dev
-    group_suffix: null
+    environment: server-django-prod
 environment-defaults:
-  server-django-dev:
+  server-django-prod:
     branch: null
     repository: null
 global:
   application_name: server_django
-  branch: null
   default_ec2_keyname: aws-eb
   default_platform: Python 3.8 running on 64bit Amazon Linux 2
   default_region: us-west-2
@@ -17,6 +15,5 @@ global:
   platform_name: null
   platform_version: null
   profile: null
-  repository: null
   sc: null
   workspace_type: Application

@@ -24,5 +24,5 @@ urlpatterns = [
     path('user/login/',LoginView.as_view()),
     path('user/logout/',LogoutView.as_view()),
     path('user/getCSRF/',GetCSRFToken.as_view()),
-    path('payroll/api/',include('app_payroll.urls'))
+    path('api/payroll/',include('app_payroll.urls'))
 ]

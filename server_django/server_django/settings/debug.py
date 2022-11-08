@@ -9,8 +9,8 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-
 from pathlib import Path
+from decouple import config as dconfig
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -26,7 +26,7 @@ SECRET_KEY = 'abc'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['server-django-dev.us-west-2.elasticbeanstalk.com','localhost','172.31.10.81','192.168.1.17']
+ALLOWED_HOSTS = ['localhost','192.168.1.17']
 
 
 # Application definition
@@ -100,8 +100,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'storedb',
-        'USER': 'postgres',
-        'PASSWORD': "MrPho1219@",
+        'USER': dconfig('PSQL_USER'),
+        'PASSWORD': dconfig('PSQL_DEBUG_PASS'),
         'HOST': '192.168.1.86',
         'PORT': '5432',
     }

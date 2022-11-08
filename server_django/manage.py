@@ -6,7 +6,10 @@ import sys
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'server_django.settings')
+    if os.environ.get("DEBUG"): #We need both for running manage.py commands such as static collection or migrations
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'server_django.settings.debug')
+    else:
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'server_django.settings.production')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

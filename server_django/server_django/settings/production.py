@@ -25,10 +25,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = dconfig('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = ['server-django-dev.us-west-2.elasticbeanstalk.com','localhost','172.31.10.81','192.168.1.17']
-
+DEBUG= False
+ALLOWED_HOSTS = ['server-django-prod.us-west-2.elasticbeanstalk.com']
 
 # Application definition
 
@@ -101,9 +99,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'ebdb',
-        'USER': postgres    #dconfig('PSQL_USER'),
-        'PASSWORD': password   #dconfig('PSQL_PASS'),
-        'HOST': '192.168.1.86'     #'awseb-e-mvemdpgwby-stack-awsebrdsdatabase-qd8nmimooaib.cjeea81gbwzu.us-west-2.rds.amazonaws.com',
+        'USER':   dconfig('PSQL_USER'),
+        'PASSWORD':   dconfig('PSQL_PASS'),
+        'HOST': 'awseb-e-asziensa9t-stack-awsebrdsdatabase-krlf0wkhif9y.cjeea81gbwzu.us-west-2.rds.amazonaws.com',
         'PORT': '5432',
     }
 }
