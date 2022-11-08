@@ -1,7 +1,8 @@
 import { Form } from 'react-bootstrap'
 import React, { useState, useEffect} from "react";
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import Fetcher from '../Utilities/Fetcher';
+import Endpoints from '../Utilities/Endpoints';
+import {getToken} from '../Utilities/Token'
 function Login({setRenderLogin, setRenderCreate, setRenderForgot}) {
     let [Password,setPassword] = useState([]);
     let [PassChar, setPassChar] = useState([0,0]);
@@ -71,10 +72,10 @@ function Login({setRenderLogin, setRenderCreate, setRenderForgot}) {
     {
         const requestOptions={
             method: 'POST',
-            headers:{'Content-Type': 'application/json'},
+            headers:{'Content-Type': 'application/json', 'X-CSRFToken': getToken('csrftoken')},
             body:JSON.stringify({"username":Username, "password":Password.join('')})
         };
-        let response = await fetch(`${Fetcher.domain}${Fetcher.logInAPI}`,requestOptions);
+        let response = await fetch(`${Endpoints.domain}${Endpoints.logInAPI}`,requestOptions);
         let data = await response.json();
         if(data["Success"])
         {
@@ -121,10 +122,10 @@ function Login({setRenderLogin, setRenderCreate, setRenderForgot}) {
                 <button type="button" id="button" onClick={()=>{sendSignIn()}} >Sign In</button>
                 <br></br>
                 <div>
-                    <a onClick = {() => {console.log("Clicked to Recover");setRenderForgot(true);setRenderLogin(false);}}>Forgot username or password?</a>
+                    <a onClick = {() => {setRenderForgot(true);setRenderLogin(false);}}>Forgot username or password?</a>
                 </div>
                 <div>
-                    <a onClick = {() => {console.log("Clicked to Create");setRenderCreate(true);setRenderLogin(false);}}>Create an account with us</a>
+                    <a onClick = {() => {setRenderCreate(true);setRenderLogin(false);}}>Create an account with us</a>
                 </div>
             </div>
         </Form>

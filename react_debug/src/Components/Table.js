@@ -2,8 +2,9 @@ import {DataGrid} from '@mui/x-data-grid'
 import React, {useState,useEffect, useRef} from 'react';
 import Query from './Query';
 import { Delete,Add, ConstructionOutlined, CurrencyYenOutlined } from '@mui/icons-material';
-import Fetcher from '../Utilities/Fetcher';
+import Endpoints from '../Utilities/Endpoints';
 import CloseIcon from '@mui/icons-material/Close';
+import {getToken} from '../Utilities/Token'
 
 function Table(
     {
@@ -71,9 +72,9 @@ function Table(
     {
         const requestOptions={
             method: 'DELETE',
-            headers:{'Content-Type': 'application/json','selectors':JSON.stringify({'id':Selected_IDs})}
+            headers:{'Content-Type': 'application/json','X-CSRFToken': getToken('csrftoken'), 'selectors':JSON.stringify({'id':Selected_IDs})}
         };
-        let response = await fetch(`${Fetcher.domain}${config.endpoint}`, requestOptions);
+        let response = await fetch(`${Endpoints.domain}${config.endpoint}`, requestOptions);
         let data = await response.json();
         if(data['Error'])
         {

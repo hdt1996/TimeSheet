@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import {BrowserRouter, Routes, Route } from 'react-router-dom';
+import {getToken} from './Utilities/Token'
 import Navbar from './Components/Navbar';
 import SideMenu from './Components/SideMenu';
 import EmployeeSearch from './Apps/EmployeeSearch';
 import TimeSheetCreate from './Apps/TimeSheetCreate';
 import TimeSheetSearch from './Apps/TimeSheetSearch';
-import {BrowserRouter, Routes, Route } from 'react-router-dom';
-import Login from './Components/Login';
-import Slider from './Components/Slider';
-import Fetcher from './Utilities/Fetcher';
+import Endpoints from './Utilities/Endpoints';
 import './App.css';
 
 
@@ -32,14 +31,26 @@ function App() {
   {
       const requestOptions={
           method: 'GET',
-          headers:{'Content-Type': 'application/json'},
+          headers:{'Content-Type': 'application/json', 'X-CSRFToken': getToken('csrftoken')},
       };
-      let response = await fetch(`${Fetcher.domain}${Fetcher.checkAuthAPI}`,requestOptions);
+      let response = await fetch(`${Endpoints.domain}${Endpoints.checkAuthAPI}`,requestOptions);
       let data = await response.json();
+      console.log(data);
   };
 
+  async function getCSRF()
+  {
+      const requestOptions={
+          method: 'GET',
+          headers:{'Content-Type': 'application/json', 'X-CSRFToken': getToken('csrftoken')},
+      };
+      let response = await fetch(`${Endpoints.domain}${Endpoints.getCSRF}`,requestOptions);
+      let data = await response.json();
+  };
+  console.log("RENDERED")
   useEffect(()=>
   {
+    getCSRF();
     checkAuthenticated();
   },[])
 

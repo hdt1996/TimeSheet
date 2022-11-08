@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef} from 'react';
-import Fetcher from '../Utilities/Fetcher';
+import Endpoints from '../Utilities/Endpoints';
 import ClearAllIcon from '@mui/icons-material/ClearAll';
+import {getToken} from '../Utilities/Token'
 function Query(
     {
         config=
@@ -76,9 +77,9 @@ function Query(
     {
         const requestOptions={
             method: 'GET',
-            headers:{'Content-Type': 'application/json','selectors':JSON.stringify(QueryOptions.current)}
+            headers:{'Content-Type': 'application/json','X-CSRFToken': getToken('csrftoken'), 'selectors':JSON.stringify(QueryOptions.current)}
         };
-        let response = await fetch(`${Fetcher.domain}${config.endpoint}`, requestOptions);
+        let response = await fetch(`${Endpoints.domain}${config.endpoint}`, requestOptions);
         let data = await response.json();
         let curr_config = {...config};
         curr_config["values"]=data;
@@ -118,7 +119,7 @@ function Query(
         <div className="Comp-Query">
             <div id="Filter">
                 <ClearAllIcon onClick={(e) => {handleQueryClear(e)}}></ClearAllIcon>
-                <button id="Button" onClick = {() =>getQuery()}>Filter</button>
+                <button id="Button" onClick = {() =>getQuery()}>Search</button>
             </div>
             
             {

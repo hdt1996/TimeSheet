@@ -1,11 +1,12 @@
 import { Form, Col ,Row} from 'react-bootstrap'
 import React, { useState, useEffect, useRef} from "react";
 import DateRangeIcon from '@mui/icons-material/DateRange';
-import Fetcher from '../Utilities/Fetcher';
+import Endpoints from '../Utilities/Endpoints';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import {buildDateTimeStr} from '../Utilities/Utils'
+import {buildDateTimeStr} from '../Utilities/Utils';
+import {getToken} from '../Utilities/Token'
 
 function CreateLogin({setRenderLogin, setRenderCreate, setRenderForgot}) {
     let FirstName= useRef(null);
@@ -90,7 +91,7 @@ function CreateLogin({setRenderLogin, setRenderCreate, setRenderForgot}) {
     {
         const requestOptions={
             method: 'POST',
-            headers:{'Content-Type': 'application/json'},
+            headers:{'Content-Type': 'application/json', 'X-CSRFToken': getToken('csrftoken')},
             body:JSON.stringify(
             {
                 "user":
@@ -112,7 +113,7 @@ function CreateLogin({setRenderLogin, setRenderCreate, setRenderForgot}) {
                 }
             })
         };
-        let response = await fetch(`${Fetcher.domain}${Fetcher.createLogin}`,requestOptions);
+        let response = await fetch(`${Endpoints.domain}${Endpoints.createLogin}`,requestOptions);
         let data = await response.json();
         if(!data["Error"])
         {

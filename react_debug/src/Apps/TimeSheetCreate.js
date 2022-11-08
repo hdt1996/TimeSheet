@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef} from 'react';
 import TextField from "@mui/material/TextField";
 import PostForm from '../Components/PostForm';
-import Fetcher from '../Utilities/Fetcher';
+import Endpoints from '../Utilities/Endpoints';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import DateRangeIcon from '@mui/icons-material/DateRange';
-import {getParentIntAttrib, buildDateTimeStr} from '../Utilities/Utils'
+import {getParentIntAttrib, buildDateTimeStr} from '../Utilities/Utils';
+import {getToken} from '../Utilities/Token'
 function TimeSheetCreate({endpoint})
 {
     let TimeSheet_columns = ['description','bill_rate','total_time','total_bill','employee'];
@@ -98,10 +99,10 @@ function TimeSheetCreate({endpoint})
     {
         const requestOptions={
             method: 'PUT',
-            headers:{'Content-Type': 'application/json'},
+            headers:{'Content-Type': 'application/json', 'X-CSRFToken': getToken('csrftoken')},
             body:JSON.stringify({"TimeSheetData":TimeSheetData.current,"LineItemsData":BillingLineData.current})
         };
-        let response = await fetch(`${Fetcher.domain}${endpoint}`,requestOptions);
+        let response = await fetch(`${Endpoints.domain}${endpoint}`,requestOptions);
         let data = await response.json();
         if(data["Error"])
         {
@@ -134,10 +135,10 @@ function TimeSheetCreate({endpoint})
     {
         const requestOptions={
             method: 'POST',
-            headers:{'Content-Type': 'application/json'},
+            headers:{'Content-Type': 'application/json', 'X-CSRFToken': getToken('csrftoken')},
             body:JSON.stringify({"TimeSheetData":TimeSheetData.current,"LineItemsData":BillingLineData.current})
         };
-        let response = await fetch(`${Fetcher.domain}${endpoint}`,requestOptions);
+        let response = await fetch(`${Endpoints.domain}${endpoint}`,requestOptions);
         let data = await response.json();
         if(data["Error"])
         {

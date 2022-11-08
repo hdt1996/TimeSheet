@@ -16,7 +16,7 @@ import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+ROOT_DIR = Path(BASE_DIR).resolve().parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = dconfig('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG= False
+DEBUG= True
 ALLOWED_HOSTS = ['server-django-prod.us-west-2.elasticbeanstalk.com']
 
 # Application definition
@@ -101,7 +101,7 @@ DATABASES = {
         'NAME': 'ebdb',
         'USER':   dconfig('PSQL_USER'),
         'PASSWORD':   dconfig('PSQL_PASS'),
-        'HOST': 'awseb-e-asziensa9t-stack-awsebrdsdatabase-krlf0wkhif9y.cjeea81gbwzu.us-west-2.rds.amazonaws.com',
+        'HOST': 'awseb-e-jm3ua59nhj-stack-awsebrdsdatabase-eu6czu7wjsmo.cjeea81gbwzu.us-west-2.rds.amazonaws.com',
         'PORT': '5432',
     }
 }
@@ -144,7 +144,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR,'static')
+STATIC_ROOT = os.path.join(ROOT_DIR,'static/')
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
