@@ -15,7 +15,7 @@ from .utils import *
 
 class EmployeeAdminView(APIView): 
     """ !!!! This view should be used cautiously by only root admins. A mistake without a backup may cause unintended bulk updates or deletions !!! """
-    permission_classes = (permissions.AllowAny,) # Controls user/group access to CRUD options
+    permission_classes = (permissions.IsAdminUser,) # Controls user/group access to CRUD options
 
     @method_decorator(csrf_protect, name = "get")
     def get(self, request):
@@ -133,6 +133,9 @@ class LineItemsView(APIView):
                 return select_obj
 
             sel_dict = buildQuery(selectors= select_obj, fixed_selectors=fixed_selectors)
+            sel_dict = limitLineItemAccess(request, sel_dict)
+            if isinstance(sel_dict, Response):
+                return sel_dict
             table_query = LineItems.objects.filter(**sel_dict)
             if len(table_query) == 0:
                 return Response({'Empty':'No Data'}, status = status.HTTP_200_OK)
@@ -154,6 +157,9 @@ class LineItemsView(APIView):
                 return select_obj
 
             sel_dict = {'id__in':select_obj['id']}
+            sel_dict = limitLineItemDel(request, sel_dict)
+            if isinstance(sel_dict, Response):
+                return sel_dict
             table_query = LineItems.objects.filter(**sel_dict)
             
             if len(table_query) == 0:
@@ -188,6 +194,9 @@ class TimeSheetView(APIView):
                 return select_obj
 
             sel_dict = buildQuery(selectors= select_obj, fixed_selectors=fixed_selectors)
+            sel_dict = limitTimesheetAccess(request, sel_dict)
+            if isinstance(sel_dict, Response):
+                return sel_dict
             table_query = TimeSheet.objects.filter(**sel_dict)
 
             if len(table_query) == 0:
@@ -221,8 +230,12 @@ class TimeSheetView(APIView):
         
         #Process employee foreign key and use to create new timesheet object (employee required)
         timesheet_data = dict(serialized_timesheet.data) #Copy to mutate later
-        emp_id = serialized_timesheet.data['employee'] #Serializer will not conver this foreign key property to numerical id, received as string
-        employee_query = Employees.objects.filter(id=emp_id) 
+         #Serializer will not conver this foreign key property to numerical id, received as string
+        sel_dict = {'id':serialized_timesheet.data['employee']}
+        sel_dict = limitTimesheetAccess(request, sel_dict = sel_dict, field = 'id')
+        if isinstance(sel_dict, Response):
+            return sel_dict
+        employee_query = Employees.objects.filter(**sel_dict) 
         if len(employee_query) == 0:
             return Response({'Error':'Entry ID does not exist'}, status = status.HTTP_403_FORBIDDEN)
 
@@ -262,6 +275,10 @@ class TimeSheetView(APIView):
             return Response({'Error':'Input data is not valid'}, status = status.HTTP_403_FORBIDDEN)
 
         timesheet_data = dict(serialized_timesheet.data)
+        sel_dict = {'id':timesheet_id}
+        sel_dict = limitTimesheetAccess(request, sel_dict = sel_dict, field = 'id')
+        if isinstance(sel_dict, Response):
+            return sel_dict
         timesheet_query = TimeSheet.objects.filter(id = timesheet_id)
         if len(timesheet_query) == 0:
             return Response({'Error':'Entry ID does not exist'}, status = status.HTTP_403_FORBIDDEN)
@@ -302,6 +319,9 @@ class TimeSheetView(APIView):
                 return select_obj
 
             sel_dict = {'id__in':select_obj['id']}
+            sel_dict = limitTimesheetDelete(request, sel_dict)
+            if isinstance(sel_dict, Response):
+                return sel_dict
             table_query = TimeSheet.objects.filter(**sel_dict)
 
             if len(table_query) == 0:

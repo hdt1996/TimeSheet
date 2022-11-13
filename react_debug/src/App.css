@@ -689,6 +689,18 @@
 #navbarSupportedContent #SignIn{
   margin-left:5em;
 }
+
+#navbarSupportedContent #SignIn #Logged-In{
+  display:flex;
+  border-radius: .5em;
+  width:fit-content;
+  height:2.3em;
+  background-color: rgb(199, 242, 199);
+}
+
+#navbarSupportedContent #SignIn #Logged-In div{
+  flex:1;
+}
 #navbarSupportedContent #SignIn #Button{
   border-radius: .5em;
   width:5em;

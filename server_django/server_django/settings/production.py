@@ -101,7 +101,7 @@ DATABASES = {
         'NAME': 'ebdb',
         'USER':   dconfig('PSQL_USER'),
         'PASSWORD':   dconfig('PSQL_PASS'),
-        'HOST': 'awseb-e-jm3ua59nhj-stack-awsebrdsdatabase-eu6czu7wjsmo.cjeea81gbwzu.us-west-2.rds.amazonaws.com',
+        'HOST': 'awseb-e-asziensa9t-stack-awsebrdsdatabase-n0ca8l4ob6r9.cjeea81gbwzu.us-west-2.rds.amazonaws.com',
         'PORT': '5432',
     }
 }

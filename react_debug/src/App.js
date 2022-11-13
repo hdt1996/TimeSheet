@@ -11,7 +11,7 @@ import './App.css';
 
 
 function App() {
-
+  let [UserData, setUserData] = useState(null);
 
   let nav_config=
   {
@@ -35,7 +35,7 @@ function App() {
       };
       let response = await fetch(`${Endpoints.domain}${Endpoints.checkAuthAPI}`,requestOptions);
       let data = await response.json();
-      console.log(data);
+      setUserData(data);
   };
 
   async function getCSRF()
@@ -55,7 +55,7 @@ function App() {
 
   return (
     <div className="App-Home">
-      <Navbar config={nav_config}></Navbar>
+      <Navbar config={nav_config} UserData = {UserData}></Navbar>
       <div className = "App-Home-Body">
         <div id="side_menu">
           <SideMenu MenuLinks = {MenuLinks}/>

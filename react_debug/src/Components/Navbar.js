@@ -3,7 +3,7 @@ import CreateLogin from "./CreateLogin";
 import ForgotLogin from "./ForgotLogin";
 import CloseIcon from '@mui/icons-material/Close';
 import React, { useState, useEffect} from 'react';
-function Navbar({config={'title':'Title','sections':['Section1','Section2','Section3'],'dropdowns':['Dropdown1','Dropdown2','Dropdown3']}}) {
+function Navbar({config={'title':'Title','sections':['Section1','Section2','Section3'],'dropdowns':['Dropdown1','Dropdown2','Dropdown3']}, UserData = null}) {
   let title = config['title'];
   let sections = config['sections'];
   let dropdowns = config['dropdowns'];
@@ -70,6 +70,12 @@ function Navbar({config={'title':'Title','sections':['Section1','Section2','Sect
             <div id="NavBar-Login">
               <CloseIcon id="Close" onClick={() =>{setRenderForgot(false)}}/>
               <ForgotLogin setRenderLogin={setRenderLogin} setRenderCreate={setRenderCreate} setRenderForgot={setRenderForgot}></ForgotLogin>
+            </div>
+            :
+            UserData && !UserData.Error?
+            <div id="Logged-In">
+              <div>{UserData.Success.username}</div>
+              <div>{`Employee ID: ${UserData.Success.employee.id}`}</div>
             </div>
             :
             <button id="Button" onClick={() => {setRenderLogin(true)}}>

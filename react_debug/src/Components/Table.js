@@ -181,7 +181,12 @@ function Table(
     return ( //First map is column titles; Second map is for data rows/columns
         <div id={`Table-N${nestedTblIndex}`} className={`Comp-Table ${className}`}>
             <div className="Buttons">
-                <Add onClick={() => setShowAdd(true)} ></Add>
+                {
+                    AddComponent !== null?
+                    <Add onClick={() => setShowAdd(true)} ></Add>
+                    :null
+                }
+
                 <Delete onClick={() => handleShowDel()}></Delete>
                 {
                     ShowConfirmDel?
@@ -222,7 +227,7 @@ function Table(
             />
             {
                 ShowRowDetail && Object.keys(DetailTblConfig).length !== 0?
-                <Table className="Nested-Table" config={DetailTblConfig} setConfig={setDetailTblConfig} nestedTblIndex={nestedTblIndex+1}></Table>
+                <Table className="Nested-Table" config={DetailTblConfig} setConfig={setDetailTblConfig} nestedTblIndex={nestedTblIndex+1} AddComponent={null}></Table>
                 :null
             }
         </div>

@@ -17,9 +17,6 @@ class GetCSRFToken(APIView):
 class CreateLoginView(APIView):
     permission_classes = (permissions.AllowAny,)
     def post(self,request): #Endpoint for creating users and employee accounts. Assume that this web service is only accessible to internal users
-        """ if not request.session.exists(request.session.session_key): # if user has not been previously viewed site
-            request.session.create()
-            print('\n\n session created... \n\n') """
         user_data = request.data['user']
         employee_data=request.data['employee']
 
@@ -83,11 +80,15 @@ class LoginView(APIView):
         if len(user_query) == 0:
             return Response({'Error': 'Invalid Credentials'}, status = status.HTTP_403_FORBIDDEN)
         user = auth.authenticate(username=username, password=password)
-        if user is not None:
-            auth.login(request, user)
-            return Response({'Success':'Authenticated'}, status = status.HTTP_200_OK)
-        else:
+        if user is None:
             return Response({'Error': 'Invalid Credentials'}, status = status.HTTP_403_FORBIDDEN)
+
+        auth.login(request, user)
+        employee_query = Employees.objects.filter(user = user) #Should always
+        employee_data = None
+        if len(employee_query) > 0:
+            employee_data = EmployeeGETSerializer(instance = employee_query[0], many = False).data
+        return Response({'Success':{'username':user.get_username()}, 'employee':employee_data}, status = status.HTTP_200_OK)
 
 @method_decorator(csrf_exempt,name="post")
 class LogoutView(APIView):
@@ -105,9 +106,14 @@ class CheckAuth(APIView):
     @method_decorator(csrf_exempt,name="get")
     # May not be necessary for production but good for debugging authentication
     def get(self, request):
-        if request.user.is_authenticated:
-            return Response({'Success':'Still Authenticated'})
-        return Response({'Error':'Need Authenication'})
+        if not request.user.is_authenticated:
+            return Response({'Error':"Not authenticated"})
+        employee_query = Employees.objects.filter(user = request.user) #Should always
+        employee_data = None
+        if len(employee_query) > 0:
+            employee_data = EmployeeGETSerializer(instance = employee_query[0], many = False).data
+        return Response({'Success':{'username':request.user.get_username(), 'employee':employee_data}})
+
 
     @method_decorator(csrf_exempt,name="post")
     def post(self,request):
@@ -115,7 +121,7 @@ class CheckAuth(APIView):
         req_body = request.data #Should contain only password string. Over HTTPS, this does not need to be salted from client side
         if not isinstance(req_body,str):
             return Response({"Error":"Request body not valid"}, status = status.HTTP_403_FORBIDDEN)
-        username = request.user 
+        username = request.user #str dunder gives username 
         if username == 'AnonymousUser':
             return Response({"Error":"Must be signed for this security feature"}, status = status.HTTP_400_BAD_REQUEST)
         user_query=User.objects.filter(username=username) #No need to check length of queryset since any user not Anonymous is safe to assume as a registered user

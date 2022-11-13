@@ -79,10 +79,13 @@ function Login({setRenderLogin, setRenderCreate, setRenderForgot}) {
         let data = await response.json();
         if(data["Success"])
         {
-            alert(data['Success']);
+            alert(`${data['Success'].username} logged in`);
+            console.log(data);
             setPassword([]);
             setUsername(null);
-            return setRenderLogin(false);
+            setRenderLogin(false);
+            //window.location.reload();
+            return;
         };
         alert(data['Error']);
     };

@@ -118,8 +118,6 @@ function CreateLogin({setRenderLogin, setRenderCreate, setRenderForgot}) {
         if(!data["Error"])
         {
             alert(`Successfully Created User Entry ${data['User'].id}\nSuccessfully Created Employee Entry ${data['Employee'].id}\nReady to close`);
-            Password.current=[];
-            Username.current=null;
             if(setRenderCreate){setRenderCreate(false)};
         }
         else
