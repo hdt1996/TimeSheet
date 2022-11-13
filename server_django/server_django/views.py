@@ -88,7 +88,7 @@ class LoginView(APIView):
         employee_data = None
         if len(employee_query) > 0:
             employee_data = EmployeeGETSerializer(instance = employee_query[0], many = False).data
-        return Response({'Success':{'username':user.get_username()}, 'employee':employee_data}, status = status.HTTP_200_OK)
+        return Response({'Success':{'username':user.get_username(), 'employee':employee_data}}, status = status.HTTP_200_OK)
 
 @method_decorator(csrf_exempt,name="post")
 class LogoutView(APIView):
