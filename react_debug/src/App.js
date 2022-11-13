@@ -47,7 +47,6 @@ function App() {
       let response = await fetch(`${Endpoints.domain}${Endpoints.getCSRF}`,requestOptions);
       let data = await response.json();
   };
-  console.log("RENDERED")
   useEffect(()=>
   {
     getCSRF();

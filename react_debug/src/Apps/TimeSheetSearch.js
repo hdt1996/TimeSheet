@@ -20,7 +20,10 @@ class Extractors
     {
         return source;
     };
-
+    static numerical_2dp(keys,source) //keys is only one
+    {
+        return source.toFixed(2);
+    };
     static strfDate(keys,source)
     {
         return source.replace(/(T.*)/,'')
@@ -46,9 +49,9 @@ function TimeSheetSearch({endpoint})
                 'id':Extractors.standard,
                 'date':Extractors.strfDate,
                 'description':Extractors.standard,
-                'bill_rate':Extractors.standard,
-                'total_time':Extractors.standard,
-                'total_bill':Extractors.standard,
+                'bill_rate':Extractors.numerical_2dp,
+                'total_time':Extractors.numerical_2dp,
+                'total_bill':Extractors.numerical_2dp,
                 'employee':Extractors.foreignKey
             },
             keys:

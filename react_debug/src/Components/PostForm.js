@@ -57,7 +57,6 @@ function PostForm(
     //Insert before very last "Add" icon
     parent_element.insertBefore(new_clone,par_children[par_children.length-1]); //Here we target the actual index of the add button since we are inserting --before--
     BillingLineData.current.push({id:null,num_minutes:null,memo:null})
-    console.log(BillingLineData.current)
     if(ColorIndex+1 === 2){
       ColorIndex = 0;
     }

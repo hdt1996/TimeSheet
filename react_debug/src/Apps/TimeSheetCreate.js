@@ -40,7 +40,7 @@ function TimeSheetCreate({endpoint})
             let total_time_element = document.querySelector('input[placeholder="total_time"]');
             let total_bill_element = document.querySelector('input[placeholder="total_bill"]');
             let bill_rate_element = document.querySelector('input[placeholder="bill_rate"]');
-            total_bill_element.value = parseFloat(total_time_element.value) *  parseFloat(bill_rate_element.value);
+            total_bill_element.value = (parseFloat(total_time_element.value) *  parseFloat(bill_rate_element.value)/ 60.0).toFixed(2);//Conversion rate for $/hr to $/minute;
         }
         let key = e.target.getAttribute("placeholder");
         let currTimeSheetData = TimeSheetData.current;
@@ -54,18 +54,35 @@ function TimeSheetCreate({endpoint})
         if(!currentBillLineData[row_index])
         {
             currentBillLineData[row_index] = {};
-        }
+        };
 
-        if(calculate && db_field === 'num_minutes' && !isNaN(parseFloat(e.target.value)))
+        if (!calculate)
+        {
+            currentBillLineData[row_index][db_field] = e.target.value;
+            return;
+        }
+        if (db_field === 'num_minutes' && (e.target.value === '' || !/^(\d+)(\.\d*)?$/.test(e.target.value)))
+        {
+            let total_time_element = document.querySelector('input[placeholder="total_time"]');
+            let total_bill_element = document.querySelector('input[placeholder="total_bill"]');
+            let bill_rate_element = document.querySelector('input[placeholder="bill_rate"]');
+            total_time_element.value = (parseFloat(total_time_element.value) - currentBillLineData[row_index][db_field]).toFixed(2);
+            total_bill_element.value = (parseFloat(total_time_element.value) *  parseFloat(bill_rate_element.value)/ 60.0).toFixed(2);
+            currentBillLineData[row_index][db_field] = 0.00;
+            return;
+        };
+        if(db_field === 'num_minutes' && /^(\d+)(\.\d*)?$/.test(e.target.value))
         {
             let total_time_element = document.querySelector('input[placeholder="total_time"]');
             let total_bill_element = document.querySelector('input[placeholder="total_bill"]');
             let bill_rate_element = document.querySelector('input[placeholder="bill_rate"]');
             let parsed_val = parseFloat(e.target.value);
-            total_time_element.value = parseFloat(total_time_element.value)  - currentBillLineData[row_index][db_field] + parsed_val;
-            total_bill_element.value = parseFloat(total_time_element.value) *  parseFloat(bill_rate_element.value);
+            total_time_element.value = (parseFloat(total_time_element.value)  - currentBillLineData[row_index][db_field] + parsed_val).toFixed(2);
+            total_bill_element.value = (parseFloat(total_time_element.value) *  parseFloat(bill_rate_element.value)/ 60.0).toFixed(2);
+            currentBillLineData[row_index][db_field] = parsed_val.toFixed(2);
+            return;
         }
-        currentBillLineData[row_index][db_field] = e.target.value;
+
     };
 
     function freezeTimeSheet(label, custom = null)
@@ -247,7 +264,7 @@ function TimeSheetCreate({endpoint})
                     className={TextDisabled?"TimeSheet-Locked":"TextField"}
                 />
                 <TextField
-                    label="Billing Rate"
+                    label="Billing Rate (Hourly)"
                     placeholder="bill_rate"
                     margin="normal"
                     defaultValue={0}
@@ -256,7 +273,7 @@ function TimeSheetCreate({endpoint})
                     className={TextDisabled?"TimeSheet-Locked Edited":"TextField Edited"}
                 />
                 <TextField
-                    label="Total Time"
+                    label="Total Time (Minutes)"
                     placeholder="total_time"
                     margin="normal"
                     defaultValue={0}
