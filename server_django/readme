@@ -1,2 +1,30 @@
+Summary:
+
+Timesheet project for internal users at an organization.
+
+Functionality:
+1) Create/Update timesheets with line items
+2) Review timesheets and corresponding line items in report page
+3) Create new users/employees
+
+Dependencies:
+1) Django
+2) PostgresQL
+3) AWS Elastic Beanstalk
+
+How to Use:
+1) Employee Search page:
+	Only available for admin/superusers. 
+	If you do not have superuser access, you will not be able to query the data. Go to admin panel to assign such.
+2) Timesheet Search page:
+	Available to both standard and admin users.
+	Query timesheet reports that exist in database
+	Standard users are restricted to only their timesheets.
+	Admins will be able to view/modify all.
+3) Timesheet Create page:
+        Available to both standard and admin users.
+        Standard users will be auto-assigned employee ID in back-end logic (Entering employee ID not necessary)
+        Admin users will be able to assign employee ID manually to create timesheets for any employee as needed.
+       
 .ebextensions contains config files that run after deployment
-	Install postgres-devel dependency via yum for psycopg2 which is specified in requirements.txt
+Install postgres-devel dependency via yum for psycopg2 which is specified in requirements.txt
