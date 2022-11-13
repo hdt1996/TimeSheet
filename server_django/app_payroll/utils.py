@@ -15,7 +15,7 @@ QUERY_OPTIONS = \
     'equal':''
 }
 
-def processSelectors(request, fixed_selectors: dict, allowed_fields: dict) -> Response | dict:
+def processSelectors(request, fixed_selectors: dict, allowed_fields: dict):
 
     if request.headers.get('selectors') == None:
         return Response({'Error':'No Search Parameters passed in'}, status = status.HTTP_403_FORBIDDEN)
