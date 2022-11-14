@@ -1,8 +1,10 @@
 ﻿from rest_framework.serializers import ModelSerializer
 import rest_framework.serializers as serializers
 from .models import *
+from server_django.serializer import UserGetSerializer
 
 class EmployeeGETSerializer(ModelSerializer):
+    user = UserGetSerializer(required=True)
     class Meta:
         model = Employees
         fields = '__all__'
@@ -24,6 +26,7 @@ class TimeSheetGETSerializer(ModelSerializer):
     class Meta:
         model = TimeSheet
         fields = '__all__'
+
 class TimeSheetPOSTSerializer(ModelSerializer):
     class Meta:
         model = TimeSheet

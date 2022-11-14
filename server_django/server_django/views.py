@@ -51,7 +51,7 @@ class CreateLoginView(APIView):
             serialized_employee_response = EmployeeGETSerializer(instance = new_employee, many=False)
             serialized_user_response = UserSerializer(instance = new_user, many = False)
             return Response({'User':serialized_user_response.data,"Employee":serialized_employee_response.data},status=status.HTTP_200_OK)
-        return Response({'Error':'TEST Invalid Data'},status=status.HTTP_200_OK)
+        return Response({'Error':'Invalid Data'},status=status.HTTP_200_OK)
 
 @method_decorator(ensure_csrf_cookie, name = "post")
 class LoginView(APIView):
@@ -108,11 +108,18 @@ class CheckAuth(APIView):
     def get(self, request):
         if not request.user.is_authenticated:
             return Response({'Error':"Not authenticated"})
-        employee_query = Employees.objects.filter(user = request.user) #Should always
-        employee_data = None
+
+        employee_query = Employees.objects.filter(user = request.user.id) #Should always
+        employee_data = {}
+        user_data = {}
+
         if len(employee_query) > 0:
-            employee_data = EmployeeGETSerializer(instance = employee_query[0], many = False).data
-        return Response({'Success':{'username':request.user.get_username(), 'employee':employee_data}})
+            employee_data = dict(EmployeeGETSerializer(instance = employee_query[0], many = False).data)
+            user_data = employee_data.pop('user')
+        else:
+            user_query = User.objects.get(id = request.user.id)
+            user_data = UserGetSerializer(instance = user_query[0], many=False).data
+        return Response({'Success':{'user':user_data, 'employee':employee_data}})
 
 
     @method_decorator(csrf_exempt,name="post")

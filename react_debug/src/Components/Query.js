@@ -63,6 +63,7 @@ function Query(
     function handleQueryChange(e, field, key)
     {   
         let dict = QueryOptions.current; //Deep Copy so useEffect triggers for debugging
+        console.log(e.target.value);
         if(e.target.value in operator_map)
         {
             dict[field][key]=operator_map[e.target.value]
@@ -70,7 +71,7 @@ function Query(
         else
         {
             dict[field][key]=e.target.value;
-        }
+        };
     };
 
     async function getQuery()
@@ -81,9 +82,16 @@ function Query(
         };
         let response = await fetch(`${Endpoints.domain}${config.endpoint}`, requestOptions);
         let data = await response.json();
-        let curr_config = {...config};
-        curr_config["values"]=data;
-        setConfig(curr_config);
+        if(data['Error'])
+        {
+            alert(data['Error'])
+        }
+        else
+        {
+            let curr_config = {...config};
+            curr_config["values"]=data;
+            setConfig(curr_config);
+        };
     };
 
 

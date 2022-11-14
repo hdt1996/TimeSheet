@@ -104,15 +104,15 @@ function Navbar({config={'title':'Title','sections':['Section1','Section2','Sect
               <ForgotLogin setRenderLogin={setRenderLogin} setRenderCreate={setRenderCreate} setRenderForgot={setRenderForgot}></ForgotLogin>
             </div>
             :
-            UserData && UserData.Error?
+            UserData && !UserData.Error?
             <div className="Logged-In">
               <div className = "Col" onClick={() => {handleShowUserOptions()}}>
                 <div>Currently</div>
-                <div>htran_dev</div>
+                <div>{UserData.Success.user.username}</div>
               </div>
               <div className = "Col">
                 <div>Employee ID</div>
-                <div>{`1`}</div>
+                <div>{UserData.Success.employee.id}</div>
               </div>
               {
                 ShowUserOptions?
@@ -139,9 +139,4 @@ function Navbar({config={'title':'Title','sections':['Section1','Section2','Sect
   );
 }
 
-/*
-              <div>{UserData.Success.username}</div>
-              <div>{`Employee ID: ${UserData.Success.employee.id}`}</div>
-
-*/
 export default Navbar;

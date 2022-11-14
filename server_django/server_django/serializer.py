@@ -6,3 +6,11 @@ class UserSerializer(ModelSerializer):
     class Meta:
         model = User
         exclude = ('username',)
+
+class UserGetSerializer(ModelSerializer):
+    username = serializers.SerializerMethodField("get_username")
+    def get_username(self, obj):
+        return obj.username
+    class Meta:
+        model = User
+        fields = ('id','username','first_name','last_name', 'is_superuser')

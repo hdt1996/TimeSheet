@@ -53,7 +53,7 @@ class Employees(models.Model): #Summary: Table in PSQL database containing emplo
     start_date = models.DateTimeField(null=True, blank=True)
     photo = models.ImageField(null=True, blank=True, upload_to= photoToUserDir) #custom uploaded to media folder. Filesize validation will be called on view
     onboard_docs = models.FileField(null=True, blank=True, upload_to= onboard_docsToUserDir) #custom uploaded to media folder. Filesize validation will be called on view
-    user = models.ForeignKey(User, on_delete=models.PROTECT, null = True, blank = True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null = True, blank = True)
     class Meta:
         verbose_name = 'Employee'
         verbose_name_plural = 'Employees'
@@ -64,7 +64,7 @@ class Employees(models.Model): #Summary: Table in PSQL database containing emplo
 
 
 class TimeSheet(models.Model):
-    employee = models.ForeignKey(Employees, on_delete=models.PROTECT, blank=True, null=True )
+    employee = models.ForeignKey(Employees, on_delete=models.CASCADE, blank=True, null=True )
     description = models.TextField(max_length=2000, null=True, blank=True)
     bill_rate = models.DecimalField(default = 0, max_digits=10,decimal_places=2)
     total_time = models.DecimalField(default = 0, max_digits=10,decimal_places=2)
@@ -103,7 +103,7 @@ class LineItems(models.Model):
         
 class WorkSchedule(models.Model):
 
-    employee = models.ForeignKey(Employees, on_delete=models.PROTECT, blank=True, null=True )
+    employee = models.ForeignKey(Employees, on_delete=models.CASCADE, blank=True, null=True )
     start_diff = models.DecimalField(null=True, blank=True, default=None, max_digits=4,decimal_places=2) #in minutes
     end_diff = models.DecimalField(null=True, blank=True, default=None, max_digits=4,decimal_places=2) #in minutes
     clock_in = models.DateTimeField(auto_now_add=True, auto_now=False) #automatically added on POST, remaining times will be updated on PUT

@@ -7,7 +7,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import DateRangeIcon from '@mui/icons-material/DateRange';
 import {getParentIntAttrib, buildDateTimeStr} from '../Utilities/Utils';
 import {getToken} from '../Utilities/Token'
-function TimeSheetCreate({endpoint})
+function TimeSheetCreate({endpoint, UserData})
 {
     let TimeSheet_columns = ['description','bill_rate','total_time','total_bill','employee'];
     let bill_line_columns = ['num_minutes','memo'];
@@ -29,9 +29,26 @@ function TimeSheetCreate({endpoint})
     let [SubmissionTime,setSubmissionTime] = useState("Pending");
     let [TextDisabled,setTextDisabled] = useState(false);
     let [ModeLabel, setModeLabel] = useState("Create");
-    useEffect(()=>
+
+    function handleEmployeeIDValue()
     {
-    },[TimeSheetData,BillingLineData,CurrentDate,ActiveCalendar,SubmissionTime,TextDisabled,ModeLabel]);
+        //UserData && !UserData.Success.user.is_superuser && UserData.Success.employee.id?UserData.Success.employee.id:""
+        if(UserData !== null && "Success" in UserData && "user" in UserData.Success && "employee" in UserData.Success)
+        {
+            return UserData.Success.employee.id;
+        };
+        return ""
+    };
+
+    function handleEmployeeIDInputStatus()
+    {
+        //UserData && !UserData.Success.user.is_superuser && UserData.Success.employee.id?UserData.Success.employee.id:""
+        if(UserData !== null && "Success" in UserData && "user" in UserData.Success && "employee" in UserData.Success)
+        {
+            return true;
+        };
+        return TextDisabled;
+    };
 
     function handleTimeSheetInputs(e, calculate = false)
     {
@@ -82,7 +99,6 @@ function TimeSheetCreate({endpoint})
             currentBillLineData[row_index][db_field] = parsed_val.toFixed(2);
             return;
         }
-
     };
 
     function freezeTimeSheet(label, custom = null)
@@ -147,7 +163,8 @@ function TimeSheetCreate({endpoint})
             id_str = id_str.join(', ');
             freezeTimeSheet('Updated',`Updated: Timesheet Entry ${data['TimeSheet'].id}\nDeleted: Timesheet Entries ${id_str}`);
         }
-    }
+    };
+
     async function postData()
     {
         const requestOptions={
@@ -159,6 +176,7 @@ function TimeSheetCreate({endpoint})
         let data = await response.json();
         if(data["Error"])
         {
+            alert(data["Error"])
             setSubmissionTime("Failed");
         }
         else{
@@ -210,6 +228,11 @@ function TimeSheetCreate({endpoint})
         setModeLabel("Update");
         setSubmissionTime(`Pending Update`);
     };
+
+    useEffect(()=>
+    {
+    },[UserData,CurrentDate,ActiveCalendar,SubmissionTime,TextDisabled,ModeLabel]);
+
     useEffect(()=>
     {
         if(Object.keys(TimeSheetData).length === 0)
@@ -252,16 +275,17 @@ function TimeSheetCreate({endpoint})
                             className = "FloatingCalendar TextField">
 
                         </DatePicker>:null
-                    }
+                    } 
                     </div>
                 </div>
                 <TextField
                     label="Employee_ID"
                     placeholder="employee"
                     margin="normal"
+                    value={handleEmployeeIDValue()}
                     onChange={(e)=>{handleTimeSheetInputs(e)}}
-                    disabled = {TextDisabled}
-                    className={TextDisabled?"TimeSheet-Locked":"TextField"}
+                    disabled = {handleEmployeeIDInputStatus()}
+                    className={TextDisabled?"TimeSheet-Locked Edited":"TextField Edited"}
                 />
                 <TextField
                     label="Billing Rate (Hourly)"

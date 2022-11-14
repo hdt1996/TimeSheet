@@ -2,6 +2,7 @@ import {DataGrid} from '@mui/x-data-grid'
 import React, {useState,useEffect, useRef} from 'react';
 import Query from './Query';
 import { Delete,Add} from '@mui/icons-material';
+import EditIcon from '@mui/icons-material/Edit';
 import Endpoints from '../Utilities/Endpoints';
 import CloseIcon from '@mui/icons-material/Close';
 import {getToken} from '../Utilities/Token'
@@ -24,13 +25,15 @@ function Table(
         setConfig,
         className="",
         nestedTblIndex = 0, //useRef instance created from app
-        AddComponent= null
+        AddComponent= null,
+        EditComponent = null
     }
 ){
     let [ShowRowDetail,setShowRowDetail] = useState(false);
     let [DetailTblConfig,setDetailTblConfig]=useState(config.DetailTblConfig);
-    let [ShowConfirmDel, setShowConfirmDel] = useState(false);
-    let [ShowAdd, setShowAdd] = useState(false);
+    let [ShowDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    let [ShowAddComp, setShowAddComp] = useState(false);
+    let [ShowEditComp, setEShowEditComp] = useState(null);
     let [Selected_IDs,setSelected_IDs] = useState([]);
     let SelectedRows = useRef([]);
     let DeleteSuccess = useRef(false);
@@ -62,17 +65,33 @@ function Table(
     };
 
 
-    function handleShowDel(){
-        if(Selected_IDs.length > 0)
+    function handleConfirmDelete(){
+        if(Selected_IDs.length > 0 && !ShowAddComp && !ShowEditComp)
         {
-            setShowConfirmDel(true);
-        }
+            setShowDeleteConfirm(true);
+        };
+    };
+
+
+    function handleShowAddComp(){
+        if(!ShowDeleteConfirm && !ShowEditComp)
+        {
+            setShowAddComp(true);
+        };
+    };
+
+    function handleShowEditComp(){
+        if(!ShowAddComp && !ShowDeleteConfirm)
+        {
+            setEShowEditComp(true);
+        };
     }
+
     async function handleSelectedDelete(ids)
     {
         const requestOptions={
             method: 'DELETE',
-            headers:{'Content-Type': 'application/json','X-CSRFToken': getToken('csrftoken'), 'selectors':JSON.stringify({'id':Selected_IDs})}
+            headers:{'Content-Type': 'application/json','X-CSRFToken': getToken('csrftoken'), 'selectors':JSON.stringify({'id':{'value':Selected_IDs}})}
         };
         let response = await fetch(`${Endpoints.domain}${config.endpoint}`, requestOptions);
         let data = await response.json();
@@ -90,7 +109,7 @@ function Table(
             str_ids = str_ids.join(', ');
             alert(`Success: Entry ${str_ids} Deleted`);
             DeleteSuccess.current=true;
-            setShowConfirmDel(false);
+            setShowDeleteConfirm(false);
         };
     };
 
@@ -167,7 +186,7 @@ function Table(
             SelectAllBox.click();
             setShowRowDetail(false);
         };
-    },[Selected_IDs,ShowConfirmDel]);
+    },[Selected_IDs,ShowDeleteConfirm]);
 
     useEffect(() =>
     {
@@ -183,26 +202,30 @@ function Table(
             <div className="Buttons">
                 {
                     AddComponent !== null?
-                    <Add onClick={() => setShowAdd(true)} ></Add>
+                    <Add onClick={() => handleShowAddComp()} ></Add>
                     :null
                 }
-
-                <Delete onClick={() => handleShowDel()}></Delete>
                 {
-                    ShowConfirmDel?
+                    EditComponent !== null?
+                    <EditIcon onClick={() => handleShowEditComp()}></EditIcon>
+                    :null
+                }
+                <Delete onClick={() => handleConfirmDelete()}></Delete>
+                {
+                    ShowDeleteConfirm?
                     <div id="Confirm">
-                        <span><strong>Confirm?</strong></span>
+                        <span><strong>Confirm Deletion?</strong></span>
                         <div>
                             <button onClick = {() => handleSelectedDelete()}>Yes</button>
-                            <button onClick={()=>setShowConfirmDel(false)} >No</button>
+                            <button onClick={()=>setShowDeleteConfirm(false)} >No</button>
                         </div>
                     </div>:
                     null
                 }
                 {
-                    ShowAdd?
+                    ShowAddComp?
                     <div id="AddComponent">
-                        <CloseIcon id="Close" onClick={() =>{setShowAdd(false)}}/>
+                        <CloseIcon id="Close" onClick={() =>{setShowAddComp(false)}}/>
                         <AddComponent endpoint={config.endpoint}/>
                     </div>:
                     null

@@ -1,8 +1,22 @@
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.serializers import ModelSerializer
-from .models import *
-import json
+from .serializer import *
+import json, os
+
+if os.environ.get('DEBUG'):
+    from .permissions.debug import getEmployeeByUser
+else:
+    from .permissions.production import getEmployeeByUser
+
+NONSTRING_SANITATION = \
+{
+    models.BigAutoField: None,
+    models.DecimalField:None,
+    models.IntegerField:None,
+    models.BooleanField:None,
+    models.DateTimeField: None,
+    models.ForeignKey: None
+}
 
 QUERY_OPTIONS = \
 {
@@ -16,8 +30,7 @@ QUERY_OPTIONS = \
     'equal':''
 }
 
-def processSelectors(request, fixed_selectors: dict, allowed_fields: dict):
-
+def processSelectors(request, fixed_selectors: dict, allowed_fields: dict, model: models.Model):
     if request.headers.get('selectors') == None:
         return Response({'Error':'No Search Parameters passed in'}, status = status.HTTP_403_FORBIDDEN)
     try:
@@ -28,12 +41,18 @@ def processSelectors(request, fixed_selectors: dict, allowed_fields: dict):
 
     if len(selectors) == 0:
         return Response({}, status = status.HTTP_403_FORBIDDEN) # return empty JSON object if selectors is empty. To prevent too large of a query if there is only fixed_selectors which may be broad in scope
-
+    sanitation_map = {}
+    for field in model._meta.get_fields():
+        sanitation_map[field.name] = type(field)
     for field in selectors:
         if field in fixed_selectors: # if any field in selectors matches those in fixed_selectors, this is not allowed. Only fields not matching keys in fixed_selectors pass this
             return Response({'Error':'Custom field passed into non-custom field'}, status = status.HTTP_403_FORBIDDEN)
         if field not in allowed_fields and allowed_fields != "*":
             return Response({'Error':'Disallowed field passed in'}, status = status.HTTP_403_FORBIDDEN)
+        value = selectors[field]['value']
+        field_type = sanitation_map[field]
+        if field_type in NONSTRING_SANITATION and value == '':
+            selectors[field]['value'] = NONSTRING_SANITATION[field_type]
 
     return selectors
 
@@ -63,74 +82,46 @@ def buildQuery(selectors: dict, fixed_selectors: dict) -> dict:
             sel_dict[f"{field}{QUERY_OPTIONS[oper]}"] = value
     return sel_dict
 
-def limitTimesheetAccess(request, sel_dict:dict, field: str = 'employee') -> dict:
-    if request.user.is_superuser:
-        return sel_dict
-    employee_query = Employees.objects.filter(user = request.user)
-    if len(employee_query) == 0:
-        return Response({'Error':'No associated employee account for user'}, status = status.HTTP_403_FORBIDDEN)
-    sel_dict[field] = employee_query[0].id
-    return sel_dict
-
-def limitTimesheetDelete(request, sel_dict:dict) -> dict:
-    if request.user.is_superuser:
-        return sel_dict
-    employee_query = Employees.objects.filter(user = request.user)
-    if len(employee_query) == 0:
-        return Response({'Error':'No associated employee account for user'}, status = status.HTTP_403_FORBIDDEN)
-
-    id = sel_dict['id__in'] #These are line item ids
-    if not isinstance(id, list):
-        id = [id]
-
-    if len(id) == 0:
-        return Response({'Error':'Attempt to bypass ID limitation in query'}, status = status.HTTP_403_FORBIDDEN)
-        
-    for i in id:
-        if not TimeSheet.objects.filter(employee = employee_query[0].id, id=i).exists():
+def verifyTimesheetQuery(request, id_list: list, many: bool = False):
+    employee = getEmployeeByUser(request)
+    if isinstance(employee, Response): #If user is authenticated and there is no corresponding employee object
+        return employee
+    if employee == None:
+        return
+    if not many:
+        if not TimeSheet.objects.filter(employee = employee.id, id=id_list).exists():
             return Response({'Error':'Attempt to access timesheet not existing for user/employee'}, status = status.HTTP_403_FORBIDDEN)
-    return sel_dict
+        return
 
-def limitLineItemAccess(request, sel_dict:dict) -> dict: 
-    #When getting line items, they are restricted to the timesheet that is assigned for the user
-    #When timesheet is missing or does not have a match for query below, return Error response
-    if request.user.is_superuser:
-        return sel_dict
-    employee_query = Employees.objects.filter(user= request.user)
-    if len(employee_query) == 0:
-        return Response({'Error':'No associated employee account for user'}, status = status.HTTP_403_FORBIDDEN)
-
-    id = sel_dict['timesheet']['value'] #if key does not exist, except will catch the Error
-    if not isinstance(id, list):
-        id = [id]
-
-    if len(id) == 0:
+    if len(id_list) == 0:
         return Response({'Error':'Attempt to bypass ID limitation in query'}, status = status.HTTP_403_FORBIDDEN)
 
-    for i in id:
-        if not TimeSheet.objects.filter(employee = employee_query[0].id, id=i).exists():
+    for i in id_list:
+        if not TimeSheet.objects.filter(employee = employee.id, id=i).exists():
             return Response({'Error':'Attempt to access timesheet not existing for user/employee'}, status = status.HTTP_403_FORBIDDEN)
-    return sel_dict
 
-def limitLineItemDel(request, sel_dict:dict) -> dict:
+def verifyLineItemQuery(request, id_list: list, many: bool = False):
     #When deleting line items, only information we have is the line item id's. We extract the timesheet and underlying employee object to compare to current user
-    if request.user.is_superuser:
-        return sel_dict
-    employee_query = Employees.objects.filter(user = request.user)
-    if len(employee_query) == 0:
-        return Response({'Error':'No associated employee account for user'}, status = status.HTTP_403_FORBIDDEN)
+    employee = getEmployeeByUser(request)
+    if isinstance(employee, Response): #If user is authenticated and there is no corresponding employee object
+        return employee
+    if employee == None:
+        return
+    if not many:
+        line_item_query = LineItems.objects.filter(id = id_list)
+        if len(line_item_query) == 0:
+            return Response({'Error':'Nonexistent Line Item ID'}, status = status.HTTP_403_FORBIDDEN)
+        if line_item_query[0].timesheet.employee.id != employee.id:
+            return Response({'Error':'Attempt to access timesheet not existing for user/employee'}, status = status.HTTP_403_FORBIDDEN)
+        return
 
-    id = sel_dict['id__in'] #These are line item ids
-    if not isinstance(id, list):
-        id = [id]
-
-    if len(id) == 0:
+    if len(id_list) == 0:
         return Response({'Error':'Attempt to bypass ID limitation in query'}, status = status.HTTP_403_FORBIDDEN)
 
-    line_item_obj = None
-    for i in id:
-        line_item_obj = LineItems.objects.get(id = i) #Should always give an object. Otherwise would not use since this method throws exceptions if not get success
-        if line_item_obj.timesheet.employee.id != employee_query[0].id:
+    for i in id_list:
+        line_item_query = LineItems.objects.filter(id = i) #Should always give an object. Otherwise would not use since this method throws exceptions if not get success
+        if len(line_item_query) == 0:
+            return Response({'Error':'Nonexistent Line Item ID'}, status = status.HTTP_403_FORBIDDEN)
+        if line_item_query[0].timesheet.employee.id != employee.id:
             return Response({'Error':'Attempt to access timesheet not existing for user/employee'}, status = status.HTTP_403_FORBIDDEN)
-    return sel_dict
 

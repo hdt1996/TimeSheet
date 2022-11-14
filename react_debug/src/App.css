@@ -379,7 +379,7 @@
 }
 .Comp-Table .Buttons #AddComponent{
   position:absolute;
-  top:0;
+  top:100%;
   right:0;
   height:fit-content;
   border: solid rgba(24, 24, 36, 0.523) .5em;
