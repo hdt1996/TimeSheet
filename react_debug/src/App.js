@@ -65,9 +65,9 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path = "/" />
-            <Route path = "/payroll/employee_search/" element={<EmployeeSearch endpoint="/api/payroll/employees/" />}/>
+            <Route path = "/payroll/employee_search/" element={<EmployeeSearch endpoint="/api/payroll/employees/" UserData = {UserData}/>}/>
             <Route path = "/payroll/timesheet_create/" element={<TimeSheetCreate endpoint="/api/payroll/timesheet/" UserData = {UserData}/>}/>
-            <Route path = "/payroll/timesheet_search/" element = {<TimeSheetSearch endpoint="/api/payroll/timesheet/" />}/>
+            <Route path = "/payroll/timesheet_search/" element = {<TimeSheetSearch endpoint="/api/payroll/timesheet/" UserData = {UserData}/>}/>
           </Routes>
         </BrowserRouter>
       </div>

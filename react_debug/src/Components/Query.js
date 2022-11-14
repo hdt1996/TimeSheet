@@ -63,7 +63,6 @@ function Query(
     function handleQueryChange(e, field, key)
     {   
         let dict = QueryOptions.current; //Deep Copy so useEffect triggers for debugging
-        console.log(e.target.value);
         if(e.target.value in operator_map)
         {
             dict[field][key]=operator_map[e.target.value]

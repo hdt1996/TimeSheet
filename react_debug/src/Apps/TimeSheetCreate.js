@@ -7,11 +7,10 @@ import "react-datepicker/dist/react-datepicker.css";
 import DateRangeIcon from '@mui/icons-material/DateRange';
 import {getParentIntAttrib, buildDateTimeStr} from '../Utilities/Utils';
 import {getToken} from '../Utilities/Token'
-function TimeSheetCreate({endpoint, UserData})
+function TimeSheetCreate({endpoint, UserData = {}})
 {
     let TimeSheet_columns = ['description','bill_rate','total_time','total_bill','employee'];
     let bill_line_columns = ['num_minutes','memo'];
-
     let PostFormConfig=
     {
         num_rows:1,
@@ -35,17 +34,21 @@ function TimeSheetCreate({endpoint, UserData})
         //UserData && !UserData.Success.user.is_superuser && UserData.Success.employee.id?UserData.Success.employee.id:""
         if(UserData !== null && "Success" in UserData && "user" in UserData.Success && "employee" in UserData.Success)
         {
-            return UserData.Success.employee.id;
+            if(!UserData.Success.user.is_superuser && UserData.Success.employee.id)
+            {
+                return UserData.Success.employee.id
+            };
         };
-        return ""
     };
 
     function handleEmployeeIDInputStatus()
     {
-        //UserData && !UserData.Success.user.is_superuser && UserData.Success.employee.id?UserData.Success.employee.id:""
         if(UserData !== null && "Success" in UserData && "user" in UserData.Success && "employee" in UserData.Success)
         {
-            return true;
+            if(!UserData.Success.user.is_superuser && UserData.Success.employee.id)
+            {
+                return true
+            };
         };
         return TextDisabled;
     };

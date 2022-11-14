@@ -30,7 +30,7 @@ class Extractors
     };
 };
 
-function TimeSheetSearch({endpoint})
+function TimeSheetSearch({endpoint, UserData = null})
 {
     let [TblConfig,setTblConfig]=useState(
     {
@@ -65,6 +65,8 @@ function TimeSheetSearch({endpoint})
                 'employee':['id','name']
             }
         },
+        AddComponent:<TimeSheetCreate endpoint = {endpoint} UserData={UserData}/>,
+        EditComponent:null,
         DetailTblConfig:
         {
             num_rows:5,
@@ -96,16 +98,25 @@ function TimeSheetSearch({endpoint})
                     'timesheet':['id']
                 }
             },
+            AddComponent:null,
+            EditComponent:null,
             DetailTblConfig:{},
         }
     });
+
+    useEffect(() =>
+    {
+        let currentTblConfig = {...TblConfig};
+        currentTblConfig.AddComponent = <TimeSheetCreate endpoint = {endpoint} UserData={UserData}/>
+        setTblConfig(currentTblConfig);
+    },[UserData])
 
     return ( //First map is column titles; Second map is for data rows/columns
     <div id="EmpMgmt">
         <div className="App-Home-Title">
             Timesheets Reporting
         </div>
-        <Table config={TblConfig} setConfig={setTblConfig} nestedTblIndex = {0} AddComponent={TimeSheetCreate}></Table>
+        <Table config={TblConfig} setConfig={setTblConfig} nestedTblIndex = {0}></Table>
     </div>
     );
 }

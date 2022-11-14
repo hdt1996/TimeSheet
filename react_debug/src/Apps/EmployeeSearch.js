@@ -30,7 +30,7 @@ class Extractors
 };
 
 
-function EmployeeSearch({endpoint})
+function EmployeeSearch({endpoint, UserData=null})
 {
     let [TblConfig,setTblConfig]=useState(
     {
@@ -69,13 +69,16 @@ function EmployeeSearch({endpoint})
                 'username':null
             }
         },
+        AddComponent:<CreateLogin endpoint = {endpoint}/>,
+        EditComponent:null,
         DetailTblConfig:{},
     });
 
-    useEffect(()=>
+    useEffect(() =>
     {
-
-    },[TblConfig]);
+        let currentTblConfig = {...TblConfig};
+        setTblConfig(currentTblConfig);
+    },[UserData])
 
     return ( //First map is column titles; Second map is for data rows/columns
     <div id="EmpMgmt">
@@ -83,7 +86,7 @@ function EmployeeSearch({endpoint})
         Admin Employee Management
         </div>
         <div className="Comp-Table">
-            <Table config={TblConfig} setConfig={setTblConfig} nestedTblIndex = {0} AddComponent={CreateLogin}></Table>
+            <Table config={TblConfig} setConfig={setTblConfig} nestedTblIndex = {0}></Table>
         </div>
     </div>
     );

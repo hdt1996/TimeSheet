@@ -25,19 +25,18 @@ function Table(
         setConfig,
         className="",
         nestedTblIndex = 0, //useRef instance created from app
-        AddComponent= null,
-        EditComponent = null
     }
 ){
     let [ShowRowDetail,setShowRowDetail] = useState(false);
     let [DetailTblConfig,setDetailTblConfig]=useState(config.DetailTblConfig);
     let [ShowDeleteConfirm, setShowDeleteConfirm] = useState(false);
     let [ShowAddComp, setShowAddComp] = useState(false);
-    let [ShowEditComp, setEShowEditComp] = useState(null);
+    let [ShowEditComp, setShowEditComp] = useState(false);
     let [Selected_IDs,setSelected_IDs] = useState([]);
     let SelectedRows = useRef([]);
     let DeleteSuccess = useRef(false);
     let CurrentDetailID = useRef(null);
+    let CurrentEditDetails = useRef({});
 
     let handleRowClicked = null;
     if(Object.keys(config.DetailTblConfig).length !== 0)
@@ -48,20 +47,24 @@ function Table(
             if(ShowRowDetail && CurrentDetailID.current === e.row['col1'])
             {
                 CurrentDetailID.current = null;
-            }
-            else
+                CurrentEditDetails.current = {};
+                return;
+            };
+            
+            let currentDetailTblConfig = {...DetailTblConfig};
+            currentDetailTblConfig.start_query={"timesheet":{"operator":"equal","value":e.row['col1'] }};
+            setDetailTblConfig(currentDetailTblConfig);
+            CurrentDetailID.current = e.row['col1'];
+            for(let  i = 0; i < db_columns.length; i++)
             {
-                let currentDetailTblConfig = {...DetailTblConfig};
-                currentDetailTblConfig.start_query={"timesheet":{"operator":"equal","value":e.row['col1'] }};
-                setDetailTblConfig(currentDetailTblConfig);
-                CurrentDetailID.current = e.row['col1'];
+                CurrentEditDetails.current[db_columns[i]] = e.row[`col${i+1}`]
             };
         };
     };
 
     function handleSelectionModel(ids)
     {
-        setSelected_IDs(ids)//e is row id, we can use to parse through original rows object to get information
+        setSelected_IDs(ids)
     };
 
 
@@ -83,7 +86,7 @@ function Table(
     function handleShowEditComp(){
         if(!ShowAddComp && !ShowDeleteConfirm)
         {
-            setEShowEditComp(true);
+            setShowEditComp(true);
         };
     }
 
@@ -112,7 +115,6 @@ function Table(
             setShowDeleteConfirm(false);
         };
     };
-
     let num_rows = config['num_rows'];
     let num_cols = config['num_cols'];
     let col_titles = config['col_titles'];
@@ -186,7 +188,7 @@ function Table(
             SelectAllBox.click();
             setShowRowDetail(false);
         };
-    },[Selected_IDs,ShowDeleteConfirm]);
+    },[Selected_IDs, ShowDeleteConfirm]);
 
     useEffect(() =>
     {
@@ -194,19 +196,23 @@ function Table(
         {
             setShowRowDetail(true);
         };
+        if(ShowEditComp &&  Object.keys(CurrentEditDetails.current).length> 0)
+        {
+            //TODO
+        };
 
-    },[DetailTblConfig])
+    },[DetailTblConfig, ShowRowDetail, ShowEditComp])
 
     return ( //First map is column titles; Second map is for data rows/columns
         <div id={`Table-N${nestedTblIndex}`} className={`Comp-Table ${className}`}>
             <div className="Buttons">
                 {
-                    AddComponent !== null?
+                    config.AddComponent !== null?
                     <Add onClick={() => handleShowAddComp()} ></Add>
                     :null
                 }
                 {
-                    EditComponent !== null?
+                    config.EditComponent !== null?
                     <EditIcon onClick={() => handleShowEditComp()}></EditIcon>
                     :null
                 }
@@ -226,7 +232,15 @@ function Table(
                     ShowAddComp?
                     <div id="AddComponent">
                         <CloseIcon id="Close" onClick={() =>{setShowAddComp(false)}}/>
-                        <AddComponent endpoint={config.endpoint}/>
+                        {config.AddComponent}
+                    </div>:
+                    null
+                }
+                {
+                    ShowEditComp?
+                    <div id="AddComponent">
+                        <CloseIcon id="Close" onClick={() =>{setShowEditComp(false)}}/>
+                        {config.EditComponent}
                     </div>:
                     null
                 }
@@ -250,7 +264,7 @@ function Table(
             />
             {
                 ShowRowDetail && Object.keys(DetailTblConfig).length !== 0?
-                <Table className="Nested-Table" config={DetailTblConfig} setConfig={setDetailTblConfig} nestedTblIndex={nestedTblIndex+1} AddComponent={null}></Table>
+                <Table className="Nested-Table" config={DetailTblConfig} setConfig={setDetailTblConfig} nestedTblIndex={nestedTblIndex+1} AddComponent={null} EditComponent={EditIcon}></Table>
                 :null
             }
         </div>
@@ -258,12 +272,3 @@ function Table(
 }
 
 export default Table;
-
-
-/*
-    const renderEditable = (params) => {
-        return (
-            <Form.Control></Form.Control>
-        )
-    }
-*/
