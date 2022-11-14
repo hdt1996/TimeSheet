@@ -94,9 +94,9 @@ class LoginView(APIView):
 class LogoutView(APIView):
     permission_classes = (permissions.AllowAny,)
     def post(self,request):
-        auth.logout(request)
         try:
-            return Response({'Session':'Logged Out'})
+            auth.logout(request)
+            return Response({'Success':'Logged Out'})
         except Exception as e:
             #TODO send email to Software team to solve server error
             return Response({'Error': 'Problem Logging Out'})

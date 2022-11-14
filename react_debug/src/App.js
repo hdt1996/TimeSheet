@@ -47,6 +47,7 @@ function App() {
       let response = await fetch(`${Endpoints.domain}${Endpoints.getCSRF}`,requestOptions);
       let data = await response.json();
   };
+
   useEffect(()=>
   {
     getCSRF();
@@ -55,13 +56,14 @@ function App() {
 
   return (
     <div className="App-Home">
-      <Navbar config={nav_config} UserData = {UserData}></Navbar>
+      <Navbar config={nav_config} UserData = {UserData} setUserData = {setUserData}></Navbar>
       <div className = "App-Home-Body">
         <div id="side_menu">
           <SideMenu MenuLinks = {MenuLinks}/>
         </div>
         <BrowserRouter>
           <Routes>
+            <Route path = "/" />
             <Route path = "/payroll/employee_search/" element={<EmployeeSearch endpoint="/api/payroll/employees/" />}/>
             <Route path = "/payroll/timesheet_create/" element={<TimeSheetCreate endpoint="/api/payroll/timesheet/" />}/>
             <Route path = "/payroll/timesheet_search/" element = {<TimeSheetSearch endpoint="/api/payroll/timesheet/" />}/>

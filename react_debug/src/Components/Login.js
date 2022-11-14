@@ -80,11 +80,9 @@ function Login({setRenderLogin, setRenderCreate, setRenderForgot}) {
         if(data["Success"])
         {
             alert(`${data['Success'].username} logged in`);
-            console.log(data);
             setPassword([]);
             setUsername(null);
             setRenderLogin(false);
-            //window.location.reload();
             return;
         };
         alert(data['Error']);

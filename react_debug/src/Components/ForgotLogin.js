@@ -120,10 +120,10 @@ function ForgotLogin({setRenderLogin, setRenderCreate, setRenderForgot}) {
                 <button type="button" id="button" onClick={()=>{sendSignIn()}} >Initialize Account Recovery</button>
                 <br></br>
                 <div>
-                    <a onClick = {() => {console.log("Clicked to Recover");setRenderCreate(true);setRenderForgot(false);}}>Create an account with us</a>
+                    <a onClick = {() => {setRenderCreate(true);setRenderForgot(false);}}>Create an account with us</a>
                 </div>
                 <div>
-                    <a onClick = {() => {console.log("Clicked to Create");setRenderLogin(true);setRenderForgot(false);}}>Go back to login</a>
+                    <a onClick = {() => {setRenderLogin(true);setRenderForgot(false);}}>Go back to login</a>
                 </div>
             </div>
         </Form>

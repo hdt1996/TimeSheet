@@ -180,7 +180,7 @@ class LineItemsView(APIView):
 class TimeSheetView(APIView):
     """ Aside from the get request, all other crud options can only perform on one entry at at a time """
     """ !!!! This view should be used cautiously by only root admins. A mistake without a backup may cause unintended bulk updates or deletions !!! """
-    permission_classes = (permissions.AllowAny,) # Controls user/group access to CRUD options
+    permission_classes = (permissions.IsAuthenticated,) # Controls user/group access to CRUD options
     @method_decorator(csrf_protect, name = "get")
     def get(self, request):
         # Summary: Method using fetch request headers to customize query options. Contains validation to control input and output query data.
@@ -192,11 +192,11 @@ class TimeSheetView(APIView):
             select_obj = processSelectors(request = request, fixed_selectors= fixed_selectors, allowed_fields= allowed_fields)
             if isinstance(select_obj, Response):
                 return select_obj
-
             sel_dict = buildQuery(selectors= select_obj, fixed_selectors=fixed_selectors)
             sel_dict = limitTimesheetAccess(request, sel_dict)
             if isinstance(sel_dict, Response):
                 return sel_dict
+
             table_query = TimeSheet.objects.filter(**sel_dict)
 
             if len(table_query) == 0:

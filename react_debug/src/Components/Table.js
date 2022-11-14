@@ -1,7 +1,7 @@
 import {DataGrid} from '@mui/x-data-grid'
 import React, {useState,useEffect, useRef} from 'react';
 import Query from './Query';
-import { Delete,Add, ConstructionOutlined, CurrencyYenOutlined } from '@mui/icons-material';
+import { Delete,Add} from '@mui/icons-material';
 import Endpoints from '../Utilities/Endpoints';
 import CloseIcon from '@mui/icons-material/Close';
 import {getToken} from '../Utilities/Token'

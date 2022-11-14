@@ -3,13 +3,45 @@ import CreateLogin from "./CreateLogin";
 import ForgotLogin from "./ForgotLogin";
 import CloseIcon from '@mui/icons-material/Close';
 import React, { useState, useEffect} from 'react';
-function Navbar({config={'title':'Title','sections':['Section1','Section2','Section3'],'dropdowns':['Dropdown1','Dropdown2','Dropdown3']}, UserData = null}) {
+import Endpoints from "../Utilities/Endpoints";
+import { getToken } from "../Utilities/Token";
+function Navbar({config={'title':'Title','sections':['Section1','Section2','Section3'],'dropdowns':['Dropdown1','Dropdown2','Dropdown3']}, UserData = null, setUserData}) {
   let title = config['title'];
   let sections = config['sections'];
   let dropdowns = config['dropdowns'];
   let [RenderLogin,setRenderLogin] = useState(false);
   let [RenderCreate, setRenderCreate] = useState(false);
   let [RenderForgot, setRenderForgot] = useState(false);
+  let [ShowUserOptions, setShowUserOptions] = useState(false);
+
+  function handleShowUserOptions()
+  {
+    if(ShowUserOptions)
+    {
+      setShowUserOptions(false);
+    }
+    else
+    {
+      setShowUserOptions(true);
+    }
+  };
+
+  async function sendSignOut()
+  {
+      const requestOptions={
+          method: 'POST',
+          headers:{'Content-Type': 'application/json', 'X-CSRFToken': getToken('csrftoken')}
+      };
+      let response = await fetch(`${Endpoints.domain}${Endpoints.logOutAPI}`,requestOptions);
+      let data = await response.json();
+      if(data["Success"])
+      {
+          alert(`${data['Success']}`);
+          setUserData(null);
+          return;
+      };
+      alert(data['Error']);
+  };
 
   useEffect(()=>
   {
@@ -55,27 +87,45 @@ function Navbar({config={'title':'Title','sections':['Section1','Section2','Sect
         <div id="SignIn">
           {
             RenderLogin?
-            <div id="NavBar-Login">
+            <div className="NavBar-Login">
               <CloseIcon id="Close" onClick={() =>{setRenderLogin(false)}}/>
               <Login setRenderLogin={setRenderLogin} setRenderCreate={setRenderCreate} setRenderForgot={setRenderForgot}></Login>
             </div>
             :
             RenderCreate?
-            <div id="NavBar-Login">
+            <div className="NavBar-Login">
               <CloseIcon id="Close" onClick={() =>{setRenderCreate(false)}}/>
               <CreateLogin setRenderLogin={setRenderLogin} setRenderCreate={setRenderCreate} setRenderForgot={setRenderForgot}></CreateLogin>
             </div>
             :
             RenderForgot?
-            <div id="NavBar-Login">
+            <div className="NavBar-Login">
               <CloseIcon id="Close" onClick={() =>{setRenderForgot(false)}}/>
               <ForgotLogin setRenderLogin={setRenderLogin} setRenderCreate={setRenderCreate} setRenderForgot={setRenderForgot}></ForgotLogin>
             </div>
             :
-            UserData && !UserData.Error?
-            <div id="Logged-In">
-              <div>{UserData.Success.username}</div>
-              <div>{`Employee ID: ${UserData.Success.employee.id}`}</div>
+            UserData && UserData.Error?
+            <div className="Logged-In">
+              <div className = "Col" onClick={() => {handleShowUserOptions()}}>
+                <div>Currently</div>
+                <div>htran_dev</div>
+              </div>
+              <div className = "Col">
+                <div>Employee ID</div>
+                <div>{`1`}</div>
+              </div>
+              {
+                ShowUserOptions?
+                <div className="Options">
+                  <button onClick = {() => {sendSignOut()}}>
+                    Sign Out
+                  </button>
+                  <button>
+                    Change Account Settings
+                  </button>
+                </div>
+                :null
+              }
             </div>
             :
             <button id="Button" onClick={() => {setRenderLogin(true)}}>
@@ -89,4 +139,9 @@ function Navbar({config={'title':'Title','sections':['Section1','Section2','Sect
   );
 }
 
+/*
+              <div>{UserData.Success.username}</div>
+              <div>{`Employee ID: ${UserData.Success.employee.id}`}</div>
+
+*/
 export default Navbar;

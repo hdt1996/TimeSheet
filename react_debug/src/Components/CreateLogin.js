@@ -175,11 +175,11 @@ function CreateLogin({setRenderLogin, setRenderCreate, setRenderForgot}) {
                             <div><VisibilityIcon></VisibilityIcon></div>
                         </div>
                         <div>First Name</div>
-                        <Form.Control onChange = {(e) => {FirstName.current=e.target.value}} placeholder="Enter employee's first name (required)"></Form.Control>
+                        <Form.Control onChange = {(e) => {FirstName.current=e.target.value}} placeholder="Enter first name (required)"></Form.Control>
                         <div>Last Name</div>
-                        <Form.Control onChange = {(e) => {LastName.current=e.target.value}} placeholder="Enter employee's last name (required)"></Form.Control>
+                        <Form.Control onChange = {(e) => {LastName.current=e.target.value}} placeholder="Enter last name (required)"></Form.Control>
                         <div>Personal Email</div>
-                        <Form.Control onChange = {(e) => {PersonalEmail.current=e.target.value}} placeholder="Enter employee's personal email"></Form.Control>
+                        <Form.Control onChange = {(e) => {PersonalEmail.current=e.target.value}} placeholder="Enter personal email"></Form.Control>
                     </div>
 
                     <div className = "Col">
@@ -191,7 +191,7 @@ function CreateLogin({setRenderLogin, setRenderCreate, setRenderForgot}) {
                         <Form.Control onChange = {(e) => {JobTitle.current=e.target.value}} placeholder="Enter employee's job title"></Form.Control>
                         <div>Hourly or Salary</div>
                         <Form.Control onChange = {(e) => {HourlyorSalary.current=e.target.value}} placeholder="Enter 0 or 1 (Salary or Hourly)"></Form.Control>
-                        <div>Pay Rate (Hourly per 40-Hour Week)</div>
+                        <div>Pay Rate (per Hour)</div>
                         <Form.Control onChange = {(e) => {PayRate.current=e.target.value}} placeholder="Enter employee's pay rate"></Form.Control>
                         <div>Start date</div>
                         <div id = "Date">
@@ -214,7 +214,7 @@ function CreateLogin({setRenderLogin, setRenderCreate, setRenderForgot}) {
                         </div>
                     </div>
                 </div>
-                <br></br>
+
                 <button type="button" id="button" onClick={()=>{sendSignIn()}} >Create Account</button>
                 {
                     setRenderLogin && setRenderForgot?
