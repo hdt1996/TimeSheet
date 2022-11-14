@@ -60,16 +60,70 @@ function Query(
             input_elements[inp].value = null;
         };
     };
-    function handleQueryChange(e, field, key)
+
+    function handleOperatorChange(e, field)
     {   
-        let dict = QueryOptions.current; //Deep Copy so useEffect triggers for debugging
-        if(e.target.value in operator_map)
+        let dict = QueryOptions.current;
+        let operator = e.target.value;
+        if(!operator_map[operator])
         {
-            dict[field][key]=operator_map[e.target.value]
+            return dict[field]['operator']=null;
+        };
+
+        let parent = e.target.parentNode;
+        let value_element = parent.children[0];
+
+        if(operator in operator_map)
+        {
+            dict[field]['operator']=operator_map[operator];
+        };
+        if(operator == 'in')
+        {
+            try
+            {
+                JSON.parse(value_element.value);
+                value_element.style.backgroundColor = "white";
+            }
+            catch
+            {
+                value_element.style.backgroundColor = "red";
+            };
+            if(value_element.value === '')
+            {
+                value_element.style.backgroundColor = "white";
+            };
+            return;
+        };
+    };
+
+    function handleValueChange(e, field)
+    {   
+        let value = e.target.value;
+        let dict = QueryOptions.current;
+        let parent = e.target.parentNode;
+        let operator_element = parent.children[1];
+        if(operator_element.value !== 'in')
+        {
+            dict[field]['value']=value;
+            return;
         }
-        else
+        if(operator_element.value === 'in')
         {
-            dict[field][key]=e.target.value;
+            try
+            {
+                let parsed_val = JSON.parse(value);
+                dict[field]['value']=parsed_val;
+                e.target.style.backgroundColor = "white";
+            }
+            catch
+            {
+                dict[field]['value']=[];
+                e.target.style.backgroundColor = "red";
+            };
+            if(value === '')
+            {
+                e.target.style.backgroundColor = "white";
+            };
         };
     };
 
@@ -135,8 +189,8 @@ function Query(
                     let db_col = db_columns[index];
                     return (
                     <div style={{width:`${col_width}px`}} key={index}>
-                        <input placeholder = "Enter filter" onChange={(e) => {handleQueryChange(e,db_col,'value')}}></input>
-                        <input placeholder = "____" onChange={(e) => {handleQueryChange(e,db_col,'operator')}}></input>
+                        <input placeholder = "Enter filter" onChange={(e) => {handleValueChange(e,db_col)}}></input>
+                        <input placeholder = "____" onChange={(e) => {handleOperatorChange(e,db_col)}}></input>
                     </div>
                     )
                 })

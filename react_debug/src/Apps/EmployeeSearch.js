@@ -21,7 +21,11 @@ class Extractors
     };
     static numerical_2dp(keys,source) //keys is only one
     {
-        return source.toFixed(2);
+        if(source)
+        {
+            return source.toFixed(2);
+        };
+        return source;
     };
     static strfDate(keys,source)
     {
@@ -50,7 +54,7 @@ function EmployeeSearch({endpoint, UserData=null})
                 'name':Extractors.standard,
                 'department':Extractors.standard,
                 'hourly':Extractors.standard,
-                'pay_rate':Extractors.standard,
+                'pay_rate':Extractors.numerical_2dp,
                 'photo':Extractors.standard,
                 'onboard_docs':Extractors.standard,
                 'user':Extractors.foreignKey,
