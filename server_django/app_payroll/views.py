@@ -7,14 +7,15 @@ from django.views.decorators.csrf import csrf_protect, csrf_exempt #ensure_csrf_
 from .models import *
 from .serializer import *
 from .query import *
-from utils.logger import *
+from utils.py.development import Development
 import os, traceback
 if os.environ.get('DEBUG'):
     from .permissions.debug import *
 else:
     from .permissions.production import *
 from django.conf import settings
-LOGGER = Logger(proj_name='Timesheet')
+
+DEV = Development(proj_dir = 'Timesheet',test_dir = 'Timesheet/tests',log_dir = 'Timesheet/logs')
 
 # Django's builtin ORM statements to prevent need for string queries/SQL injection risk
 class EmployeeAdminView(APIView): 
@@ -40,7 +41,7 @@ class EmployeeAdminView(APIView):
             return processGetResponse(serialized=serialized_employees,response_fields=response_fields)
 
         except Exception as e:
-            print(LOGGER.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest = False))
+            print(DEV.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest = False, exception = e))
             #TODO send email to IT Software team of severe server error to fix asap
             return Response({"Error":"Server Error - Notifying admins"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -89,7 +90,7 @@ class EmployeeAdminView(APIView):
             return Response(serialized_employees.data, status = status.HTTP_200_OK)
 
         except Exception as e:
-            print(LOGGER.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest = False))
+            print(DEV.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest = False))
             #TODO send email to IT Software team of severe server error to fix asap
             return Response({"Error":"Server Error - Notifying admins"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -123,7 +124,7 @@ class EmployeeAdminView(APIView):
             return Response(serialized_employees.data, status = status.HTTP_200_OK)
 
         except Exception as e:
-            print(LOGGER.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest = False))
+            print(DEV.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest = False))
             #TODO send email to IT Software team of severe server error to fix asap
             return Response({"Error":"Server Error - Notifying admins"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -157,7 +158,7 @@ class LineItemsView(APIView):
             return processGetResponse(serialized = serialized_line_items, response_fields=response_fields)
 
         except Exception as e:
-            print(LOGGER.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest = False))
+            print(DEV.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest = False))
             #TODO send email to IT Software team of severe server error to fix asap
             return Response({"Error":"Server Error - Notifying admins"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -196,7 +197,7 @@ class LineItemsView(APIView):
             return Response(serialized_data, status = status.HTTP_200_OK)
 
         except Exception as e:
-            print(LOGGER.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest = False))
+            print(DEV.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest = False))
             #TODO send email to IT Software team of severe server error to fix asap
             return Response({"Error":"Server Error - Notifying admins"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -233,7 +234,7 @@ class TimeSheetView(APIView):
             return processGetResponse(serialized = serialized_timesheets, response_fields=response_fields)
 
         except Exception as e:
-            print(LOGGER.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest = False))
+            print(DEV.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest = False))
             #TODO send email to IT Software team of severe server error to fix asap
             return Response({"Error":"Server Error - Notifying admins"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -286,7 +287,7 @@ class TimeSheetView(APIView):
             return Response({"TimeSheet":serialized_timesheet,"LineItems":serialized_line_items}, status = status.HTTP_200_OK)
 
         except Exception as e:
-            print(LOGGER.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest = False))
+            print(DEV.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest = False))
             #TODO send email to IT Software team of severe server error to fix asap
             return Response({"Error":"Server Error - Notifying admins"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -355,7 +356,7 @@ class TimeSheetView(APIView):
             return Response({"TimeSheet":timesheet_data, "LineItems":line_item_data, "DeletedLineItems":deleted_lines_response}, status = status.HTTP_200_OK)
 
         except Exception as e:
-            print(LOGGER.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest = False))
+            print(DEV.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest = False))
             #TODO send email to IT Software team of severe server error to fix asap
             return Response({"Error":"Server Error - Notifying admins"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
         
@@ -391,6 +392,6 @@ class TimeSheetView(APIView):
             return Response(serialized_data, status = status.HTTP_200_OK)
 
         except Exception as e:
-            print(LOGGER.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest = False))
+            print(DEV.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest = False))
             #TODO send email to IT Software team of severe server error to fix asap
             return Response({"Error":"Server Error - Notifying admins"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)

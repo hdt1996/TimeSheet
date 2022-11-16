@@ -1,0 +1,3 @@
+[submodule "server_django/utils"]
+	path = server_django/utils
+	url = git@github.com:hdt1996/Utils.git
