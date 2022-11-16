@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { Link } from 'react-router-dom';
 function SideMenu(
     {
         MenuLinks=
@@ -12,13 +12,13 @@ function SideMenu(
     function handleCollapse(e)
     {
         let element = e.target.parentNode.querySelector('.Menu');
-        if(!element.classList.contains("SideMenu-Transition"))
+        if(!element.classList.contains("Transition"))
         {
-            element.classList.add("SideMenu-Transition")
+            element.classList.add("Transition")
         }
         else
         {
-            element.classList.remove("SideMenu-Transition")
+            element.classList.remove("Transition")
         };
     };
 
@@ -37,7 +37,7 @@ function SideMenu(
                     };
                     return (
                     <div id={alternative_shades[curr_index]} key={index}>
-                        <a id="link" href={MenuLinks[menu_item]}> {menu_item}</a>
+                        <Link className="Link" to={MenuLinks[menu_item]}> {menu_item}</Link>
                     </div>
                     )
                 })

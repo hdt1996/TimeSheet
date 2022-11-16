@@ -2,7 +2,7 @@ import Form from 'react-bootstrap/Form'
 import React, { useState, useEffect} from "react";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import {login} from '../Utilities/Endpoints';
-function Login({setRenderLogin, setRenderCreate, setRenderForgot}) {
+function Login({setRenderLogin, setRenderCreate, setRenderForgot, setUserData}) {
     let [Password,setPassword] = useState([]);
     let [PassChar, setPassChar] = useState([0,0]);
     let [ShowPass, setShowPass] = useState(false);
@@ -72,7 +72,8 @@ function Login({setRenderLogin, setRenderCreate, setRenderForgot}) {
         let data = await login({"username":Username, "password":Password.join('')});
         if(data["Success"])
         {
-            alert(`${data['Success'].username} logged in`);
+            alert(`${data['Success'].user.username} logged in`);
+            setUserData(data);
             setPassword([]);
             setUsername(null);
             setRenderLogin(false);
@@ -93,13 +94,13 @@ function Login({setRenderLogin, setRenderCreate, setRenderForgot}) {
     
     return (
         <Form className="Comp-Login">
-            <div id = "Row">
+            <div className = "Row">
                 <div style={{textAlign:"center", fontWeight:"bolder", borderBottom:"solid black .1em"}}>Welcome!</div>
                 <br></br>
                 <div>Username</div>
                 <Form.Control onChange = {(e) => {setUsername(e.target.value)}} placeholder="Enter your Username"></Form.Control>
                 <div>Password</div>
-                <div id = "Password">
+                <div className = "Password">
                     <Form.Control 
                         placeholder="Enter your Password" id="Comp-Login-Password"
                         onChange = {(e) => {handlePassInput(e,'')}}

@@ -32,7 +32,7 @@ function PostForm(
     let updated_placeholder = parseInt(new_clone.getAttribute('placeholder'))+1; //Initial clone has placeholder of 0, we increment
 
     new_clone.setAttribute('placeholder',updated_placeholder) //update
-    new_clone.querySelector("#index").innerHTML = updated_placeholder + 1; //The index shown is the placeholder plus one since we do not start from zero
+    new_clone.querySelector(".Index").innerHTML = updated_placeholder + 1; //The index shown is the placeholder plus one since we do not start from zero
     new_clone.setAttribute("id",alternative_shades[ColorIndex]);
     //We will use this to feed to onKeyUp event handler #TODO
 
@@ -47,7 +47,7 @@ function PostForm(
 
     //Now we add the delete event listener
     //Get the delete div from the clone
-    let clone_delete_icon = new_clone.querySelector("#delete");
+    let clone_delete_icon = new_clone.querySelector(".Delete");
     clone_delete_icon.onclick=(e)=>{handleDelete(e)};
 
     //This is it for hydrating the new clone!
@@ -80,10 +80,9 @@ function PostForm(
     // No need to rehydrate elements since arguments for array functions
     {
       par_children[index].setAttribute("placeholder",index);
-      par_children[index].querySelector("#index").innerHTML = index+1;
+      par_children[index].querySelector(".Index").innerHTML = index+1;
     };
 
-    console.log(BillingLineData.current);
     if(ColorIndex === 0){
       ColorIndex = 1;
     }
@@ -100,7 +99,7 @@ function PostForm(
         {                
           return (
             <Row key = {rindex} className="Comp-PostForm-Row" placeholder={`${rindex}`}>
-              <Col id="index">
+              <Col className="Index">
                 {rindex+1}
               </Col>
               {
@@ -114,8 +113,8 @@ function PostForm(
                   )
                 })
               }
-              <div id="delete" onClick={(e)=>{handleDelete(e)}}>
-                <Delete id="icon"/>
+              <div className="Delete" onClick={(e)=>{handleDelete(e)}}>
+                <Delete className="Icon"/>
               </div>
             </Row>
           )
@@ -123,7 +122,7 @@ function PostForm(
       }
 
       <div className="Comp-PostForm-Add">
-        <Add id="button" onClick={()=>{handleAdd()}}></Add>
+        <Add className="Button" onClick={()=>{handleAdd()}}></Add>
       </div>
     </Form>
     );

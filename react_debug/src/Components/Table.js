@@ -137,7 +137,7 @@ function Table(
         if(DeleteSuccess.current && SelectedRows.current.length > 0)
         {
             let SelectAllBox = activeTable.querySelector('input[aria-label="Unselect all rows"]');
-            let filter_element = activeTable.querySelector(".Comp-Query #Filter #Button");
+            let filter_element = activeTable.querySelector(".Comp-Query .Filter #Button");
             filter_element.click();
             DeleteSuccess.current = false;
             SelectAllBox.click();
@@ -174,7 +174,7 @@ function Table(
                 <Delete onClick={() => handleConfirmDelete()}></Delete>
                 {
                     ShowDeleteConfirm?
-                    <div id="Confirm">
+                    <div className="Confirm">
                         <span><strong>Confirm Deletion?</strong></span>
                         <div>
                             <button onClick = {() => handleSelectedDelete()}>Yes</button>
@@ -185,16 +185,16 @@ function Table(
                 }
                 {
                     ShowAddComp?
-                    <div id="AddComponent">
-                        <CloseIcon id="Close" onClick={() =>{setShowAddComp(false)}}/>
+                    <div className="AddComponent">
+                        <CloseIcon className="Close" onClick={() =>{setShowAddComp(false)}}/>
                         {config.AddComponent}
                     </div>:
                     null
                 }
                 {
                     ShowEditComp?
-                    <div id="AddComponent">
-                        <CloseIcon id="Close" onClick={() =>{setShowEditComp(false)}}/>
+                    <div className="AddComponent">
+                        <CloseIcon className="Close" onClick={() =>{setShowEditComp(false)}}/>
                         {config.EditComponent}
                     </div>:
                     null

@@ -84,11 +84,16 @@ class LoginView(APIView):
             return Response({'Error': 'Invalid Credentials'}, status = status.HTTP_403_FORBIDDEN)
 
         auth.login(request, user)
-        employee_query = Employees.objects.filter(user = user) #Should always
-        employee_data = None
+        employee_query = Employees.objects.filter(user = request.user.id) #Should always
+        employee_data = {}
+        user_data = {}
+
         if len(employee_query) > 0:
-            employee_data = EmployeeGETSerializer(instance = employee_query[0], many = False).data
-        return Response({'Success':{'username':user.get_username(), 'employee':employee_data}}, status = status.HTTP_200_OK)
+            employee_data = dict(EmployeeGETSerializer(instance = employee_query[0], many = False).data)
+            user_data = employee_data.pop('user')
+        else:
+            user_data = UserGetSerializer(instance = user, many=False).data
+        return Response({'Success':{'user':user_data, 'employee':employee_data}})
 
 @method_decorator(csrf_exempt,name="post")
 class LogoutView(APIView):

@@ -1,31 +1,31 @@
 .Hidden{
   visibility: hidden !important;
 }
-.TimeSheet-Locked{
+.App-Timesheet .TimeSheet-Locked{
   background-color: rgb(195, 195, 201);
   pointer-events: none;
   user-select: none !important;
 }
 
-#TimeSheet #row
+.App-Timesheet .Row
 {
   height:26em;
   overflow-y:hidden;
   background-color: rgb(194, 233, 200);
   display:flex;
 }
-#TimeSheet #footer{
+.App-Timesheet .Footer{
   display:flex;
   max-height:4em;
 }
 
-#TimeSheet #submission-time{
+.App-Timesheet .Submit-Time{
   flex:1;
   max-width:20em;
   background-color: rgb(191, 231, 217);
   border-bottom-left-radius: .45em;
 }
-#TimeSheet #submission-time #Row
+.App-Timesheet .Submit-Time .Row
 {
   display:flex;
   align-items: center;
@@ -36,24 +36,24 @@
   background-color: #a8b7af;
   font-weight:400;
 }
-#TimeSheet #submission-time #Row div:first-child{
+.App-Timesheet .Submit-Time .Row div:first-child{
   flex:.5
 }
-#TimeSheet #submission-time #Row div{
+.App-Timesheet .Submit-Time .Row div{
   flex:2;
   display:flex;
   justify-content: center;
   border-radius: .45em;
 }
 
-#TimeSheet #submit-button{
+.App-Timesheet .Submit-Button{
   display:flex;
   flex:1;
   justify-content: flex-end;
   background-color:rgb(191, 231, 217);
   border-bottom-right-radius: 1em;
 }
-#TimeSheet #submit-button button{
+.App-Timesheet .Submit-Button button{
   width:fit-content;
   padding-left:.5em;
   padding-right:.5em;
@@ -64,28 +64,28 @@
   border-radius: .3em;
 }
 
-#TimeSheet #submit-button button:hover{
+.App-Timesheet .Submit-Button button:hover{
   cursor:pointer;
   background-color:rgb(196, 210, 204);
 }
-.TimeSheet-Totals #Date{
+.Field-TimesheetTotals .Date{
   display:flex;
   flex-direction: row;
 }
 
-.TimeSheet-Totals #Date #Value{
+.Field-TimesheetTotals .Date .Value{
   flex:1;
   width:10em;
 }
-.TimeSheet-Totals #Date #Value::placeholder{
+.Field-TimesheetTotals .Date .Value::placeholder{
   font-size:.8em;
   opacity: 1;
 }
-.TimeSheet-Totals #Date #Icon{
+.Field-TimesheetTotals .Date .Icon{
   height:100%;
   width:1.5em;
 }
-.TimeSheet-Totals{
+.Field-TimesheetTotals{
   flex:1;
   display:flex;
   flex-direction: column;
@@ -94,27 +94,27 @@
   padding-top:0em;
 
 }
-#TimeSheet #Form{
+.App-Timesheet .Form{
   flex:1;
   background-color: rgb(191, 231, 217);
   padding:1em;
 
 }
 
-.Edited input{
+.Field-Edit input{
   display:flex;
   text-align: end;
 }
-.TextField{
+.Field-Text{
   background-color: white;
 }
-.TimeSheet-Description{
+.Field-Description{
   flex:3;
   min-width:25em;
   padding-right:2.5em;
 }
 
-.FloatingCalendar{
+.Field-Calendar{
   position:absolute;
   z-index:2;
 }
@@ -128,7 +128,7 @@
   top:2em;
 }
 
-.App-Main{
+.Main-Home{
   background-color: #a4d7bd;
   min-height: 100vh;
   min-width: 100vw;
@@ -146,23 +146,26 @@
   font-weight: bold;
   font-size:1.5em
 }
-.App-Body{
+.Main-Body{
   flex:1;
   display:flex;
   flex-direction: row;
   background-color: rgb(126, 191, 162);
 }
 
-.App-Body #EmpMgmt{
+
+.Main-Body .App-Timesheet{
   display:flex;
   flex-direction: column;
   flex:30;
 }
-.App-Body #TimeSheet{
+
+.App-Table{
   display:flex;
   flex-direction: column;
   flex:30;
 }
+
 .Comp-SideMenu
 {
   flex:1;
@@ -176,7 +179,7 @@
   transition: all .5s ease;
 
 }
-.Comp-SideMenu .SideMenu-Transition{
+.Comp-SideMenu .Transition{
   width:0;
   transition: all .5s ease;
 }
@@ -243,7 +246,7 @@
   align-items: center;
   background-color: rgb(165, 203, 190);
 }
-.Comp-SideMenu .Menu div #link
+.Comp-SideMenu .Menu div .Link
 {
   white-space: nowrap;
   text-decoration: none;
@@ -264,25 +267,25 @@
   background-color: rgb(234, 244, 246);
 }
 
-.Comp-Query #Filter{
+.Comp-Query .Filter{
   width:50px;
   position:relative;
   background-color: transparent;
   border:none;
 }
 
-.Comp-Query #Filter .Clear{
+.Comp-Query .Filter .Clear{
   position:relative;
 }
 
-.Comp-Query #Filter .Clear:hover{
+.Comp-Query .Filter .Clear:hover{
   cursor:pointer;
   background-color: white;
 }
-.Comp-Query #Filter path{
+.Comp-Query .Filter path{
   pointer-events: none;
 }
-.Comp-Query #Filter button{
+.Comp-Query .Filter button{
   position:absolute;
   top:-1.9em;
   left:1em;
@@ -290,16 +293,16 @@
   font-size: 1.25em;
   border-radius:.5em;
 }
-.Comp-Query #Filter button:active{
+.Comp-Query .Filter button:active{
   width:5em;
   background-color: transparent;
 }
-.Comp-Query #Filter button:focus{
+.Comp-Query .Filter button:focus{
   width:5em;
   background-color: transparent;
   outline: none;
 }
-.Comp-Query #Filter button:hover{
+.Comp-Query .Filter button:hover{
   background-color: gainsboro;
   cursor:pointer;
   user-select: none;
@@ -339,7 +342,7 @@
   width:1.5em;
   margin-left:1em;
 }
-.Comp-Table .Buttons #AddComponent{
+.Comp-Table .Buttons .AddComponent{
   position:absolute;
   top:100%;
   right:0;
@@ -351,7 +354,7 @@
   width:fit-content;
   display:flex;
 }
-.Comp-Table .Buttons #AddComponent #Close{
+.Comp-Table .Buttons .AddComponent .Close{
   position:absolute;
   height:1.5em;
   top:0;
@@ -359,7 +362,7 @@
   z-index: 1;
   border:solid rgba(106, 10, 10, 0.433) .1em;
 }
-.Comp-Table .Buttons #Confirm{
+.Comp-Table .Buttons .Confirm{
   position:absolute;
   display:flex;
   flex-direction: column;
@@ -373,18 +376,18 @@
   z-index:1;
   border:solid black .125em;
 }
-.Comp-Table .Buttons #Confirm div{
+.Comp-Table .Buttons .Confirm div{
   display:flex;
   flex-direction: row;
   margin-top:.5em;
 }
-.Comp-Table .Buttons #Confirm div button{
+.Comp-Table .Buttons .Confirm div button{
   border-radius: .5em;
   width:5em;
   margin:.5em;
 }
 
-.Comp-Table .Buttons #Confirm div button:hover{
+.Comp-Table .Buttons .Confirm div button:hover{
   background-color: rgb(51, 51, 140);
   color:white;
   cursor:pointer;
@@ -417,23 +420,23 @@
   align-items: center;
 }
 
-.Comp-PostForm-Row #index{
+.Comp-PostForm-Row .Index{
   max-width:3em;
 }
-.Comp-PostForm-Row #delete{
+.Comp-PostForm-Row .Delete{
   background-color: transparent !important;
   z-index:2;
 }
-.Comp-PostForm-Row #delete #icon{
+.Comp-PostForm-Row .Delete .Icon{
   width:fit-content;
   height:1.5em;
   pointer-events: none;
 }
 
-.Comp-PostForm-Row #delete #icon path{
+.Comp-PostForm-Row .Delete .Icon path{
   pointer-events: none;
 }
-.Comp-PostForm-Row #delete:hover{
+.Comp-PostForm-Row .Delete:hover{
   cursor:pointer;
   background-color: rgba(185, 175, 175, 0.487);
 }
@@ -445,12 +448,12 @@
   align-items: center;
   height:2.5em;
 }
-.Comp-PostForm-Add #button{
+.Comp-PostForm-Add .Button{
   height:100%;
   background-color: transparent !important;
   width:auto;
 }
-.Comp-PostForm-Add #button:hover{
+.Comp-PostForm-Add .Button:hover{
   cursor:pointer;
   background-color: rgba(185, 175, 175, 0.487);
 }
@@ -473,14 +476,14 @@
   font-size: .75em;
 }
 
-.Comp-CreateLogin .Input .Col #Date div{
+.Comp-CreateLogin .Input .Col .Date div{
   width:fit-content;
 }
 
-.Comp-CreateLogin .Input .Col #Date input::placeholder{
+.Comp-CreateLogin .Input .Col .Date input::placeholder{
   font-size:.75em !important;
 }
-.Comp-CreateLogin .Input .Col #Date{
+.Comp-CreateLogin .Input .Col .Date{
   display:flex;
   position:relative;
   flex-direction: row;
@@ -490,17 +493,17 @@
   width:100%;
 }
 
-.Comp-CreateLogin .Input .Col #Date #Value{
+.Comp-CreateLogin .Input .Col .Date .Value{
 
   position:relative;
 }
-.Comp-CreateLogin .Input .Col #Date #Icon{
+.Comp-CreateLogin .Input .Col .Date .Icon{
   height:100%;
   width:1.25em;
   position:relative;
   top:-.15em;
 }
-.Comp-CreateLogin #Date #Value::placeholder{
+.Comp-CreateLogin .Date .Value::placeholder{
   font-size:.8em;
   opacity: 1;
 }
@@ -524,15 +527,15 @@
 }
 
 
-.Comp-CreateLogin .Input .Col #Password{
+.Comp-CreateLogin .Input .Col .Password{
   display:flex;
   align-items: center;
 }
-.Comp-CreateLogin .Input .Col #Password div{
+.Comp-CreateLogin .Input .Col .Password div{
   position:relative;
   height:inherit;
 }
-.Comp-CreateLogin .Input .Col #Password div svg{
+.Comp-CreateLogin .Input .Col .Password div svg{
   height:1em;
 }
 
@@ -570,7 +573,7 @@
   border-radius: .5em;
   border:solid black .1em;
 }
-.Comp-Login #Row{
+.Comp-Login .Row{
   flex:1;
   display:flex;
   flex-direction: column;
@@ -579,82 +582,35 @@
   padding-right:2em;
   align-items: center;
 }
-.Comp-Login #Row button{
+.Comp-Login .Row button{
   width:100%;
   background-color: rgb(215, 215, 237);
   border-radius: .25em;
 }
-.Comp-Login #Row input{
+.Comp-Login .Row input{
   margin-bottom:1em;
   margin-top:.5em;
 }
-.Comp-Login #Row div{
+.Comp-Login .Row div{
   font-weight: bold;
   width:100%;
 }
-.Comp-Login #Row #Password{
+.Comp-Login .Row .Password{
   display:flex;
   align-items: center;
 }
-.Comp-Login #Row #Password div{
+.Comp-Login .Row .Password div{
   flex:1;
 }
 
-.Comp-Login #Row div a{
+.Comp-Login .Row div a{
   font-weight: normal;
   padding:.25em;
 }
-.Comp-Login #Row div a:hover{
+.Comp-Login .Row div a:hover{
   cursor:pointer;
   font-weight: bold;
 }
-
-.Comp-Create{
-  background-color: rgb(231, 232, 243);
-  width:25em;
-  height:50em;
-  display:flex;
-  flex-direction: column;
-  border-radius: .5em;
-  border:solid black .1em;
-}
-.Comp-Create #Row{
-  flex:1;
-  display:flex;
-  flex-direction: column;
-  padding:2em;
-  align-items: center;
-}
-.Comp-Create #Row button{
-  width:100%;
-  background-color: rgb(215, 215, 237);
-  border-radius: .25em;
-}
-.Comp-Create #Row input{
-  margin-bottom:1em;
-}
-.Comp-Create #Row div{
-  font-weight: bold;
-  width:100%;
-}
-.Comp-Create #Row #Password{
-  display:flex;
-  align-items: center;
-}
-.Comp-Create #Row #Password div{
-  flex:1;
-}
-
-.Comp-Create #Row div a{
-  font-weight: normal;
-  padding:.25em;
-}
-.Comp-Create #Row div a:hover{
-  cursor:pointer;
-  font-weight: bold;
-}
-
-
 
 .Comp-Forgot{
   background-color: rgb(202, 225, 228);
@@ -665,51 +621,51 @@
   border-radius: .5em;
   border:solid black .1em;
 }
-.Comp-Forgot #Row{
+.Comp-Forgot .Row{
   flex:1;
   display:flex;
   flex-direction: column;
   padding:2em;
   align-items: center;
 }
-.Comp-Forgot #Row button{
+.Comp-Forgot .Row button{
   width:100%;
   background-color: rgb(215, 215, 237);
   border-radius: .25em;
 }
-.Comp-Forgot #Row input{
+.Comp-Forgot .Row input{
   margin-bottom:1em;
 }
-.Comp-Forgot #Row div{
+.Comp-Forgot .Row div{
   font-weight: bold;
   width:100%;
 }
-.Comp-Forgot #Row #Password{
+.Comp-Forgot .Row .Password{
   display:flex;
   align-items: center;
 }
-.Comp-Forgot #Row #Password div{
+.Comp-Forgot .Row .Password div{
   flex:1;
 }
 
-.Comp-Forgot #Row div a{
+.Comp-Forgot .Row div a{
   font-weight: normal;
   padding:.25em;
 }
-.Comp-Forgot #Row div a:hover{
+.Comp-Forgot .Row div a:hover{
   cursor:pointer;
   font-weight: bold;
 }
 
 
-#navbarSupportedContent #SignIn{
-  margin-left:2em;
+#navbarSupportedContent .SignIn{
   display:flex;
+  padding-left:.5em;
   justify-content: flex-end;
   width:fit-content;
 }
 
-#navbarSupportedContent #SignIn .Logged-In{
+#navbarSupportedContent .SignIn .Logged-In{
   flex:1;
   display:flex;
   justify-content: center;
@@ -723,7 +679,7 @@
   white-space:nowrap;
 }
 
-#navbarSupportedContent #SignIn .Logged-In .Options{
+#navbarSupportedContent .SignIn .Logged-In .Options{
   position:absolute;
   top:100%;
   margin-top:.5em;
@@ -739,7 +695,7 @@
   z-index: 1;
 }
 
-#navbarSupportedContent #SignIn .Logged-In .Options button{
+#navbarSupportedContent .SignIn .Logged-In .Options button{
   border-radius: .5em;
   width:fit-content;
   height:2.3em;
@@ -747,16 +703,16 @@
   margin:.4em;
   font-size:.7em;
 }
-#navbarSupportedContent #SignIn .Logged-In .Options button:hover{
+#navbarSupportedContent .SignIn .Logged-In .Options button:hover{
   cursor:pointer;
   background-color: rgb(241, 246, 240);
 }
-#navbarSupportedContent #SignIn .Logged-In .Col:first-child:hover{
+#navbarSupportedContent .SignIn .Logged-In .Col:first-child:hover{
   cursor:pointer;
   background-color: rgb(241, 246, 240);
 }
 
-#navbarSupportedContent #SignIn .Logged-In .Col{
+#navbarSupportedContent .SignIn .Logged-In .Col{
   display:flex;
   flex-direction: column;
   justify-content: center;
@@ -768,37 +724,37 @@
   font-size:.7em;
   border-radius:.5em;
 }
-#navbarSupportedContent #SignIn .Logged-In .Col div:first-child{
+#navbarSupportedContent .SignIn .Logged-In .Col div:first-child{
   border-bottom: solid rgba(0, 0, 0, 0.618) .1em;
   border-bottom-style: dashed;
 }
-#navbarSupportedContent #SignIn .Logged-In .Col div{
+#navbarSupportedContent .SignIn .Logged-In .Col div{
   flex:1;
   width:100%;
   display:flex;
   justify-content: center;
   align-items: center;
 }
-#navbarSupportedContent #SignIn #Button{
+#navbarSupportedContent .SignIn .Button{
   border-radius: .5em;
   width:5em;
   height:2.3em;
   background-color: rgb(199, 242, 199);
 }
 
-#navbarSupportedContent #SignIn #Button:hover{
+#navbarSupportedContent .SignIn .Button:hover{
   cursor:pointer;
   background-color: rgb(216, 245, 211);
 }
 
-#SignIn .NavBar-Login{
+#navbarSupportedContent .SignIn .Navbar-Auth{
   position:absolute;
   top:3.5em;
-  right:0;
+  right:1.5em;
   z-index: 5;
 }
 
-#SignIn .NavBar-Login #Close{
+#navbarSupportedContent .SignIn .Navbar-Auth .Close{
   background-color: rgb(225, 62, 62);
   position:absolute;
   top:.125em;
@@ -811,7 +767,7 @@
   border:solid black .1em;
 }
 
-#SignIn .NavBar-Login #Close:hover{
+#navbarSupportedContent .SignIn .Navbar-Auth .Close:hover{
   background-color:rgb(240, 83, 83);
   cursor:pointer;
 }

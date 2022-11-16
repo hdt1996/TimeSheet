@@ -46,7 +46,7 @@ export default function EmployeeSearch({endpoint, UserData=null})
     });
 
     return ( //First map is column titles; Second map is for data rows/columns
-    <div id="EmpMgmt">
+    <div className="App-Table">
         <div className="App-Title">
         Admin Employee Management
         </div>

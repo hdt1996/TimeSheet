@@ -43,6 +43,7 @@ function Query(
             QueryOptions.current[field]['value']=null;
             return;
         };
+
         QueryOptions.current[field]['operator']=operator_map[operator];
         if(operator === 'in')
         {
@@ -66,7 +67,7 @@ function Query(
     function handleQueryClear(e)
     {
         let currentQueryOptions = QueryOptions.current;
-        for(let i = 0; i < config['col_titles']; i++)
+        for(let i = 0; i < config['col_titles'].length; i++)
         {
             currentQueryOptions[config['db_columns'][i]]={operator:null,value:null};
         };
@@ -109,9 +110,8 @@ function Query(
         if(Object.keys(QueryOptions.current).length === 0)
         {
             let emptyQueryOptions = QueryOptions.current;
-            for(let i = 0; i < config['col_titles']; i++)
+            for(let i = 0; i < config['col_titles'].length; i++)
             {
-
                 emptyQueryOptions[config['db_columns'][i]]={operator:null,value:null};
             };
         };
@@ -126,7 +126,7 @@ function Query(
                 currentQueryOptions[key]=config['start_query'][key];
             };
             let activeTable = document.getElementById(`Table-N${nestedTblIndex}`);
-            let filter_element = activeTable.querySelector(".Comp-Query #Filter #Button");
+            let filter_element = activeTable.querySelector(".Comp-Query .Filter #Button");
             filter_element.click();
             firstQuery.current = true;
         };
@@ -135,7 +135,7 @@ function Query(
 
     return ( //First map is column titles; Second map is for data rows/columns
         <div className="Comp-Query">
-            <div id="Filter">
+            <div className="Filter">
                 <ClearAllIcon className="Clear" onClick={(e) => {handleQueryClear(e)}}></ClearAllIcon>
                 <button id="Button" onClick = {() =>getQuery()}>Search</button>
             </div>

@@ -122,7 +122,7 @@ class EmployeeAdminView(APIView):
             if len(table_query) > 1:
                 serialized_data=EmployeeGETSerializer(instance = table_query, many=True).data
             else:
-                serialized_data = EmployeeGETSerializer(instance = table_query[0], many=False).data
+                serialized_data = [EmployeeGETSerializer(instance = table_query[0], many=False).data]
 
             # using id is always safe to assume that only one or no entries exist since it is a primary key
             table_query.delete()

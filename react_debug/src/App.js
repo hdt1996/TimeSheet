@@ -28,19 +28,26 @@ function App() {
     "Timesheet Entry":'/payroll/timesheet_create/',
   });
 
+  async function getUserData()
+  {
+    let data = await checkAuth();
+    setUserData(data);
+  };
+
   useEffect(()=>
   {
     getCSRF();
-    checkAuth();
+    getUserData();
   },[]);
 
 
   return (
-    <div className="App-Main">
+    <div className="Main-Home">
       <Navbar config={nav_config} UserData = {UserData} setUserData = {setUserData}></Navbar>
-      <div className = "App-Body">
-        <SideMenu MenuLinks = {MenuLinks.current}/>
+      <div className = "Main-Body">
+
         <BrowserRouter>
+        <SideMenu MenuLinks = {MenuLinks.current}/>
             <Routes>
               <Route path = "/" />
               <Route path = "/payroll/employee_search/" element={<LazyWrapper Comp = {<EmployeeSearch endpoint="/api/payroll/employees/" UserData = {UserData}/>}/>}/>

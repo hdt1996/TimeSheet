@@ -159,7 +159,7 @@ function CreateLogin({setRenderLogin, setRenderCreate, setRenderForgot}) {
                         <div>New Employee Username</div>
                         <Form.Control onChange = {(e) => {Username.current=e.target.value}} placeholder="Enter your Username (required)"></Form.Control>
                         <div>New Employee Password</div>
-                        <div id = "Password">
+                        <div className = "Password">
                             <Form.Control 
                                 placeholder="Enter your Password (required)" id="Comp-Login-Password"
                                 onChange = {(e) => {handlePassInput(e)}}
@@ -187,9 +187,9 @@ function CreateLogin({setRenderLogin, setRenderCreate, setRenderForgot}) {
                         <div>Pay Rate (per Hour)</div>
                         <Form.Control onChange = {(e) => {PayRate.current=e.target.value}} placeholder="Enter employee's pay rate"></Form.Control>
                         <div>Start date</div>
-                        <div id = "Date">
-                            <Form.Control id="Value" placeholder={CurrentDate}></Form.Control>
-                            <DateRangeIcon id = "Icon" onClick ={() => {renderCalendar()}} ></DateRangeIcon>
+                        <div className= "Date">
+                            <Form.Control className="Value" placeholder={CurrentDate}></Form.Control>
+                            <DateRangeIcon className = "Icon" onClick ={() => {renderCalendar()}} ></DateRangeIcon>
                             <div >
                             {
                                 ActiveCalendar?
@@ -199,7 +199,7 @@ function CreateLogin({setRenderLogin, setRenderCreate, setRenderForgot}) {
                                     placeholderText="mm/dd/yyyy" 
                                     format = 'yyyy-MM-dd' 
                                     onChange = {(e) =>handleDateChange((e))} 
-                                    className = "FloatingCalendar TextField">
+                                    className = "Field-Calendar TextField">
 
                                 </DatePicker>:null
                             }
@@ -214,10 +214,10 @@ function CreateLogin({setRenderLogin, setRenderCreate, setRenderForgot}) {
                     <>
                     <br></br>
                     <div>
-                        <a onClick = {() => {console.log("Clicked to Recover");setRenderForgot(true);setRenderCreate(false);}}>Go to forgot username or password?</a>
+                        <a onClick = {() => {setRenderForgot(true);setRenderCreate(false);}}>Go to forgot username or password?</a>
                     </div>
                     <div>
-                        <a onClick = {() => {console.log("Clicked to Create");setRenderLogin(true);setRenderCreate(false);}}>Go back to login</a>
+                        <a onClick = {() => {setRenderLogin(true);setRenderCreate(false);}}>Go back to login</a>
                     </div>
                     </>
                     :null

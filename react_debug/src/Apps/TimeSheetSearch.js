@@ -81,7 +81,7 @@ export default function TimeSheetSearch({endpoint, UserData = null})
     },[UserData])
 
     return (
-    <div id="EmpMgmt">
+    <div className="App-Table">
         <div className="App-Title">
             Timesheets Reporting
         </div>

@@ -17,7 +17,7 @@ function Navbar({config={'title':'Title','sections':['Section1','Section2','Sect
 
   async function sendSignOut()
   {
-      let data = logOut();
+      let data = await logOut();
       if(data["Success"])
       {
           alert(`${data['Success']}`);
@@ -64,24 +64,23 @@ function Navbar({config={'title':'Title','sections':['Section1','Section2','Sect
           <input className="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"></input>
           <button className="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
         </form>
-
-        <div id="SignIn">
+        <div className="SignIn">
           {
             RenderLogin?
-            <div className="NavBar-Login">
-              <CloseIcon id="Close" onClick={() =>{setRenderLogin(false)}}/>
-              <Login setRenderLogin={setRenderLogin} setRenderCreate={setRenderCreate} setRenderForgot={setRenderForgot}></Login>
+            <div className="Navbar-Auth">
+              <CloseIcon className="Close" onClick={() =>{setRenderLogin(false)}}/>
+              <Login setRenderLogin={setRenderLogin} setRenderCreate={setRenderCreate} setRenderForgot={setRenderForgot} setUserData={setUserData}></Login>
             </div>
             :
             RenderCreate?
-            <div className="NavBar-Login">
-              <CloseIcon id="Close" onClick={() =>{setRenderCreate(false)}}/>
+            <div className="Navbar-Auth">
+              <CloseIcon className="Close" onClick={() =>{setRenderCreate(false)}}/>
               <CreateLogin setRenderLogin={setRenderLogin} setRenderCreate={setRenderCreate} setRenderForgot={setRenderForgot}></CreateLogin>
             </div>
             :
             RenderForgot?
-            <div className="NavBar-Login">
-              <CloseIcon id="Close" onClick={() =>{setRenderForgot(false)}}/>
+            <div className="Navbar-Auth">
+              <CloseIcon className="Close" onClick={() =>{setRenderForgot(false)}}/>
               <ForgotLogin setRenderLogin={setRenderLogin} setRenderCreate={setRenderCreate} setRenderForgot={setRenderForgot}></ForgotLogin>
             </div>
             :
@@ -109,7 +108,7 @@ function Navbar({config={'title':'Title','sections':['Section1','Section2','Sect
               }
             </div>
             :
-            <button id="Button" onClick={() => {setRenderLogin(true)}}>
+            <button className="Button" onClick={() => {setRenderLogin(true)}}>
               Sign In
             </button>
           }
