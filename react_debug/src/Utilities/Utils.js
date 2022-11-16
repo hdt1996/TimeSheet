@@ -20,4 +20,29 @@ function buildDateTimeStr(date)
     return dstr;
 };
 
-export {getParentIntAttrib,buildDateTimeStr}
+function alternativeBoolState(CurrState, setCurState)
+{
+  if(CurrState)
+  {
+    setCurState(false);
+    return;
+  };
+  setCurState(true);
+};
+
+function processDelData(del_items, label = "")
+{
+    if(del_items.length === 0)
+    {
+        return "";
+    }
+    let id_str=[];
+    for(let i = 0; i < del_items.length; i++)
+    {
+        id_str.push(del_items[i].id);
+    };
+    id_str = id_str.join(', ');
+    return `${label}${id_str}`
+};
+
+export {getParentIntAttrib,buildDateTimeStr, alternativeBoolState, processDelData}

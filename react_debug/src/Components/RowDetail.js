@@ -1,16 +1,11 @@
-import { Form } from 'react-bootstrap'
 import React, { useState, useEffect} from "react";
-import Endpoints from '../Utilities/Endpoints';
+import {fetcherSelect} from '../Utilities/Endpoints';
+
 function RowDetail({RowEntryID, detail_endpoint}) {
     let [RowData, setRowData] = useState([]);
     async function getRowDetail()
     {
-        const requestOptions={
-            method: 'GET',
-            headers:{'Content-Type': 'application/json','X-CSRFToken': getToken('csrftoken'), 'selectors':JSON.stringify({id:RowEntryID})}
-        };
-        let response = await fetch(`${Endpoints.domain}${detail_endpoint}`, requestOptions);
-        let data = await response.json();
+        let data = await fetcherSelect('GET',{id:RowEntryID}, detail_endpoint);
         setRowData(data);
     }
 

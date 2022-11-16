@@ -1,18 +1,18 @@
-import {DataGrid} from '@mui/x-data-grid'
+
 import React, {useState,useEffect, useRef} from 'react';
-import Query from './Query';
-import { Delete,Add} from '@mui/icons-material';
+import {DataGrid} from '@mui/x-data-grid/DataGrid/DataGrid'
+import Delete from '@mui/icons-material/Delete';
+import Add from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
-import Endpoints from '../Utilities/Endpoints';
 import CloseIcon from '@mui/icons-material/Close';
-import {getToken} from '../Utilities/Token'
+import {fetcherSelect} from '../Utilities/Endpoints';
+import {processDelData} from '../Utilities/Utils';
+import Query from './Query';
 
 function Table(
     {
         config=
         {
-            num_rows:2,
-            num_cols:3,
             col_titles:['Column1','Column2','Column3'], 
             db_columns:['DBColumn1','DBColumn2','DBColumn3'],
             values:[{Column1:0,Column2:1,Column3:2},{Column1:0,Column2:1,Column3:2}],
@@ -22,9 +22,9 @@ function Table(
             DetailTblConfig:{},
             start_query:{}
         },
-        setConfig,
         className="",
-        nestedTblIndex = 0, //useRef instance created from app
+        nestedTblIndex = 0,
+        values = [] //useRef instance created from app
     }
 ){
     let [ShowRowDetail,setShowRowDetail] = useState(false);
@@ -37,6 +37,7 @@ function Table(
     let DeleteSuccess = useRef(false);
     let CurrentDetailID = useRef(null);
     let CurrentEditDetails = useRef({});
+    let [TableValues, setTableValues] = useState(values);
 
     let handleRowClicked = null;
     if(Object.keys(config.DetailTblConfig).length !== 0)
@@ -55,18 +56,12 @@ function Table(
             currentDetailTblConfig.start_query={"timesheet":{"operator":"equal","value":e.row['col1'] }};
             setDetailTblConfig(currentDetailTblConfig);
             CurrentDetailID.current = e.row['col1'];
-            for(let  i = 0; i < db_columns.length; i++)
+            for(let  i = 0; i < config['db_columns'].length; i++)
             {
-                CurrentEditDetails.current[db_columns[i]] = e.row[`col${i+1}`]
+                CurrentEditDetails.current[config['db_columns'][i]] = e.row[`col${i+1}`]
             };
         };
     };
-
-    function handleSelectionModel(ids)
-    {
-        setSelected_IDs(ids)
-    };
-
 
     function handleConfirmDelete(){
         if(Selected_IDs.length > 0 && !ShowAddComp && !ShowEditComp)
@@ -92,84 +87,44 @@ function Table(
 
     async function handleSelectedDelete(ids)
     {
-        const requestOptions={
-            method: 'DELETE',
-            headers:{'Content-Type': 'application/json','X-CSRFToken': getToken('csrftoken'), 'selectors':JSON.stringify({'id':{'value':Selected_IDs}})}
-        };
-        let response = await fetch(`${Endpoints.domain}${config.endpoint}`, requestOptions);
-        let data = await response.json();
+        let data = await fetcherSelect('DELETE',{'id':{'value':Selected_IDs}}, config.endpoint);
         if(data['Error'])
         {
-            alert(data['Error'])
-        }
-        else
-        {
-            let str_ids = [];
-            for(let i = 0; i < data.length; i++)
-            {
-                str_ids.push(data[i].id);
-            };
-            str_ids = str_ids.join(', ');
-            alert(`Success: Entry ${str_ids} Deleted`);
-            DeleteSuccess.current=true;
-            setShowDeleteConfirm(false);
+            alert(data['Error']);
+            return;
         };
+        alert(processDelData(data, 'Deleted Entries: '));
+        DeleteSuccess.current=true;
+        setShowDeleteConfirm(false);
     };
-    let num_rows = config['num_rows'];
-    let num_cols = config['num_cols'];
-    let col_titles = config['col_titles'];
-    let db_columns = config['db_columns'];
-    let values = config['values'];
-    let col_width = config['col_width'];
-    let extract_config = config['extract_config'];
-    if(col_titles){num_cols = col_titles.length};
-    if(values){num_rows=values.length};
 
     let rows=[]; 
     let columns=[];
 
-    for(let c = 0; c < num_cols; c++)
+    for(let c = 0; c < config['col_titles'].length; c++)
     {
         let data = {};
         data['field'] = `col${c+1}`;
-        data['headerName'] = col_titles[c];
-        data['width']=col_width;
+        data['headerName'] = config['col_titles'][c];
+        data['width']=config['col_width'];
         //data['editable']=true
         //data['renderCell'] = renderDetailsButton
         columns[c] = data;
     };
 
-    if(Object.keys(extract_config).length !== 0)
+    if(Object.keys(config['extract_config']).length !== 0)
     {
-        for(let i = 0; i < num_rows; i++) //set rows and data
+        for(let i = 0; i < TableValues.length; i++) //set rows and data
         {
             let data = {};
             let source;
             let field;
-            data['id']=values[i].id;
-            for(let c = 0; c < num_cols; c++)
+            data['id']=TableValues[i].id;
+            for(let c = 0; c < config['col_titles'].length; c++)
             {
-                field=db_columns[c];
-                source=values[i][field];
-                data[`col${c+1}`]=extract_config.methods[field](extract_config.keys[field],source);
-            };
-            rows[i]=data;
-        };
-    }
-    else
-    {
-        for(let i = 0; i < num_rows; i++) //set rows and data
-        {
-            let data = {};
-            let source;
-            let field;
-            data['id']=values[i].id;
-     
-            for(let c = 0; c < num_cols; c++)
-            {
-                field=db_columns[c];
-                source=values[i][field];
-                data[`col${c+1}`]=source;
+                field=config['db_columns'][c];
+                source=TableValues[i][field];
+                data[`col${c+1}`]=config['extract_config'].methods[field](config['extract_config'].keys[field],source);
             };
             rows[i]=data;
         };
@@ -188,7 +143,7 @@ function Table(
             SelectAllBox.click();
             setShowRowDetail(false);
         };
-    },[Selected_IDs, ShowDeleteConfirm]);
+    },[ShowDeleteConfirm, nestedTblIndex]);
 
     useEffect(() =>
     {
@@ -247,14 +202,14 @@ function Table(
 
             </div>
 
-            <Query config={config} setConfig={setConfig} nestedTblIndex={nestedTblIndex}></Query>
+            <Query config={config} setTableValues={setTableValues} nestedTblIndex={nestedTblIndex}></Query>
             <DataGrid
                 rows={rows}
                 columns={columns}
                 checkboxSelection
                 editMode='row'
                 onRowClick = {handleRowClicked}
-                onSelectionModelChange={(id) =>handleSelectionModel(id)}
+                onSelectionModelChange={(id) =>setSelected_IDs(id)}
                 sx={{
                     "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
                        outline: "none !important",
@@ -264,7 +219,7 @@ function Table(
             />
             {
                 ShowRowDetail && Object.keys(DetailTblConfig).length !== 0?
-                <Table className="Nested-Table" config={DetailTblConfig} setConfig={setDetailTblConfig} nestedTblIndex={nestedTblIndex+1} AddComponent={null} EditComponent={EditIcon}></Table>
+                <Table className="Nested-Table" config={DetailTblConfig} nestedTblIndex={nestedTblIndex+1} AddComponent={null} EditComponent={EditIcon}></Table>
                 :null
             }
         </div>

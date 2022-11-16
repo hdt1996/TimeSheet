@@ -1,12 +1,11 @@
-import { Form, Col ,Row} from 'react-bootstrap'
+import Form from 'react-bootstrap/Form'
 import React, { useState, useEffect, useRef} from "react";
 import DateRangeIcon from '@mui/icons-material/DateRange';
-import Endpoints from '../Utilities/Endpoints';
+import {createLogin} from '../Utilities/Endpoints';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import {buildDateTimeStr} from '../Utilities/Utils';
-import {getToken} from '../Utilities/Token'
 
 function CreateLogin({setRenderLogin, setRenderCreate, setRenderForgot}) {
     let FirstName= useRef(null);
@@ -71,8 +70,11 @@ function CreateLogin({setRenderLogin, setRenderCreate, setRenderForgot}) {
             mod_chars = value.slice(currPassChar[0],currPassChar[1]);
             curr_password.splice(currPassChar[0],index_offset,...mod_chars);
             newPassChar=currPassChar[1];
-        }
-        for(let i = 0; i < value.length;i++){hidden_pass.push('*')};
+        };
+        for(let i = 0; i < value.length;i++)
+        {
+            hidden_pass.push('*')
+        };
         e.target.value = hidden_pass.join('');
         PassChar.current = [newPassChar,newPassChar];
         Password.current = curr_password;
@@ -87,44 +89,40 @@ function CreateLogin({setRenderLogin, setRenderCreate, setRenderForgot}) {
         };
     };
 
-    async function sendSignIn()
+    function makeSignUpData()
     {
-        const requestOptions={
-            method: 'POST',
-            headers:{'Content-Type': 'application/json', 'X-CSRFToken': getToken('csrftoken')},
-            body:JSON.stringify(
+        return (
+        {
+            "user":
             {
-                "user":
-                {
-                    "first_name":FirstName.current,
-                    "last_name":LastName.current,
-                    "username":Username.current, 
-                    "password":Password.current.join(''),
-                    'email':PersonalEmail.current,
-                },
-                "employee":
-                {
-                    'work_email':WorkEmail.current,
-                    'department':Department.current,
-                    'job_title':JobTitle.current,
-                    'hourly':HourlyorSalary.current,
-                    'pay_rate':PayRate.current,
-                    'start_date':StartDate.current
-                }
-            })
-        };
-        let response = await fetch(`${Endpoints.domain}${Endpoints.createLogin}`,requestOptions);
-        let data = await response.json();
+                "first_name":FirstName.current,
+                "last_name":LastName.current,
+                "username":Username.current, 
+                "password":Password.current.join(''),
+                'email':PersonalEmail.current,
+            },
+            "employee":
+            {
+                'work_email':WorkEmail.current,
+                'department':Department.current,
+                'job_title':JobTitle.current,
+                'hourly':HourlyorSalary.current,
+                'pay_rate':PayRate.current,
+                'start_date':StartDate.current
+            }
+        });
+    };
+
+    async function sendSignUp()
+    {
+        let data = await createLogin(makeSignUpData());
         if(!data["Error"])
         {
             alert(`Successfully Created User Entry ${data['User'].id}\nSuccessfully Created Employee Entry ${data['Employee'].id}\nReady to close`);
             if(setRenderCreate){setRenderCreate(false)};
-        }
-        else
-        {
-            alert(data['Error']);
-        }
-
+            return;
+        };
+        alert(data['Error']);
     };
 
     let renderCalendar = () =>
@@ -143,11 +141,6 @@ function CreateLogin({setRenderLogin, setRenderCreate, setRenderForgot}) {
         setCurrentDate(date_format);
         StartDate.current = buildDateTimeStr(date);
     };
-
-    useEffect(()=>
-    {
-    },[Password, PassChar, ShowPass, Username]);
-    
 
     useEffect(()=>
     {
@@ -215,7 +208,7 @@ function CreateLogin({setRenderLogin, setRenderCreate, setRenderForgot}) {
                     </div>
                 </div>
 
-                <button type="button" id="button" onClick={()=>{sendSignIn()}} >Create Account</button>
+                <button type="button" id="button" onClick={()=>{sendSignUp()}} >Create Account</button>
                 {
                     setRenderLogin && setRenderForgot?
                     <>

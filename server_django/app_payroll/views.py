@@ -167,10 +167,11 @@ class LineItemsView(APIView):
         allowed_fields = {'id':True} #{"'id': True, 'name': True"} # This controls fields that can be used within 'selectors' from request header; asterisks * means all fields
         try:
             select_obj = processSelectors(request = request, fixed_selectors= fixed_selectors, allowed_fields= allowed_fields, model = LineItems)
+            print(select_obj)
             if isinstance(select_obj, Response):
                 return select_obj
 
-            line_item_ids = select_obj.get('timesheet').get('value')
+            line_item_ids = select_obj.get('id').get('value')
             if line_item_ids == None or not isinstance(line_item_ids, list) or \
                 (isinstance(line_item_ids, list) and not any(i.isdigit() if isinstance(i,str) else isinstance(i, int) for i in line_item_ids)): 
                 return Response({"Error":"Input data is not valid"}, status = status.HTTP_403_FORBIDDEN)
@@ -179,19 +180,20 @@ class LineItemsView(APIView):
             if isinstance(check_access, Response):
                 return check_access
 
-            sel_dict = {'id__in':select_obj['id']}
+            sel_dict = {'id__in':line_item_ids}
+            print(sel_dict)
             table_query = LineItems.objects.filter(**sel_dict)
             
             if len(table_query) == 0:
                 return Response({'Error':'Entry ID does not exist'}, status = status.HTTP_403_FORBIDDEN)
             if len(table_query) > 1:
-                serialized_line_items=LineItemsGETSerializer(instance = table_query, many=True)
+                serialized_data=LineItemsGETSerializer(instance = table_query, many=True).data
             else:
-                serialized_line_items = LineItemsGETSerializer(instance = table_query[0], many=False)
+                serialized_data = [LineItemsGETSerializer(instance = table_query[0], many=False).data]
 
             # using id is always safe to assume that only one or no entries exist since it is a primary key
             table_query.delete()
-            return Response(serialized_line_items.data, status = status.HTTP_200_OK)
+            return Response(serialized_data, status = status.HTTP_200_OK)
 
         except Exception as e:
             print(LOGGER.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest = False))
@@ -338,6 +340,7 @@ class TimeSheetView(APIView):
 
             # Delete line_objects that do not exist in updated form
             deleted_lines_query = LineItems.objects.filter(timesheet = timesheet_id).exclude(id__in=current_existing_ids)
+            deleted_lines_response = LineItemsGETSerializer(instance = deleted_lines_query, many = True).data
             if len(deleted_lines_query) > 0:
                 deleted_lines_query.delete()
             line_items_query = LineItems.objects.filter(timesheet = timesheet_id) #Get current list of line items after deleting
@@ -347,7 +350,8 @@ class TimeSheetView(APIView):
             timesheet_entry.save()
             timesheet_data = TimeSheetGETSerializer(instance = timesheet_entry, many=False).data
             line_item_data = LineItemsGETSerializer(instance = line_items_query, many = True).data
-            deleted_lines_response = LineItemsGETSerializer(instance = deleted_lines_query, many = True).data
+
+            print(deleted_lines_response)
             return Response({"TimeSheet":timesheet_data, "LineItems":line_item_data, "DeletedLineItems":deleted_lines_response}, status = status.HTTP_200_OK)
 
         except Exception as e:

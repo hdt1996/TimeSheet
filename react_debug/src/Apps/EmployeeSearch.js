@@ -1,45 +1,12 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState} from 'react';
 import Table from '../Components/Table';
 import CreateLogin from '../Components/CreateLogin'
+import Extractors from '../Utilities/Data';
 
-class Extractors
-{
-    static foreignKey(keys,source)
-    {
-        let extracted = [];
-        for(let i = 0; i < keys.length; i++)
-        {
-            extracted.push(source[keys[i]]);
-        };
-        extracted = extracted.join(' - ');
-        return extracted;
-    };
-
-    static standard(keys,source) //keys is only one
-    {
-        return source;
-    };
-    static numerical_2dp(keys,source) //keys is only one
-    {
-        if(source)
-        {
-            return source.toFixed(2);
-        };
-        return source;
-    };
-    static strfDate(keys,source)
-    {
-        return source.replace(/(T.*)/,'')
-    };
-};
-
-
-function EmployeeSearch({endpoint, UserData=null})
+export default function EmployeeSearch({endpoint, UserData=null})
 {
     let [TblConfig,setTblConfig]=useState(
     {
-        num_rows:2,
-        num_cols:8,
         col_titles:['Emp_ID','Name','Department','Hourly?','Pay Rate','Photo','Onboard Docs','User'], 
         db_columns:['id','name','department','hourly','pay_rate','photo','onboard_docs','user'],
         values:[],
@@ -78,23 +45,15 @@ function EmployeeSearch({endpoint, UserData=null})
         DetailTblConfig:{},
     });
 
-    useEffect(() =>
-    {
-        let currentTblConfig = {...TblConfig};
-        setTblConfig(currentTblConfig);
-    },[UserData])
-
     return ( //First map is column titles; Second map is for data rows/columns
     <div id="EmpMgmt">
         <div className="App-Home-Title">
         Admin Employee Management
         </div>
         <div className="Comp-Table">
-            <Table config={TblConfig} setConfig={setTblConfig} nestedTblIndex = {0}></Table>
+            <Table config={TblConfig} nestedTblIndex = {0}></Table>
         </div>
     </div>
     );
-}
-  
-export default EmployeeSearch;
+};
   

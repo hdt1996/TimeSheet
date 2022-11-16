@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef} from 'react';
 import {BrowserRouter, Routes, Route } from 'react-router-dom';
-import {getToken} from './Utilities/Token'
+import {getCSRF, checkAuth} from './Utilities/Endpoints'
 import Navbar from './Components/Navbar';
 import SideMenu from './Components/SideMenu';
-import EmployeeSearch from './Apps/EmployeeSearch';
-import TimeSheetCreate from './Apps/TimeSheetCreate';
-import TimeSheetSearch from './Apps/TimeSheetSearch';
-import Endpoints from './Utilities/Endpoints';
+import LazyWrapper from './Utilities/LazyWrapper';
 import './App.css';
 
 
 function App() {
+  const EmployeeSearch = React.lazy(() => {return import('./Apps/EmployeeSearch')});
+  const TimeSheetCreate = React.lazy(() => {return import('./Apps/TimeSheetCreate')});
+  const TimeSheetSearch = React.lazy(() => {return import('./Apps/TimeSheetSearch')})
+
   let [UserData, setUserData] = useState(null);
 
   let nav_config=
@@ -21,54 +22,34 @@ function App() {
   };
 
 
-  let [MenuLinks,setMenuLinks]=useState(
+  let MenuLinks=useRef(
   {
     "Employee Reports":'/payroll/employee_search/',
     "Timesheet Reports":'/payroll/timesheet_search/',
     "Timesheet Entry":'/payroll/timesheet_create/',
   });
-  async function checkAuthenticated()
-  {
-      const requestOptions={
-          method: 'GET',
-          headers:{'Content-Type': 'application/json', 'X-CSRFToken': getToken('csrftoken')},
-      };
-      let response = await fetch(`${Endpoints.domain}${Endpoints.checkAuthAPI}`,requestOptions);
-      let data = await response.json();
-      setUserData(data);
-  };
-
-  async function getCSRF()
-  {
-      const requestOptions={
-          method: 'GET',
-          headers:{'Content-Type': 'application/json', 'X-CSRFToken': getToken('csrftoken')},
-      };
-      let response = await fetch(`${Endpoints.domain}${Endpoints.getCSRF}`,requestOptions);
-      let data = await response.json();
-      console.log(data);
-  };
 
   useEffect(()=>
   {
     getCSRF();
-    checkAuthenticated();
-  },[])
+    checkAuth();
+  },[]);
+
 
   return (
     <div className="App-Home">
       <Navbar config={nav_config} UserData = {UserData} setUserData = {setUserData}></Navbar>
       <div className = "App-Home-Body">
         <div id="side_menu">
-          <SideMenu MenuLinks = {MenuLinks}/>
+          <SideMenu MenuLinks = {MenuLinks.current}/>
         </div>
         <BrowserRouter>
-          <Routes>
-            <Route path = "/" />
-            <Route path = "/payroll/employee_search/" element={<EmployeeSearch endpoint="/api/payroll/employees/" UserData = {UserData}/>}/>
-            <Route path = "/payroll/timesheet_create/" element={<TimeSheetCreate endpoint="/api/payroll/timesheet/" UserData = {UserData}/>}/>
-            <Route path = "/payroll/timesheet_search/" element = {<TimeSheetSearch endpoint="/api/payroll/timesheet/" UserData = {UserData}/>}/>
-          </Routes>
+            <Routes>
+              <Route path = "/" />
+              <Route path = "/payroll/employee_search/" element={<LazyWrapper Comp = {<EmployeeSearch endpoint="/api/payroll/employees/" UserData = {UserData}/>}/>}/>
+              <Route path = "/payroll/timesheet_create/" element={<LazyWrapper Comp = {<TimeSheetCreate endpoint="/api/payroll/timesheet/" UserData = {UserData}/>}/>}/>
+              <Route path = "/payroll/timesheet_search/" element = {<LazyWrapper Comp = {<TimeSheetSearch endpoint="/api/payroll/timesheet/" UserData = {UserData}/>}/>}/>
+            </Routes>
         </BrowserRouter>
       </div>
     </div>

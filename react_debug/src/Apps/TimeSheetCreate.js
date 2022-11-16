@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useRef} from 'react';
-import TextField from "@mui/material/TextField";
-import PostForm from '../Components/PostForm';
-import Endpoints from '../Utilities/Endpoints';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import DateRangeIcon from '@mui/icons-material/DateRange';
+import TextField from "@mui/material/TextField";
+import {fetcherModify} from '../Utilities/Endpoints';
+import PostForm from '../Components/PostForm';
 import {getParentIntAttrib, buildDateTimeStr} from '../Utilities/Utils';
-import {getToken} from '../Utilities/Token'
-function TimeSheetCreate({endpoint, UserData = {}})
+import {alternativeBoolState, processDelData} from '../Utilities/Utils'
+
+export default function TimeSheetCreate({endpoint, UserData = {}})
 {
     let TimeSheet_columns = ['description','bill_rate','total_time','total_bill','employee'];
     let bill_line_columns = ['num_minutes','memo'];
@@ -21,17 +22,23 @@ function TimeSheetCreate({endpoint, UserData = {}})
     let today = new Date();
     let [CurrentDate,setCurrentDate] = useState(today.toLocaleString('en-us', { weekday:"long", year:"numeric", month:"short", day:"numeric"}));
     let [ActiveCalendar,setActiveCalendar] = useState(false);
-
     let TimeSheetData=useRef({'date':buildDateTimeStr(today)});
     let BillingLineData=useRef([{"id":null,"num_minutes":null,"memo":null}]);
-
     let [SubmissionTime,setSubmissionTime] = useState("Pending");
     let [TextDisabled,setTextDisabled] = useState(false);
     let [ModeLabel, setModeLabel] = useState("Create");
 
+    let handleDateChange = (e) =>
+    {
+        let date = new Date(e)
+        let date_format = date.toLocaleString('en-us', { weekday:"long", year:"numeric", month:"short", day:"numeric"});
+        setCurrentDate(date_format);
+        let currTimeSheetData = TimeSheetData.current;
+        currTimeSheetData["date"] = buildDateTimeStr(date);
+    };
+
     function handleEmployeeIDValue()
     {
-        //UserData && !UserData.Success.user.is_superuser && UserData.Success.employee.id?UserData.Success.employee.id:""
         if(UserData !== null && "Success" in UserData && "user" in UserData.Success && "employee" in UserData.Success)
         {
             if(!UserData.Success.user.is_superuser && UserData.Success.employee.id)
@@ -104,16 +111,12 @@ function TimeSheetCreate({endpoint, UserData = {}})
         }
     };
 
-    function freezeTimeSheet(label, custom = null)
+    function freezeTimesheet(time_label = '', custom = null)
     {
         if(custom)
         {
             alert(`Successfully ${custom}`);
-        }
-        else
-        {
-            alert(`${label}`);
-        }
+        };
 
         let all_inputs = document.querySelector("#TimeSheet #Form").querySelectorAll("input");
         for(let i = 0; i < all_inputs.length;i++)
@@ -128,92 +131,10 @@ function TimeSheetCreate({endpoint, UserData = {}})
             delete_buttons[i].classList.add("TimeSheet-Locked");
         };
         setTextDisabled(true);
-        setSubmissionTime(`${label} ${new Date().toLocaleString('en-us', { weekday:"long", year:"numeric", month:"short", day:"numeric"})}`);
-    }
-
-    async function putData()
-    {
-        const requestOptions={
-            method: 'PUT',
-            headers:{'Content-Type': 'application/json', 'X-CSRFToken': getToken('csrftoken')},
-            body:JSON.stringify({"TimeSheetData":TimeSheetData.current,"LineItemsData":BillingLineData.current})
-        };
-        let response = await fetch(`${Endpoints.domain}${endpoint}`,requestOptions);
-        let data = await response.json();
-        if(data["Error"])
-        {
-            setSubmissionTime("Failed");
-        }
-        else
-        {
-
-            let currBillingLineData = BillingLineData.current;
-            for(let i = 0; i < data.LineItems.length; i++)
-            {
-                currBillingLineData[i]["id"] = data.LineItems[i].id;
-            };
-            let del_items = data['DeletedLineItems'];
-
-            if(del_items.length === 0)
-            {
-                return freezeTimeSheet('Updated',`Updated: Timesheet Entry ${data['TimeSheet'].id}`);
-            };
-            let id_str=[];
-            for(let i = 0; i < del_items.length; i++)
-            {
-                id_str.push(del_items[i].id);
-            };
-            id_str = id_str.join(', ');
-            freezeTimeSheet('Updated',`Updated: Timesheet Entry ${data['TimeSheet'].id}\nDeleted: Timesheet Entries ${id_str}`);
-        }
+        setSubmissionTime(`${time_label} ${new Date().toLocaleString('en-us', { weekday:"long", year:"numeric", month:"short", day:"numeric"})}`);
     };
 
-    async function postData()
-    {
-        const requestOptions={
-            method: 'POST',
-            headers:{'Content-Type': 'application/json', 'X-CSRFToken': getToken('csrftoken')},
-            body:JSON.stringify({"TimeSheetData":TimeSheetData.current,"LineItemsData":BillingLineData.current})
-        };
-        let response = await fetch(`${Endpoints.domain}${endpoint}`,requestOptions);
-        let data = await response.json();
-        if(data["Error"])
-        {
-            alert(data["Error"])
-            setSubmissionTime("Failed");
-        }
-        else{
-            freezeTimeSheet("Created", `Created: Timesheet Entry ${data['TimeSheet'].id}`);
-            let currTimeSheetData = TimeSheetData.current;
-            let currBillingLineData = BillingLineData.current;
-            currTimeSheetData['id'] = data.TimeSheet.id;
-            for(let i = 0; i < data.LineItems.length; i++)
-            {
-                currBillingLineData[i]["id"] = data.LineItems[i].id;
-            };
-        }
-    };
-
-    let renderCalendar = () =>
-    {
-        if(ActiveCalendar === true)
-        {
-            return setActiveCalendar(false)
-        };
-        setActiveCalendar(true);
-    };
-
-    let handleDateChange = (e) =>
-    {
-        let date = new Date(e)
-        let date_format = date.toLocaleString('en-us', { weekday:"long", year:"numeric", month:"short", day:"numeric"});
-        setCurrentDate(date_format);
-
-        let currTimeSheetData = TimeSheetData.current;
-        currTimeSheetData["date"] = buildDateTimeStr(date);
-    };
-
-    let handleUpdateCurrent = () =>
+    function unfreezeTimesheet()
     {
         let all_inputs = document.querySelector("#TimeSheet #Form").querySelectorAll("input");
         for(let i = 0; i < all_inputs.length;i++)
@@ -232,9 +153,44 @@ function TimeSheetCreate({endpoint, UserData = {}})
         setSubmissionTime(`Pending Update`);
     };
 
-    useEffect(()=>
+    function processNewData(data)
     {
-    },[UserData,CurrentDate,ActiveCalendar,SubmissionTime,TextDisabled,ModeLabel]);
+        TimeSheetData.current['id'] = data.TimeSheet.id;
+        let currBillingLineData = BillingLineData.current;
+        for(let i = 0; i < data.LineItems.length; i++)
+        {
+            currBillingLineData[i]["id"] = data.LineItems[i].id;
+        };
+    };
+
+    async function putData()
+    {
+        let data = await fetcherModify("PUT",{"TimeSheetData":TimeSheetData.current,"LineItemsData":BillingLineData.current},endpoint);
+        if(data["Error"])
+        {
+            alert(data["Error"])
+            setSubmissionTime("Failed");
+            return;
+        };
+        let del_str = processDelData(data.DeletedLineItems, '\nDeleted: Timesheet Entries ');
+        TimeSheetData.current['id'] = data.TimeSheet.id;
+        processNewData(data);
+        freezeTimesheet('Updated',`Updated: Timesheet Entry ${data['TimeSheet'].id}${del_str}`);
+    };
+
+    async function postData()
+    {
+        let data = await fetcherModify("POST",{"TimeSheetData":TimeSheetData.current,"LineItemsData":BillingLineData.current},endpoint);
+        if(data["Error"])
+        {
+            alert(data["Error"])
+            setSubmissionTime("Failed");
+            return;
+        };
+        processNewData(data);
+        freezeTimesheet("Created", `Created: Timesheet Entry ${data['TimeSheet'].id}`);
+    }
+
 
     useEffect(()=>
     {
@@ -249,8 +205,7 @@ function TimeSheetCreate({endpoint, UserData = {}})
     },[]);
 
 
-
-    return ( //First map is column titles; Second map is for data rows/columns
+    return ( 
     <div id="TimeSheet">
         <div className="App-Home-Title">
             TimeSheet Entry
@@ -265,7 +220,7 @@ function TimeSheetCreate({endpoint, UserData = {}})
                         disabled = {true}
                         className={TextDisabled?"TimeSheet-Locked":"TextField"}
                     />
-                    <DateRangeIcon id = "Icon" onClick ={() => {renderCalendar()}} ></DateRangeIcon>
+                    <DateRangeIcon id = "Icon" onClick ={() => {alternativeBoolState(ActiveCalendar,setActiveCalendar)}} ></DateRangeIcon>
                     <div className={TextDisabled?"TimeSheet-Locked":""}>
                     {
                         ActiveCalendar?
@@ -367,7 +322,7 @@ function TimeSheetCreate({endpoint, UserData = {}})
                 }
                 {
                     TextDisabled?
-                    <button onClick = {() =>{handleUpdateCurrent()}}>Update Current</button>
+                    <button onClick = {() =>{unfreezeTimesheet()}}>Update Current</button>
                     :
                     null
                 }
@@ -378,7 +333,5 @@ function TimeSheetCreate({endpoint, UserData = {}})
 
     </div>
     );
-}
-  
-export default TimeSheetCreate;
+};
   

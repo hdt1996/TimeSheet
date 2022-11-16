@@ -1,25 +1,23 @@
-import { Form } from 'react-bootstrap'
-import { Col } from 'react-bootstrap';
-import { Row } from 'react-bootstrap';
-import { Delete,Add } from '@mui/icons-material';
+import Form from 'react-bootstrap/Form'
+import Col from 'react-bootstrap/Col'
+import Row from 'react-bootstrap/Row'
+import Delete from '@mui/icons-material/Delete';
+import Add from '@mui/icons-material/Add'
 import {getParentIntAttrib} from '../Utilities/Utils'
-import React, { useState, useEffect} from "react";
+import React from "react";
 function PostForm(
   {
     config={num_rows:5,col_titles:["col1","col2","col3"],db_columns:["dbcol1","dbcol2","dbcol3"]}, inputChange, BillingLineData
   }
 )
 {
-  let db_columns = config["db_columns"];
-  let num_rows =config["num_rows"];
   let rows = [];
 
-  for(let i = 0; i < num_rows; i++)
+  for(let i = 0; i < config["num_rows"]; i++)
   {
     rows.push(i);
   };
 
-  let col_titles=config["col_titles"];
   const alternative_shades = ["lighter","darker"];
   let ColorIndex = 1;
 
@@ -71,7 +69,7 @@ function PostForm(
     //Get the parents and children
     let index = getParentIntAttrib(e,'placeholder',1);
     let par_children = document.querySelector('#Comp-PostForm').children; //initial Children
-    if(index === 0 && par_children.length == 2){return;}; //Don't delete first row otherwise there will be no copy to clone
+    if(index === 0 && par_children.length === 2){return;}; //Don't delete first row otherwise there will be no copy to clone
 
     par_children[index].remove(); // Chosen element is deleted. par_children is now stale. Reset to updated list
     BillingLineData.current.splice(index,1); //removes element and re-indexes
@@ -106,9 +104,9 @@ function PostForm(
                 {rindex+1}
               </Col>
               {
-                col_titles.map((c, cindex) =>
+                config["col_titles"].map((c, cindex) =>
                 {
-                  let db_attrib = db_columns[cindex];
+                  let db_attrib = config["db_columns"][cindex];
                   return (
                     <Col id="col" key = {cindex}>
                       <Form.Control onKeyUp = {(e) =>{inputChange(e, true)}} db = {db_attrib} id="form-control-db" placeholder={c} />

@@ -1,4 +1,4 @@
-export function getToken(name) 
+export default function getToken(name) 
 {
   let cookieValue = null;
   if (document.cookie && document.cookie !== '') 

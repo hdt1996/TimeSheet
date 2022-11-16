@@ -1,36 +1,30 @@
 {
   "name": "react_debug",
+  "sideEffects": false,
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
-    "@mui/icons-material": "^5.10.9",
-    "@mui/material": "^5.10.12",
-    "@mui/styled-engine-sc": "^5.10.6",
-    "@mui/x-data-grid": "^5.17.9",
+    "@mui/icons-material": "^5.10.14",
+    "@mui/x-data-grid": "^5.17.11",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
-    "dotenv": "^16.0.3",
-    "framer-motion": "^7.6.4",
     "react": "^18.2.0",
-    "react-bootstrap": "^2.5.0",
-    "react-calendar": "^3.9.0",
+    "react-bootstrap": "^2.6.0",
     "react-datepicker": "^4.8.0",
     "react-dom": "^18.2.0",
-    "react-icons": "^4.6.0",
     "react-router-dom": "^6.4.3",
     "react-scripts": "5.0.1",
-    "sass": "^1.56.0",
-    "styled-components": "^5.3.6",
+    "source-map-explorer": "^2.5.3",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build && mv build ../server_django/build && cd ../server_django && rm -r frontend_react/build && rm -r static && mv build/static static && mv build frontend_react/build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "analyze": "source-map-explorer '../server_django/static/js/*.js' "
   },
   "eslintConfig": {
     "extends": [

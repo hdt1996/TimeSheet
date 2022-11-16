@@ -1,41 +1,12 @@
-import React, { useState, useEffect,useRef} from 'react';
+import React, { useState, useEffect} from 'react';
+import Extractors from '../Utilities/Data';
 import Table from '../Components/Table';
 import TimeSheetCreate from './TimeSheetCreate';
 
-
-class Extractors
-{
-    static foreignKey(keys,source)
-    {
-        let extracted = [];
-        for(let i = 0; i < keys.length; i++)
-        {
-            extracted.push(source[keys[i]]);
-        };
-        extracted = extracted.join(' - ');
-        return extracted;
-    };
-
-    static standard(keys,source) //keys is only one
-    {
-        return source;
-    };
-    static numerical_2dp(keys,source) //keys is only one
-    {
-        return source.toFixed(2);
-    };
-    static strfDate(keys,source)
-    {
-        return source.replace(/(T.*)/,'')
-    };
-};
-
-function TimeSheetSearch({endpoint, UserData = null})
+export default function TimeSheetSearch({endpoint, UserData = null})
 {
     let [TblConfig,setTblConfig]=useState(
     {
-        num_rows:5,
-        num_cols:6,
         col_titles:['Timesheet ID','Date Worked','Description','Billing Rate','Total Time','Total Bill','Employee'], 
         db_columns:['id','date','description','bill_rate','total_time','total_bill','employee'],
         values:[],
@@ -69,8 +40,6 @@ function TimeSheetSearch({endpoint, UserData = null})
         EditComponent:null,
         DetailTblConfig:
         {
-            num_rows:5,
-            num_cols:6,
             col_titles:['id','num_minutes','memo','date_added','date_modified','timesheet'], 
             db_columns:['id','num_minutes','memo','date_added','date_modified','timesheet'],
             values:[],
@@ -111,15 +80,14 @@ function TimeSheetSearch({endpoint, UserData = null})
         setTblConfig(currentTblConfig);
     },[UserData])
 
-    return ( //First map is column titles; Second map is for data rows/columns
+    return (
     <div id="EmpMgmt">
         <div className="App-Home-Title">
             Timesheets Reporting
         </div>
-        <Table config={TblConfig} setConfig={setTblConfig} nestedTblIndex = {0}></Table>
+        <Table config={TblConfig} nestedTblIndex = {0} values = {[]}></Table>
     </div>
     );
 }
   
-export default TimeSheetSearch;
   

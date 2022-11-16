@@ -1,8 +1,7 @@
-import { Form } from 'react-bootstrap'
+import Form from 'react-bootstrap/Form'
 import React, { useState, useEffect} from "react";
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import Endpoints from '../Utilities/Endpoints';
-import {getToken} from '../Utilities/Token'
+import {login} from '../Utilities/Endpoints';
 function Login({setRenderLogin, setRenderCreate, setRenderForgot}) {
     let [Password,setPassword] = useState([]);
     let [PassChar, setPassChar] = useState([0,0]);
@@ -70,13 +69,7 @@ function Login({setRenderLogin, setRenderCreate, setRenderForgot}) {
 
     async function sendSignIn()
     {
-        const requestOptions={
-            method: 'POST',
-            headers:{'Content-Type': 'application/json', 'X-CSRFToken': getToken('csrftoken')},
-            body:JSON.stringify({"username":Username, "password":Password.join('')})
-        };
-        let response = await fetch(`${Endpoints.domain}${Endpoints.logInAPI}`,requestOptions);
-        let data = await response.json();
+        let data = await login({"username":Username, "password":Password.join('')});
         if(data["Success"])
         {
             alert(`${data['Success'].username} logged in`);
@@ -87,12 +80,7 @@ function Login({setRenderLogin, setRenderCreate, setRenderForgot}) {
         };
         alert(data['Error']);
     };
-
-    useEffect(()=>
-    {
-    },[Password, PassChar, ShowPass, Username]);
     
-
     useEffect(()=>
     {
         window.addEventListener('mouseup',handleMouseUp);

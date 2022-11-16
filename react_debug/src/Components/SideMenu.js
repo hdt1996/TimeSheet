@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
 function SideMenu(
     {
@@ -21,6 +21,7 @@ function SideMenu(
             element.classList.remove("SideMenu-Transition")
         };
     };
+
     const alternative_shades = ["lighter","darker"];
     let curr_index = -1;
     return ( //First map is column titles; Second map is for data rows/columns

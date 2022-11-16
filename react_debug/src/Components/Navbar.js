@@ -2,9 +2,10 @@ import Login from "./Login";
 import CreateLogin from "./CreateLogin";
 import ForgotLogin from "./ForgotLogin";
 import CloseIcon from '@mui/icons-material/Close';
-import React, { useState, useEffect} from 'react';
-import Endpoints from "../Utilities/Endpoints";
-import { getToken } from "../Utilities/Token";
+import React, { useState} from 'react';
+import {logOut} from "../Utilities/Endpoints";
+import {alternativeBoolState} from "../Utilities/Utils";
+
 function Navbar({config={'title':'Title','sections':['Section1','Section2','Section3'],'dropdowns':['Dropdown1','Dropdown2','Dropdown3']}, UserData = null, setUserData}) {
   let title = config['title'];
   let sections = config['sections'];
@@ -14,26 +15,9 @@ function Navbar({config={'title':'Title','sections':['Section1','Section2','Sect
   let [RenderForgot, setRenderForgot] = useState(false);
   let [ShowUserOptions, setShowUserOptions] = useState(false);
 
-  function handleShowUserOptions()
-  {
-    if(ShowUserOptions)
-    {
-      setShowUserOptions(false);
-    }
-    else
-    {
-      setShowUserOptions(true);
-    }
-  };
-
   async function sendSignOut()
   {
-      const requestOptions={
-          method: 'POST',
-          headers:{'Content-Type': 'application/json', 'X-CSRFToken': getToken('csrftoken')}
-      };
-      let response = await fetch(`${Endpoints.domain}${Endpoints.logOutAPI}`,requestOptions);
-      let data = await response.json();
+      let data = logOut();
       if(data["Success"])
       {
           alert(`${data['Success']}`);
@@ -43,9 +27,6 @@ function Navbar({config={'title':'Title','sections':['Section1','Section2','Sect
       alert(data['Error']);
   };
 
-  useEffect(()=>
-  {
-  }, [RenderLogin, RenderCreate, RenderForgot]);
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <a className="navbar-brand" href="#">{title}</a>
@@ -106,7 +87,7 @@ function Navbar({config={'title':'Title','sections':['Section1','Section2','Sect
             :
             UserData && !UserData.Error?
             <div className="Logged-In">
-              <div className = "Col" onClick={() => {handleShowUserOptions()}}>
+              <div className = "Col" onClick={() => {alternativeBoolState(ShowUserOptions, setShowUserOptions)}}>
                 <div>Currently</div>
                 <div>{UserData.Success.user.username}</div>
               </div>
