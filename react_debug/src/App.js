@@ -6,7 +6,6 @@ import SideMenu from './Components/SideMenu';
 import LazyWrapper from './Utilities/LazyWrapper';
 import './App.css';
 
-
 function App() {
   const EmployeeSearch = React.lazy(() => {return import('./Apps/EmployeeSearch')});
   const TimeSheetCreate = React.lazy(() => {return import('./Apps/TimeSheetCreate')});
@@ -37,12 +36,10 @@ function App() {
 
 
   return (
-    <div className="App-Home">
+    <div className="App-Main">
       <Navbar config={nav_config} UserData = {UserData} setUserData = {setUserData}></Navbar>
-      <div className = "App-Home-Body">
-        <div id="side_menu">
-          <SideMenu MenuLinks = {MenuLinks.current}/>
-        </div>
+      <div className = "App-Body">
+        <SideMenu MenuLinks = {MenuLinks.current}/>
         <BrowserRouter>
             <Routes>
               <Route path = "/" />

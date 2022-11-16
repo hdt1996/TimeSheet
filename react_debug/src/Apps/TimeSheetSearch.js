@@ -82,7 +82,7 @@ export default function TimeSheetSearch({endpoint, UserData = null})
 
     return (
     <div id="EmpMgmt">
-        <div className="App-Home-Title">
+        <div className="App-Title">
             Timesheets Reporting
         </div>
         <Table config={TblConfig} nestedTblIndex = {0} values = {[]}></Table>

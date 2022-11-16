@@ -48,20 +48,25 @@ class EmployeeAdminView(APIView):
     @method_decorator(csrf_exempt,name="post")
     def post(self, request):
         # Summary: for posting only single entry to Employee Table aka first Clock-In
-        
-        req_body = request.data
-        if not isinstance(req_body,dict):
-            return Response({"Error":"Input data is not valid"}, status = status.HTTP_403_FORBIDDEN)
+        try:
+            req_body = request.data
+            if not isinstance(req_body,dict):
+                return Response({"Error":"Input data is not valid"}, status = status.HTTP_403_FORBIDDEN)
 
-        serialized_employees = EmployeePOSTSerializer(data = req_body, many = False) #False to serialize single object only. req_body contains fields-value pairs to create entry (Different from get's implementation)
-        if not serialized_employees.is_valid():
-            #TODO send email to IT Software team for logging purposes of all requests
-            return Response({'Error':serialized_employees.errors}, status = status.HTTP_403_FORBIDDEN)
+            serialized_employees = EmployeePOSTSerializer(data = req_body, many = False) #False to serialize single object only. req_body contains fields-value pairs to create entry (Different from get's implementation)
+            if not serialized_employees.is_valid():
+                #TODO send email to IT Software team for logging purposes of all requests
+                return Response({'Error':serialized_employees.errors}, status = status.HTTP_403_FORBIDDEN)
 
-        data = dict(serialized_employees.data)
-        Employees.objects.create(**data)
-        return Response(data, status = status.HTTP_200_OK)
+            data = dict(serialized_employees.data)
+            Employees.objects.create(**data)
+            return Response(data, status = status.HTTP_200_OK)
 
+        except Exception as e:
+            print(DEV.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest = False, exception = e))
+            #TODO send email to IT Software team of severe server error to fix asap
+            return Response({"Error":"Server Error - Notifying admins"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
+            
     @method_decorator(csrf_exempt,name="put")
     def put(self, request):
         # Summary: Update one or MULTIPLE entries queried by selectors.
@@ -90,7 +95,7 @@ class EmployeeAdminView(APIView):
             return Response(serialized_employees.data, status = status.HTTP_200_OK)
 
         except Exception as e:
-            print(DEV.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest = False))
+            print(DEV.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest=False, exception = e))
             #TODO send email to IT Software team of severe server error to fix asap
             return Response({"Error":"Server Error - Notifying admins"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -115,16 +120,16 @@ class EmployeeAdminView(APIView):
             if len(table_query) == 0:
                 return Response({'Error':'Entry ID does not exist'}, status = status.HTTP_403_FORBIDDEN)
             if len(table_query) > 1:
-                serialized_employees=EmployeeGETSerializer(instance = table_query, many=True)
+                serialized_data=EmployeeGETSerializer(instance = table_query, many=True).data
             else:
-                serialized_employees = EmployeeGETSerializer(instance = table_query[0], many=False)
+                serialized_data = EmployeeGETSerializer(instance = table_query[0], many=False).data
 
             # using id is always safe to assume that only one or no entries exist since it is a primary key
             table_query.delete()
-            return Response(serialized_employees.data, status = status.HTTP_200_OK)
+            return Response(serialized_data, status = status.HTTP_200_OK)
 
         except Exception as e:
-            print(DEV.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest = False))
+            print(DEV.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest=False, exception = e))
             #TODO send email to IT Software team of severe server error to fix asap
             return Response({"Error":"Server Error - Notifying admins"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -158,7 +163,7 @@ class LineItemsView(APIView):
             return processGetResponse(serialized = serialized_line_items, response_fields=response_fields)
 
         except Exception as e:
-            print(DEV.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest = False))
+            print(DEV.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest=False, exception = e))
             #TODO send email to IT Software team of severe server error to fix asap
             return Response({"Error":"Server Error - Notifying admins"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -197,7 +202,7 @@ class LineItemsView(APIView):
             return Response(serialized_data, status = status.HTTP_200_OK)
 
         except Exception as e:
-            print(DEV.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest = False))
+            print(DEV.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest=False, exception = e))
             #TODO send email to IT Software team of severe server error to fix asap
             return Response({"Error":"Server Error - Notifying admins"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -234,7 +239,7 @@ class TimeSheetView(APIView):
             return processGetResponse(serialized = serialized_timesheets, response_fields=response_fields)
 
         except Exception as e:
-            print(DEV.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest = False))
+            print(DEV.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest=False, exception = e))
             #TODO send email to IT Software team of severe server error to fix asap
             return Response({"Error":"Server Error - Notifying admins"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -287,7 +292,7 @@ class TimeSheetView(APIView):
             return Response({"TimeSheet":serialized_timesheet,"LineItems":serialized_line_items}, status = status.HTTP_200_OK)
 
         except Exception as e:
-            print(DEV.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest = False))
+            print(DEV.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest=False, exception = e))
             #TODO send email to IT Software team of severe server error to fix asap
             return Response({"Error":"Server Error - Notifying admins"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -356,7 +361,7 @@ class TimeSheetView(APIView):
             return Response({"TimeSheet":timesheet_data, "LineItems":line_item_data, "DeletedLineItems":deleted_lines_response}, status = status.HTTP_200_OK)
 
         except Exception as e:
-            print(DEV.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest = False))
+            print(DEV.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest=False, exception = e))
             #TODO send email to IT Software team of severe server error to fix asap
             return Response({"Error":"Server Error - Notifying admins"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
         
@@ -392,6 +397,6 @@ class TimeSheetView(APIView):
             return Response(serialized_data, status = status.HTTP_200_OK)
 
         except Exception as e:
-            print(DEV.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest = False))
+            print(DEV.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest=False, exception = e))
             #TODO send email to IT Software team of severe server error to fix asap
             return Response({"Error":"Server Error - Notifying admins"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)

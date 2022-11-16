@@ -207,7 +207,7 @@ export default function TimeSheetCreate({endpoint, UserData = {}})
 
     return ( 
     <div id="TimeSheet">
-        <div className="App-Home-Title">
+        <div className="App-Title">
             TimeSheet Entry
         </div>
         <div id= "row">
@@ -286,7 +286,7 @@ export default function TimeSheetCreate({endpoint, UserData = {}})
                 />
             </div>
         </div>
-        <div className="App-Home-Title">
+        <div className="App-Title">
             Billing Line Items
         </div>
         <div id="Form">

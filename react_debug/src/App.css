@@ -128,7 +128,7 @@
   top:2em;
 }
 
-.App-Home{
+.App-Main{
   background-color: #a4d7bd;
   min-height: 100vh;
   min-width: 100vw;
@@ -136,7 +136,7 @@
   flex-direction: column;
   padding:.5em;
 }
-.App-Home-Title{
+.App-Title{
   flex:1;
   max-height:2.5em;
   background-color: rgb(113, 190, 162);
@@ -146,25 +146,19 @@
   font-weight: bold;
   font-size:1.5em
 }
-.App-Home-Body{
+.App-Body{
   flex:1;
   display:flex;
   flex-direction: row;
   background-color: rgb(126, 191, 162);
 }
-.App-Home-Body #side_menu{
-  min-width:fit-content;
-  max-width:25em;
-  display:flex;
-  flex-direction: column;
-}
 
-.App-Home-Body #EmpMgmt{
+.App-Body #EmpMgmt{
   display:flex;
   flex-direction: column;
   flex:30;
 }
-.App-Home-Body #TimeSheet{
+.App-Body #TimeSheet{
   display:flex;
   flex-direction: column;
   flex:30;
