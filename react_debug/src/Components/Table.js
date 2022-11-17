@@ -8,7 +8,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import {fetcherSelect, fetcherModify} from '../Utilities/Endpoints';
 import {processDelData} from '../Utilities/Utils';
 import Query from './Query';
-import { gridColumnPositionsSelector } from '@mui/x-data-grid';
 
 function Table(
     {
@@ -30,7 +29,6 @@ function Table(
     let [DetailTblConfig,setDetailTblConfig]=useState(config.DetailTblConfig);
     let [ShowDeleteConfirm, setShowDeleteConfirm] = useState(false);
     let [ShowAddComp, setShowAddComp] = useState(false);
-    let [ShowEditComp, setShowEditComp] = useState(false);
     let [Selected_IDs,setSelected_IDs] = useState([]);
     let SelectedRows = useRef([]);
     let DeleteSuccess = useRef(false);
@@ -38,7 +36,6 @@ function Table(
     let CurrentEditDetails = useRef({});
     let [Editing,setEditing] = useState({});
     let [TableValues, setTableValues] = useState([]);
-
     let rows=[];
     let columns=[];
     let col_keys = Object.keys(config['col_map']);
@@ -48,7 +45,6 @@ function Table(
     {
         handleRowClicked = (e) =>
         {
-            console.log(e.row)
             setShowRowDetail(false);
             if(ShowRowDetail && CurrentDetailID.current === e.row['col1'])
             {
@@ -69,7 +65,7 @@ function Table(
     };
 
     function handleConfirmDelete(){
-        if(Selected_IDs.length > 0 && !ShowAddComp && !ShowEditComp)
+        if(Selected_IDs.length > 0 && !ShowAddComp)
         {
             setShowDeleteConfirm(true);
         };
@@ -77,18 +73,11 @@ function Table(
 
 
     function handleShowAddComp(){
-        if(!ShowDeleteConfirm && !ShowEditComp)
+        if(!ShowDeleteConfirm)
         {
             setShowAddComp(true);
         };
     };
-
-    function handleShowEditComp(){
-        if(!ShowAddComp && !ShowDeleteConfirm)
-        {
-            setShowEditComp(true);
-        };
-    }
 
     async function handleSelectedDelete(ids)
     {
@@ -101,12 +90,6 @@ function Table(
         alert(processDelData(data, 'Deleted Entries: '));
         DeleteSuccess.current=true;
         setShowDeleteConfirm(false);
-    };
-
-    function handleInputEdit(e)
-    {
-        let value = e.target.value;
-        let default_value = e.target.getAttribute('orig-val')
     };
 
     function handleEditCell(e)
@@ -140,25 +123,26 @@ function Table(
     {
         let row_element = e.target.parentNode.parentNode.parentNode.parentNode;
         let id = row_element.getAttribute('data-id');
-        let inputs = row_element.querySelectorAll('input');
-        let currEditing = {...Editing}
-
-        let put_data = {"TimeSheetData":{"id":id},"LineItemsData":[]};
+        let inputs = row_element.querySelectorAll('input[db_col]');
+        let put_data = {...config['edit_config']['data']};
+        let active = config['edit_config']['active'];
+        put_data[active]['id'] = id;
         for(let i = 0; i < inputs.length; i++)
         {
             let default_value = inputs[i].getAttribute('orig-val');
-            let new_value = inputs[i].value;
+            let curr_value = inputs[i].value;
             let db_col = inputs[i].getAttribute('db_col');
-            console.log(db_col)
-            if(new_value !== default_value)
+
+            if(curr_value !== '' && curr_value !== default_value)
             {
-                put_data["TimeSheetData"][db_col] = new_value;
-            };
+                put_data[active][db_col] = curr_value;
+            }
+            else if(config['extract_config']['keys'][db_col] !== null)
+            {
+                put_data[active][db_col] = default_value.split(" - ")[0];
+            }
         };
-        console.log(put_data);
         let data = await fetcherModify("PUT",put_data,config.endpoint);
-        console.log(data);
-        //setEditing(currEditing);
     };
     function addEditCell()
     {
@@ -190,14 +174,26 @@ function Table(
             data['width']=config['col_width'];
             if(!(col_keys[c] in config['uneditable']))
             {
-                data['renderCell'] = (params) => <input db_col = {col_keys[c]} orig-val = {params.value} disabled className = "Comp-Table-Input" defaultValue={params.value} onChange = {(e) => handleInputEdit(e)}></input>;
+                data['renderCell'] = (params) => 
+                {
+                    return(
+                    <input db_col = {col_keys[c]} orig-val = {JSON.stringify(params.value).replace(/"/g,'')} disabled className = "Comp-Table-Input" defaultValue={params.value}></input>
+                    )
+                };
             };
             columns[c] = data;
         };
-        addEditCell();
-    };
+        if(config.edit_config)
+        {
+            addEditCell();
+        };
 
-    buildColumns();
+    };
+    if(TableValues.length > 0)
+    {
+        buildColumns();
+    }
+
 
     if(Object.keys(config['extract_config']).length !== 0)
     {
@@ -206,12 +202,14 @@ function Table(
             let data = {};
             let source;
             let field;
+            let key;
             data['id']=TableValues[i].id;
             for(let c = 0; c < col_keys.length; c++)
             {
                 field=col_keys[c];
                 source=TableValues[i][field];
-                data[`col${c+1}`]=config['extract_config'].methods[field](config['extract_config'].keys[field],source);
+                key = config['extract_config'].keys[field];
+                data[`col${c+1}`]=config['extract_config'].methods[field](key,source);
             };
             rows[i]=data;
         };
@@ -248,11 +246,6 @@ function Table(
                     <Add onClick={() => handleShowAddComp()} ></Add>
                     :null
                 }
-                {
-                    config.EditComponent !== null?
-                    <EditIcon onClick={() => handleShowEditComp()}></EditIcon>
-                    :null
-                }
                 <Delete onClick={() => handleConfirmDelete()}></Delete>
                 {
                     ShowDeleteConfirm?
@@ -273,14 +266,6 @@ function Table(
                     </div>:
                     null
                 }
-                {
-                    ShowEditComp?
-                    <div className="AddComponent">
-                        <CloseIcon className="Close" onClick={() =>{setShowEditComp(false)}}/>
-                        {config.EditComponent}
-                    </div>:
-                    null
-                }
 
             </div>
 
@@ -289,6 +274,7 @@ function Table(
                 rows={rows}
                 columns={columns}
                 checkboxSelection
+                onCellKeyDown={(params, events) => events.stopPropagation()}
                 editMode='row'
                 onRowDoubleClick={handleRowClicked}
                 onSelectionModelChange={(id) =>setSelected_IDs(id)}
@@ -301,7 +287,7 @@ function Table(
             />
             {
                 ShowRowDetail && Object.keys(DetailTblConfig).length !== 0?
-                <Table className="Nested-Table" config={DetailTblConfig} nestedTblIndex={nestedTblIndex+1} AddComponent={null} EditComponent={EditIcon}></Table>
+                <Table className="Nested-Table" config={DetailTblConfig} nestedTblIndex={nestedTblIndex+1} AddComponent={null}></Table>
                 :null
             }
         </div>

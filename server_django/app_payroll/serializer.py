@@ -32,6 +32,7 @@ class TimeSheetPOSTSerializer(ModelSerializer):
         model = TimeSheet
         fields = '__all__'
 class TimeSheetPUTSerializer(ModelSerializer):
+    date = serializers.DateTimeField(required = False)
     class Meta:
         model = TimeSheet
         fields = '__all__'

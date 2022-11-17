@@ -20,7 +20,17 @@ export default function TimeSheetSearch({endpoint, UserData = null})
         uneditable:
         {
             'id':true,
-            'date':true
+            'total_time':true,
+            'total_bill':true
+        },
+        edit_config:
+        {
+            "active":"TimeSheetData",
+            "data":
+            {
+                "TimeSheetData":{},
+                "LineItemsData":[]
+            }
         },
         col_width:150,
         endpoint:endpoint, //First level table does
@@ -66,6 +76,14 @@ export default function TimeSheetSearch({endpoint, UserData = null})
                 'id':true,
                 'date_added':true,
                 'date_modified':true
+            },
+            edit_config:
+            {
+                "active":"LineItemsData",
+                "data":
+                {
+                    "LineItemsData":{}
+                }
             },
             col_width:150,
             endpoint:"/api/payroll/timesheet/lineitems/",

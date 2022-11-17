@@ -173,7 +173,6 @@ class LineItemsView(APIView):
         allowed_fields = {'id':True} #{"'id': True, 'name': True"} # This controls fields that can be used within 'selectors' from request header; asterisks * means all fields
         try:
             select_obj = processSelectors(request = request, fixed_selectors= fixed_selectors, allowed_fields= allowed_fields, model = LineItems)
-            print(select_obj)
             if isinstance(select_obj, Response):
                 return select_obj
 
@@ -187,7 +186,6 @@ class LineItemsView(APIView):
                 return check_access
 
             sel_dict = {'id__in':line_item_ids}
-            print(sel_dict)
             table_query = LineItems.objects.filter(**sel_dict)
             
             if len(table_query) == 0:
@@ -196,9 +194,12 @@ class LineItemsView(APIView):
                 serialized_data=LineItemsGETSerializer(instance = table_query, many=True).data
             else:
                 serialized_data = [LineItemsGETSerializer(instance = table_query[0], many=False).data]
-
+            timesheet_entry = table_query[0].timesheet
             # using id is always safe to assume that only one or no entries exist since it is a primary key
             table_query.delete()
+            timesheet_entry.total_time = timesheet_entry.getTotalMinutes()
+            timesheet_entry.total_bill = timesheet_entry.total_time * timesheet_entry.bill_rate
+            timesheet_entry.save()
             return Response(serialized_data, status = status.HTTP_200_OK)
 
         except Exception as e:
@@ -206,6 +207,45 @@ class LineItemsView(APIView):
             #TODO send email to IT Software team of severe server error to fix asap
             return Response({"Error":"Server Error - Notifying admins"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    def put(self, request):
+        try:
+            line_item_data = request.data['LineItemsData']
+            if not isinstance(line_item_data, dict):
+                return Response({"Error":"Input data is not valid"}, status = status.HTTP_403_FORBIDDEN)
+
+            serialized_line_items = LineItemsPUTSerializer(data = line_item_data, many = False)
+            if not serialized_line_items.is_valid():
+                #TODO send email to IT Software team for logging purposes of all requests
+                print(serialized_line_items.errors)
+                return Response({'Error':'Input data is not valid'}, status = status.HTTP_403_FORBIDDEN)
+            line_item_id = line_item_data.pop('id')
+            serialized_line_items = dict(serialized_line_items.data)
+            del line_item_data
+
+            check_access = verifyLineItemQuery(request = request, id_list = line_item_id, many = False)
+            if isinstance(check_access, Response):
+                return check_access
+
+            sel_dict = {'id':line_item_id}
+            table_query = LineItems.objects.filter(**sel_dict)
+            
+            if len(table_query) == 0:
+                return Response({'Error':'Entry ID does not exist'}, status = status.HTTP_403_FORBIDDEN)
+            
+            table_query.update(**serialized_line_items)
+
+            serialized_line_items = [LineItemsGETSerializer(instance = table_query[0], many=False).data]
+            timesheet_entry = table_query[0].timesheet
+            # using id is always safe to assume that only one or no entries exist since it is a primary key
+            timesheet_entry.total_time = timesheet_entry.getTotalMinutes()
+            timesheet_entry.total_bill = timesheet_entry.total_time * timesheet_entry.bill_rate
+            timesheet_entry.save()
+            return Response({"LineItems":serialized_line_items}, status = status.HTTP_200_OK)
+
+        except Exception as e:
+            print(DEV.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest=False, exception = e))
+            #TODO send email to IT Software team of severe server error to fix asap
+            return Response({"Error":"Server Error - Notifying admins"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
 class TimeSheetView(APIView):
     """ Aside from the get request, all other crud options can only perform on one entry at at a time """
     """ !!!! This view should be used cautiously by only root admins. A mistake without a backup may cause unintended bulk updates or deletions !!! """
@@ -269,13 +309,14 @@ class TimeSheetView(APIView):
                 return Response({'Error':'Input data is not valid'}, status = status.HTTP_403_FORBIDDEN)
 
             #Process employee foreign key and use to create new timesheet object (employee required)
-            timesheet_data = dict(serialized_timesheet.data) #Copy to mutate later
+            serialized_timesheet = dict(serialized_timesheet.data) #Copy to mutate later
+            del timesheet_data
             #Serializer will not conver this foreign key property to numerical id, received as string
             if employee != None:
-                timesheet_data['employee'] = employee 
+                serialized_timesheet['employee'] = employee 
             else:
-                timesheet_data['employee'] = Employees.objects.get(id = timesheet_data['employee'])
-            new_timesheet = TimeSheet.objects.create(**timesheet_data)
+                serialized_timesheet['employee'] = Employees.objects.get(id = serialized_timesheet['employee'])
+            new_timesheet = TimeSheet.objects.create(**serialized_timesheet)
                 
             #Create line item objects using created timesheet above as foreign key
             line_item_objects=[]
@@ -298,10 +339,9 @@ class TimeSheetView(APIView):
 
     @method_decorator(csrf_exempt,name="put")
     def put(self, request):
-        timesheet_data = request.data['TimeSheetData']
-        line_item_data = request.data['LineItemsData']
-
         try:
+            timesheet_data = request.data['TimeSheetData']
+            line_item_data = request.data['LineItemsData']
             if not isinstance(timesheet_data,dict) or not isinstance(line_item_data,list) or timesheet_data.get('id') == None:
                 return Response({"Error":"Input data is not valid"}, status = status.HTTP_403_FORBIDDEN)
 
@@ -317,24 +357,25 @@ class TimeSheetView(APIView):
                 print(serialized_line_items.errors)
                 return Response({'Error':'Line Items - Input data is not valid'}, status = status.HTTP_403_FORBIDDEN)
 
-            timesheet_data = dict(serialized_timesheet.data)
+            serialized_timesheet = dict(serialized_timesheet.data)
+            del timesheet_data
             sel_dict = {'id':timesheet_id}
             employee = getEmployeeByUser(request)
             if isinstance(employee, Response): #If user is authenticated and there is no corresponding employee object
                 return employee
             if employee != None:
-                timesheet_data['employee'] = employee.id
+                serialized_timesheet['employee'] = employee.id
             else:
-                timesheet_data['employee'] = Employees.objects.get(id=timesheet_data['employee']).id
+                serialized_timesheet['employee'] = Employees.objects.get(id=serialized_timesheet['employee']).id
             
-            sel_dict['employee'] = timesheet_data.pop('employee') #We do not need id nor employee in update fields
+            sel_dict['employee'] = serialized_timesheet.pop('employee') #We do not need id nor employee in update fields
             timesheet_query = TimeSheet.objects.filter(**sel_dict)
 
             if len(timesheet_query) == 0:
                 return Response({'Error':'Entry ID does not exist'}, status = status.HTTP_403_FORBIDDEN)
             # using id is always safe to assume that only one or no entries exist since it is a primary key
 
-            timesheet_query.update(**timesheet_data)
+            timesheet_query.update(**serialized_timesheet)
             timesheet_entry = timesheet_query[0]
             current_existing_ids=[]
 
@@ -345,20 +386,19 @@ class TimeSheetView(APIView):
                 current_existing_ids.append(line_obj.id)
 
             # Delete line_objects that do not exist in updated form
-            deleted_lines_query = LineItems.objects.filter(timesheet = timesheet_id).exclude(id__in=current_existing_ids)
-            deleted_lines_response = LineItemsGETSerializer(instance = deleted_lines_query, many = True).data
-            if len(deleted_lines_query) > 0:
-                deleted_lines_query.delete()
-            line_items_query = LineItems.objects.filter(timesheet = timesheet_id) #Get current list of line items after deleting
+            deleted_lines_response = []
 
+            if len(line_item_data) > 0:
+                deleted_lines_query = LineItems.objects.filter(timesheet = timesheet_id).exclude(id__in=current_existing_ids)
+                deleted_lines_response = LineItemsGETSerializer(instance = deleted_lines_query, many = True).data
+                deleted_lines_query.delete()
+                line_items_query = LineItems.objects.filter(timesheet = timesheet_id) #Get current list of line items after deleting
+                line_item_data = LineItemsGETSerializer(instance = line_items_query, many = True).data
             timesheet_entry.total_time = timesheet_entry.getTotalMinutes()
             timesheet_entry.total_bill = timesheet_entry.total_time * timesheet_entry.bill_rate
             timesheet_entry.save()
-            timesheet_data = TimeSheetGETSerializer(instance = timesheet_entry, many=False).data
-            line_item_data = LineItemsGETSerializer(instance = line_items_query, many = True).data
-
-            print(deleted_lines_response)
-            return Response({"TimeSheet":timesheet_data, "LineItems":line_item_data, "DeletedLineItems":deleted_lines_response}, status = status.HTTP_200_OK)
+            serialized_timesheet = TimeSheetGETSerializer(instance = timesheet_entry, many=False).data
+            return Response({"TimeSheet":serialized_timesheet, "LineItems":line_item_data, "DeletedLineItems":deleted_lines_response}, status = status.HTTP_200_OK)
 
         except Exception as e:
             print(DEV.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest=False, exception = e))
