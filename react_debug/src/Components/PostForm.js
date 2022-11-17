@@ -7,17 +7,18 @@ import {getParentIntAttrib} from '../Utilities/Utils'
 import React from "react";
 function PostForm(
   {
-    config={num_rows:5,col_titles:["col1","col2","col3"],db_columns:["dbcol1","dbcol2","dbcol3"]}, inputChange, BillingLineData
+    config={num_rows:5,col_map:{}}, inputChange, BillingLineData
   }
 )
 {
   let rows = [];
-
   for(let i = 0; i < config["num_rows"]; i++)
   {
     rows.push(i);
   };
 
+  let col_keys = Object.keys(config['col_map']);
+  let col_titles = Object.keys(config['col_map']).map(function(key){return config['col_map'][key]});
   const alternative_shades = ["lighter","darker"];
   let ColorIndex = 1;
 
@@ -51,14 +52,15 @@ function PostForm(
     clone_delete_icon.onclick=(e)=>{handleDelete(e)};
 
     //This is it for hydrating the new clone!
-
     //Insert before very last "Add" icon
     parent_element.insertBefore(new_clone,par_children[par_children.length-1]); //Here we target the actual index of the add button since we are inserting --before--
     BillingLineData.current.push({id:null,num_minutes:null,memo:null})
-    if(ColorIndex+1 === 2){
+    if(ColorIndex+1 === 2)
+    {
       ColorIndex = 0;
     }
-    else{
+    else
+    {
       ColorIndex++;
     };
 
@@ -86,11 +88,11 @@ function PostForm(
     if(ColorIndex === 0){
       ColorIndex = 1;
     }
-    else{
+    else
+    {
       ColorIndex--;
     };
   };
-
 
     return (
       <Form id="Comp-PostForm">
@@ -103,9 +105,9 @@ function PostForm(
                 {rindex+1}
               </Col>
               {
-                config["col_titles"].map((c, cindex) =>
+                col_titles.map((c, cindex) =>
                 {
-                  let db_attrib = config["db_columns"][cindex];
+                  let db_attrib = col_keys[cindex];
                   return (
                     <Col id="col" key = {cindex}>
                       <Form.Control onKeyUp = {(e) =>{inputChange(e, true)}} db = {db_attrib} id="form-control-db" placeholder={c} />

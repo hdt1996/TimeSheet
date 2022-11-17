@@ -5,17 +5,17 @@ import Delete from '@mui/icons-material/Delete';
 import Add from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
-import {fetcherSelect} from '../Utilities/Endpoints';
+import {fetcherSelect, fetcherModify} from '../Utilities/Endpoints';
 import {processDelData} from '../Utilities/Utils';
 import Query from './Query';
+import { gridColumnPositionsSelector } from '@mui/x-data-grid';
 
 function Table(
     {
         config=
         {
-            col_titles:['Column1','Column2','Column3'], 
-            db_columns:['DBColumn1','DBColumn2','DBColumn3'],
-            values:[{Column1:0,Column2:1,Column3:2},{Column1:0,Column2:1,Column3:2}],
+            col_map: {},
+            uneditable:{},
             col_width:150,
             endpoint:"", 
             extract_config:{},
@@ -23,8 +23,7 @@ function Table(
             start_query:{}
         },
         className="",
-        nestedTblIndex = 0,
-        values = [] //useRef instance created from app
+        nestedTblIndex = 0
     }
 ){
     let [ShowRowDetail,setShowRowDetail] = useState(false);
@@ -37,13 +36,19 @@ function Table(
     let DeleteSuccess = useRef(false);
     let CurrentDetailID = useRef(null);
     let CurrentEditDetails = useRef({});
-    let [TableValues, setTableValues] = useState(values);
+    let [Editing,setEditing] = useState({});
+    let [TableValues, setTableValues] = useState([]);
+
+    let rows=[];
+    let columns=[];
+    let col_keys = Object.keys(config['col_map']);
 
     let handleRowClicked = null;
     if(Object.keys(config.DetailTblConfig).length !== 0)
     {
         handleRowClicked = (e) =>
         {
+            console.log(e.row)
             setShowRowDetail(false);
             if(ShowRowDetail && CurrentDetailID.current === e.row['col1'])
             {
@@ -56,9 +61,9 @@ function Table(
             currentDetailTblConfig.start_query={"timesheet":{"operator":"equal","value":e.row['col1'] }};
             setDetailTblConfig(currentDetailTblConfig);
             CurrentDetailID.current = e.row['col1'];
-            for(let  i = 0; i < config['db_columns'].length; i++)
+            for(let  i = 0; i < col_keys.length; i++)
             {
-                CurrentEditDetails.current[config['db_columns'][i]] = e.row[`col${i+1}`]
+                CurrentEditDetails.current[col_keys[i]] = e.row[`col${i+1}`]
             };
         };
     };
@@ -98,19 +103,101 @@ function Table(
         setShowDeleteConfirm(false);
     };
 
-    let rows=[]; 
-    let columns=[];
+    function handleInputEdit(e)
+    {
+        let value = e.target.value;
+        let default_value = e.target.getAttribute('orig-val')
+    };
 
-    for(let c = 0; c < config['col_titles'].length; c++)
+    function handleEditCell(e)
+    {
+        let row_element = e.target.parentNode.parentNode.parentNode;
+        let currEditing = {...Editing}
+        currEditing[row_element.getAttribute('data-id')] = true;
+        let inputs = row_element.querySelectorAll('input');
+        for(let i = 0; i < inputs.length; i++)
+        {
+            inputs[i].removeAttribute('disabled');
+        };
+        setEditing(currEditing);
+    };
+
+    function handleEditReset(e)
+    {
+        let row_element = e.target.parentNode.parentNode.parentNode.parentNode;
+        let currEditing = {...Editing}
+        delete currEditing[row_element.getAttribute('data-id')];
+        let inputs = row_element.querySelectorAll('input');
+        for(let i = 0; i < inputs.length; i++)
+        {
+            inputs[i].value = inputs[i].getAttribute('orig-val');
+            inputs[i].setAttribute('disabled',true);
+        };
+        setEditing(currEditing);
+    };
+
+    async function handleEditSave(e)
+    {
+        let row_element = e.target.parentNode.parentNode.parentNode.parentNode;
+        let id = row_element.getAttribute('data-id');
+        let inputs = row_element.querySelectorAll('input');
+        let currEditing = {...Editing}
+
+        let put_data = {"TimeSheetData":{"id":id},"LineItemsData":[]};
+        for(let i = 0; i < inputs.length; i++)
+        {
+            let default_value = inputs[i].getAttribute('orig-val');
+            let new_value = inputs[i].value;
+            let db_col = inputs[i].getAttribute('db_col');
+            console.log(db_col)
+            if(new_value !== default_value)
+            {
+                put_data["TimeSheetData"][db_col] = new_value;
+            };
+        };
+        console.log(put_data);
+        let data = await fetcherModify("PUT",put_data,config.endpoint);
+        console.log(data);
+        //setEditing(currEditing);
+    };
+    function addEditCell()
     {
         let data = {};
-        data['field'] = `col${c+1}`;
-        data['headerName'] = config['col_titles'][c];
+        data['field'] = `col${col_keys.length + 1}`;
+        data['headerName'] = ''
         data['width']=config['col_width'];
-        //data['editable']=true
-        //data['renderCell'] = renderDetailsButton
-        columns[c] = data;
+        data['renderCell'] = (params) => 
+            <div className="Comp-Table-Edit">
+            {
+                Editing[params.id]?
+                <div className = "Options">
+                    <button onClick = {(e) => {handleEditSave(e)}}>Save</button>
+                    <button onClick = {(e) => {handleEditReset(e)}}>Reset</button>
+                </div>:
+                <EditIcon onClick = {(e) => handleEditCell(e)}/>
+            }
+            </div>;
+        columns[col_keys.length + 1] = data;
     };
+
+    function buildColumns()
+    {
+        for(let c = 0; c < col_keys.length; c++)
+        {
+            let data = {};
+            data['field'] = `col${c+1}`;
+            data['headerName'] = config['col_map'][col_keys[c]];
+            data['width']=config['col_width'];
+            if(!(col_keys[c] in config['uneditable']))
+            {
+                data['renderCell'] = (params) => <input db_col = {col_keys[c]} orig-val = {params.value} disabled className = "Comp-Table-Input" defaultValue={params.value} onChange = {(e) => handleInputEdit(e)}></input>;
+            };
+            columns[c] = data;
+        };
+        addEditCell();
+    };
+
+    buildColumns();
 
     if(Object.keys(config['extract_config']).length !== 0)
     {
@@ -120,9 +207,9 @@ function Table(
             let source;
             let field;
             data['id']=TableValues[i].id;
-            for(let c = 0; c < config['col_titles'].length; c++)
+            for(let c = 0; c < col_keys.length; c++)
             {
-                field=config['db_columns'][c];
+                field=col_keys[c];
                 source=TableValues[i][field];
                 data[`col${c+1}`]=config['extract_config'].methods[field](config['extract_config'].keys[field],source);
             };
@@ -151,12 +238,7 @@ function Table(
         {
             setShowRowDetail(true);
         };
-        if(ShowEditComp &&  Object.keys(CurrentEditDetails.current).length> 0)
-        {
-            //TODO
-        };
-
-    },[DetailTblConfig, ShowRowDetail, ShowEditComp])
+    },[DetailTblConfig]);
 
     return ( //First map is column titles; Second map is for data rows/columns
         <div id={`Table-N${nestedTblIndex}`} className={`Comp-Table ${className}`}>
@@ -208,7 +290,7 @@ function Table(
                 columns={columns}
                 checkboxSelection
                 editMode='row'
-                onRowClick = {handleRowClicked}
+                onRowDoubleClick={handleRowClicked}
                 onSelectionModelChange={(id) =>setSelected_IDs(id)}
                 sx={{
                     "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {

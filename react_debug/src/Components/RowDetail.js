@@ -23,17 +23,17 @@ function RowDetail({RowEntryID, detail_endpoint}) {
                     let fields = Object.keys(line_item);
                     return(
                         <div key = {lindex} className="RowItem">
+                        {
+                            fields.map((field, findex)=>
                             {
-                                fields.map((field, findex)=>
-                                {
-                                    return (
-                                        <div key={findex}>
-                                            <span>{field}</span>
-                                            <li>{line_item[field]}</li>
-                                        </div>
-                                    )
-                                })
-                            }
+                                return (
+                                    <div key={findex}>
+                                        <span>{field}</span>
+                                        <li>{line_item[field]}</li>
+                                    </div>
+                                )
+                            })
+                        }
                         </div>
                     )
                 })

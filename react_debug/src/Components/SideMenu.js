@@ -24,7 +24,7 @@ function SideMenu(
 
     const alternative_shades = ["lighter","darker"];
     let curr_index = -1;
-    return ( //First map is column titles; Second map is for data rows/columns
+    return ( 
         <div className="Comp-SideMenu">
             <div className="Menu">
             {

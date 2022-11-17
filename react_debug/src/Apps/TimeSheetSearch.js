@@ -7,9 +7,21 @@ export default function TimeSheetSearch({endpoint, UserData = null})
 {
     let [TblConfig,setTblConfig]=useState(
     {
-        col_titles:['Timesheet ID','Date Worked','Description','Billing Rate','Total Time','Total Bill','Employee'], 
-        db_columns:['id','date','description','bill_rate','total_time','total_bill','employee'],
-        values:[],
+        col_map:
+        {
+            'id':'Timesheet',
+            'date':'Date Worked',
+            'description':'Description',
+            'bill_rate':'Billing Rate',
+            'total_time':'Total Time',
+            'total_bill':'Total Bill',
+            'employee':'Employee'
+        },
+        uneditable:
+        {
+            'id':true,
+            'date':true
+        },
         col_width:150,
         endpoint:endpoint, //First level table does
         start_query:{"id":{"operator":null,"value":null}},
@@ -40,9 +52,21 @@ export default function TimeSheetSearch({endpoint, UserData = null})
         EditComponent:null,
         DetailTblConfig:
         {
-            col_titles:['id','num_minutes','memo','date_added','date_modified','timesheet'], 
-            db_columns:['id','num_minutes','memo','date_added','date_modified','timesheet'],
-            values:[],
+            col_map:
+            {
+                'id':'id',
+                'num_minutes':'num_minutes',
+                'memo':'memo',
+                'date_added':'date_added',
+                'date_modified':'date_modified',
+                'timesheet':'timesheet'
+            },
+            uneditable:
+            {
+                'id':true,
+                'date_added':true,
+                'date_modified':true
+            },
             col_width:150,
             endpoint:"/api/payroll/timesheet/lineitems/",
             start_query:{"id":{"operator":null,"value":null}},
@@ -75,17 +99,21 @@ export default function TimeSheetSearch({endpoint, UserData = null})
 
     useEffect(() =>
     {
-        let currentTblConfig = {...TblConfig};
-        currentTblConfig.AddComponent = <TimeSheetCreate endpoint = {endpoint} UserData={UserData}/>
-        setTblConfig(currentTblConfig);
-    },[UserData])
+        if(UserData === null)
+        {
+            let currentTblConfig = {...TblConfig};
+            currentTblConfig.AddComponent = <TimeSheetCreate endpoint = {endpoint} UserData={UserData}/>
+            setTblConfig(currentTblConfig);
+        };
+
+    },[UserData, TblConfig, endpoint])
 
     return (
     <div className="App-Table">
         <div className="App-Title">
             Timesheets Reporting
         </div>
-        <Table config={TblConfig} nestedTblIndex = {0} values = {[]}></Table>
+        <Table config={TblConfig} nestedTblIndex = {0}></Table>
     </div>
     );
 }

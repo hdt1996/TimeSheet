@@ -328,6 +328,53 @@
   flex-direction: column;
 }
 
+.Comp-Table-Input{
+  border:none;
+}
+
+.Comp-Table-Inpu{
+  background-color: blue;
+}
+.Comp-Table-Edit{
+  display:flex;
+  flex:1;
+  justify-content: center;
+  align-items: center;
+}
+
+.Comp-Table-Edit .Options button{
+  margin-left:.125em;
+  margin-right:.125em;
+}
+
+.Comp-Table-Edit .Options button:hover{
+  cursor:pointer;
+  background-color: rgb(242, 174, 195) !important
+}
+
+.Comp-Table-Edit .Options button:first-child{
+  border-radius:.75em;
+  background-color: rgb(141, 240, 207);
+}
+
+.Comp-Table-Edit .Options button:nth-child(2)
+{
+  border-radius:.75em;
+  background-color: rgb(137, 219, 246);
+}
+
+.Comp-Table-Edit svg:hover{
+  background-color: rgb(236, 236, 241);
+  border:solid black .05em;
+  cursor:pointer;
+  border-radius: .1em;
+  height:1.25em;
+  width:1.25em;
+}
+
+.Comp-Table-Edit path{
+  pointer-events: none;
+}
 
 .Comp-Table .Buttons{
   display:flex;

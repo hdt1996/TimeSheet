@@ -5,18 +5,19 @@ import DateRangeIcon from '@mui/icons-material/DateRange';
 import TextField from "@mui/material/TextField";
 import {fetcherModify} from '../Utilities/Endpoints';
 import PostForm from '../Components/PostForm';
-import {getParentIntAttrib, buildDateTimeStr} from '../Utilities/Utils';
-import {alternativeBoolState, processDelData} from '../Utilities/Utils'
+import {getParentIntAttrib, buildDateTimeStr, alternativeBoolState, processDelData} from '../Utilities/Utils';
 
 export default function TimeSheetCreate({endpoint, UserData = {}})
 {
-    let TimeSheet_columns = ['description','bill_rate','total_time','total_bill','employee'];
-    let bill_line_columns = ['num_minutes','memo'];
-    let PostFormConfig=
+    let timesheet_fields = ['description','bill_rate','total_time','total_bill','employee'];
+    let PostFormConfig= //For line items
     {
         num_rows:1,
-        col_titles:["Minutes Worked", "Memo"],
-        db_columns:bill_line_columns
+        col_map:
+        {
+            'num_minutes':'Minutes Worked',
+            'memo':'Memo'
+        },
     };
 
     let today = new Date();
@@ -108,7 +109,7 @@ export default function TimeSheetCreate({endpoint, UserData = {}})
             total_bill_element.value = (parseFloat(total_time_element.value) *  parseFloat(bill_rate_element.value)/ 60.0).toFixed(2);
             currentBillLineData[row_index][db_field] = parsed_val.toFixed(2);
             return;
-        }
+        };
     };
 
     function freezeTimesheet(time_label = '', custom = null)
@@ -191,18 +192,17 @@ export default function TimeSheetCreate({endpoint, UserData = {}})
         freezeTimesheet("Created", `Created: Timesheet Entry ${data['TimeSheet'].id}`);
     }
 
-
     useEffect(()=>
     {
         if(Object.keys(TimeSheetData).length === 0)
         {
             let emptyTimeSheetData = TimeSheetData.current;
-            for(let i = 0; i < TimeSheet_columns.length; i++)
+            for(let i = 0; i < timesheet_fields.length; i++)
             {
-                emptyTimeSheetData[TimeSheet_columns[i]]=null;
+                emptyTimeSheetData[timesheet_fields[i]]=null;
             };
         };
-    },[]);
+    });
 
 
     return ( 
@@ -277,6 +277,7 @@ export default function TimeSheetCreate({endpoint, UserData = {}})
                     multiline
                     fullWidth
                     minRows={15}
+                    maxRows = {15}
                     margin="normal"
                     label="Description"
                     placeholder="description"

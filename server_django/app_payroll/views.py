@@ -259,7 +259,7 @@ class TimeSheetView(APIView):
             serialized_timesheet = TimeSheetPOSTSerializer(data = timesheet_data, many = False)
             serialized_line_items = LineItemsPOSTSerializer(data = line_item_data, many = True)
 
-            if not serialized_timesheet.is_valid() or not serialized_line_items.is_valid():
+            if not serialized_timesheet.is_valid():
                 #TODO send email to IT Software team for logging purposes of all requests
                 print(serialized_timesheet.errors)
                 return Response({'Error':'Input data is not valid'}, status = status.HTTP_403_FORBIDDEN)
@@ -312,10 +312,10 @@ class TimeSheetView(APIView):
             if not serialized_timesheet.is_valid():
                 #TODO send email to IT Software team for logging purposes of all requests
                 print(serialized_timesheet.errors)
-                return Response({'Error':'Input data is not valid'}, status = status.HTTP_403_FORBIDDEN)
+                return Response({'Error':'Timesheet - Input data is not valid'}, status = status.HTTP_403_FORBIDDEN)
             if not serialized_line_items.is_valid():
                 print(serialized_line_items.errors)
-                return Response({'Error':'Input data is not valid'}, status = status.HTTP_403_FORBIDDEN)
+                return Response({'Error':'Line Items - Input data is not valid'}, status = status.HTTP_403_FORBIDDEN)
 
             timesheet_data = dict(serialized_timesheet.data)
             sel_dict = {'id':timesheet_id}

@@ -5,8 +5,7 @@ function Query(
     {
         config=
         {
-            col_titles:['Column1','Column2','Column3'], 
-            db_columns:['DBColumn1','DBColumn2','DBColumn3'],
+            col_map:{},
             col_width:150,
             start_query:{},
             endpoint:''
@@ -16,11 +15,14 @@ function Query(
     },
 ){
     let columns=[];
-    for(let i = 0; i < config['col_titles'].length; i++)
+    let col_keys = Object.keys(config['col_map']);
+
+    for(let i = 0; i < col_keys.length; i++)
     {
         columns.push(i);
     };
 
+    let firstQuery = useRef(false);
     let QueryOptions = useRef({});  // Will be updated when input boxes are updated onChange
 
     const operator_map = // I could have used Django's direct ORM statements as value, but I think it is better to abstract/hide the back-end arguments
@@ -67,9 +69,9 @@ function Query(
     function handleQueryClear(e)
     {
         let currentQueryOptions = QueryOptions.current;
-        for(let i = 0; i < config['col_titles'].length; i++)
+        for(let i = 0; i < col_keys.length; i++)
         {
-            currentQueryOptions[config['db_columns'][i]]={operator:null,value:null};
+            currentQueryOptions[col_keys[i]]={operator:null,value:null};
         };
         let comp_element = e.target.parentNode.parentNode;
         let input_elements = comp_element.querySelectorAll('input');
@@ -103,16 +105,14 @@ function Query(
         setTableValues(data);
     };
 
-    let firstQuery = useRef(false);
-
     useEffect(()=>
     {
         if(Object.keys(QueryOptions.current).length === 0)
         {
             let emptyQueryOptions = QueryOptions.current;
-            for(let i = 0; i < config['col_titles'].length; i++)
+            for(let i = 0; i < col_keys.length; i++)
             {
-                emptyQueryOptions[config['db_columns'][i]]={operator:null,value:null};
+                emptyQueryOptions[col_keys[i]]={operator:null,value:null};
             };
         };
         let start_query_keys = Object.keys(config['start_query'])
@@ -130,10 +130,10 @@ function Query(
             filter_element.click();
             firstQuery.current = true;
         };
-    },[config, nestedTblIndex]);
+    },[config, nestedTblIndex, col_keys]);
 
 
-    return ( //First map is column titles; Second map is for data rows/columns
+    return (
         <div className="Comp-Query">
             <div className="Filter">
                 <ClearAllIcon className="Clear" onClick={(e) => {handleQueryClear(e)}}></ClearAllIcon>
@@ -143,7 +143,7 @@ function Query(
             {
                 columns.map((col, index)=>
                 {
-                    let db_col = config['db_columns'][index];
+                    let db_col = col_keys[index];
                     return (
                     <div style={{width:`${config['col_width']}px`}} key={index}>
                         <input placeholder = "Enter filter" onChange={(e) => {handleValueChange(e,db_col)}}></input>
