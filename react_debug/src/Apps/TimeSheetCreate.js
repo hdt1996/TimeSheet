@@ -156,11 +156,11 @@ export default function TimeSheetCreate({endpoint, UserData = {}})
 
     function processNewData(data)
     {
-        TimeSheetData.current['id'] = data.TimeSheet.id;
+        TimeSheetData.current['id'] = data['TimeSheetData'].id;
         let currBillingLineData = BillingLineData.current;
-        for(let i = 0; i < data.LineItems.length; i++)
+        for(let i = 0; i < data["LineItemsData"].length; i++)
         {
-            currBillingLineData[i]["id"] = data.LineItems[i].id;
+            currBillingLineData[i]["id"] = data["LineItemsData"][i].id;
         };
     };
 
@@ -174,9 +174,9 @@ export default function TimeSheetCreate({endpoint, UserData = {}})
             return;
         };
         let del_str = processDelData(data.DeletedLineItems, '\nDeleted: Timesheet Entries ');
-        TimeSheetData.current['id'] = data.TimeSheet.id;
+        TimeSheetData.current['id'] = data['TimeSheetData'].id;
         processNewData(data);
-        freezeTimesheet('Updated',`Updated: Timesheet Entry ${data['TimeSheet'].id}${del_str}`);
+        freezeTimesheet('Updated',`Updated: Timesheet Entry ${data['TimeSheetData'].id}${del_str}`);
     };
 
     async function postData()
@@ -189,7 +189,7 @@ export default function TimeSheetCreate({endpoint, UserData = {}})
             return;
         };
         processNewData(data);
-        freezeTimesheet("Created", `Created: Timesheet Entry ${data['TimeSheet'].id}`);
+        freezeTimesheet("Created", `Created: Timesheet Entry ${data['TimeSheetData'].id}`);
     }
 
     useEffect(()=>

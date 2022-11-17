@@ -234,13 +234,13 @@ class LineItemsView(APIView):
             
             table_query.update(**serialized_line_items)
 
-            serialized_line_items = [LineItemsGETSerializer(instance = table_query[0], many=False).data]
+            serialized_line_items = LineItemsGETSerializer(instance = table_query[0], many=False).data
             timesheet_entry = table_query[0].timesheet
             # using id is always safe to assume that only one or no entries exist since it is a primary key
             timesheet_entry.total_time = timesheet_entry.getTotalMinutes()
             timesheet_entry.total_bill = timesheet_entry.total_time * timesheet_entry.bill_rate
             timesheet_entry.save()
-            return Response({"LineItems":serialized_line_items}, status = status.HTTP_200_OK)
+            return Response({"LineItemsData":serialized_line_items}, status = status.HTTP_200_OK)
 
         except Exception as e:
             print(DEV.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest=False, exception = e))
@@ -330,7 +330,7 @@ class TimeSheetView(APIView):
             new_timesheet.save()
             serialized_line_items = LineItemsGETSerializer(instance = line_item_objects, many = True).data
             serialized_timesheet = TimeSheetGETSerializer(instance = new_timesheet).data #Ready to be sent as JSON
-            return Response({"TimeSheet":serialized_timesheet,"LineItems":serialized_line_items}, status = status.HTTP_200_OK)
+            return Response({"TimeSheetData":serialized_timesheet,"LineItemsData":serialized_line_items}, status = status.HTTP_200_OK)
 
         except Exception as e:
             print(DEV.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest=False, exception = e))
@@ -398,7 +398,7 @@ class TimeSheetView(APIView):
             timesheet_entry.total_bill = timesheet_entry.total_time * timesheet_entry.bill_rate
             timesheet_entry.save()
             serialized_timesheet = TimeSheetGETSerializer(instance = timesheet_entry, many=False).data
-            return Response({"TimeSheet":serialized_timesheet, "LineItems":line_item_data, "DeletedLineItems":deleted_lines_response}, status = status.HTTP_200_OK)
+            return Response({"TimeSheetData":serialized_timesheet, "LineItemsData":line_item_data, "DeletedLineItems":deleted_lines_response}, status = status.HTTP_200_OK)
 
         except Exception as e:
             print(DEV.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest=False, exception = e))

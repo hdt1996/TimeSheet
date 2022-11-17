@@ -142,7 +142,35 @@ function Table(
                 put_data[active][db_col] = default_value.split(" - ")[0];
             }
         };
+
         let data = await fetcherModify("PUT",put_data,config.endpoint);
+        if(data['Error'])
+        {
+            alert(data['Error']);
+            return
+        };
+
+        let currEditing = {...Editing};
+        delete currEditing[row_element.getAttribute('data-id')];
+        for(let i = 0; i < inputs.length; i++)
+        {
+            let db_col = inputs[i].getAttribute('db_col');
+            let key = config['extract_config'].keys[db_col];
+            let source = data[active][db_col];
+            inputs[i].value = config['extract_config'].methods[db_col](key,source);
+            inputs[i].setAttribute('orig-val',inputs[i].value);
+            inputs[i].setAttribute('disabled',true);
+        };
+        let uneditables = row_element.querySelectorAll('div[db_col]');
+        for(let i = 0; i < uneditables.length; i++)
+        {
+            let db_col = uneditables[i].getAttribute('db_col');
+            let key = config['extract_config'].keys[db_col];
+            let source = data[active][db_col];
+            uneditables[i].innerHTML = config['extract_config'].methods[db_col](key,source); 
+        };
+        setEditing(currEditing);
+
     };
     function addEditCell()
     {
@@ -180,7 +208,16 @@ function Table(
                     <input db_col = {col_keys[c]} orig-val = {JSON.stringify(params.value).replace(/"/g,'')} disabled className = "Comp-Table-Input" defaultValue={params.value}></input>
                     )
                 };
-            };
+            }
+            else
+            {
+                data['renderCell'] = (params) => 
+                {
+                    return(
+                    <div db_col = {col_keys[c]}>{params.value}</div>
+                    )
+                };
+            }
             columns[c] = data;
         };
         if(config.edit_config)
@@ -193,7 +230,6 @@ function Table(
     {
         buildColumns();
     }
-
 
     if(Object.keys(config['extract_config']).length !== 0)
     {
@@ -238,6 +274,10 @@ function Table(
         };
     },[DetailTblConfig]);
 
+    useEffect(()=>
+    {
+    },[Editing])
+
     return ( //First map is column titles; Second map is for data rows/columns
         <div id={`Table-N${nestedTblIndex}`} className={`Comp-Table ${className}`}>
             <div className="Buttons">
@@ -276,6 +316,8 @@ function Table(
                 checkboxSelection
                 onCellKeyDown={(params, events) => events.stopPropagation()}
                 editMode='row'
+                rowBuffer={100}
+                pageSize={100}
                 onRowDoubleClick={handleRowClicked}
                 onSelectionModelChange={(id) =>setSelected_IDs(id)}
                 sx={{
