@@ -7,7 +7,7 @@ import {getParentIntAttrib} from '../Utilities/Utils'
 import React from "react";
 function PostForm(
   {
-    config={num_rows:5,col_map:{}}, inputChange, BillingLineData
+    config={num_rows:5,col_map:{}}, inputChange, deleteChange, BillingLineData, CurrentData = null
   }
 )
 {
@@ -27,7 +27,7 @@ function PostForm(
     let par_children = parent_element.children;
     //Make copy of 2nd to last element
     let new_clone = par_children[par_children.length-2].cloneNode(true); //Clone contains attributes but not hydrated event listeners
-    
+  
     //Before we insert, we need to update the placeholder which is the actual programmatic index of the rows
     //List starts with zero but on the frontend we use 1 as starting point
     let updated_placeholder = parseInt(new_clone.getAttribute('placeholder'))+1; //Initial clone has placeholder of 0, we increment
@@ -64,6 +64,7 @@ function PostForm(
       ColorIndex++;
     };
 
+
   };
 
   function handleDelete(e){
@@ -72,7 +73,7 @@ function PostForm(
     let index = getParentIntAttrib(e,'placeholder',1);
     let par_children = document.querySelector('#Comp-PostForm').children; //initial Children
     if(index === 0 && par_children.length === 2){return;}; //Don't delete first row otherwise there will be no copy to clone
-
+    deleteChange(index);
     par_children[index].remove(); // Chosen element is deleted. par_children is now stale. Reset to updated list
     BillingLineData.current.splice(index,1); //removes element and re-indexes
     par_children = document.querySelector('#Comp-PostForm').children;
@@ -97,6 +98,7 @@ function PostForm(
     return (
       <Form id="Comp-PostForm">
       {
+        !CurrentData?
         rows.map((r, rindex)=>
         {                
           return (
@@ -109,8 +111,33 @@ function PostForm(
                 {
                   let db_attrib = col_keys[cindex];
                   return (
-                    <Col id="col" key = {cindex}>
+                    <Col key = {cindex}>
                       <Form.Control onKeyUp = {(e) =>{inputChange(e, true)}} db = {db_attrib} id="form-control-db" placeholder={c} />
+                    </Col>
+                  )
+                })
+              }
+              <div className="Delete" onClick={(e)=>{handleDelete(e)}}>
+                <Delete className="Icon"/>
+              </div>
+            </Row>
+          )
+        })
+        :
+        CurrentData.map((r, rindex)=>
+        {                
+          return (
+            <Row key = {rindex} className="Comp-PostForm-Row" placeholder={`${rindex}`}>
+              <Col className="Index">
+                {rindex+1}
+              </Col>
+              {
+                col_titles.map((c, cindex) =>
+                {
+                  let db_attrib = col_keys[cindex];
+                  return (
+                    <Col id="col" key = {cindex}>
+                      <Form.Control onKeyUp = {(e) =>{inputChange(e, true)}} db = {db_attrib} id="form-control-db" placeholder={c} defaultValue = {r[db_attrib]}/>
                     </Col>
                   )
                 })

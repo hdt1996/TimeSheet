@@ -77,7 +77,7 @@ function ForgotLogin({setRenderLogin, setRenderCreate, setRenderForgot}) {
     
     return (
         <Form className="Comp-Forgot">
-            <div className = "Row">
+            <div className = "CF-Row">
                 <div style={{fontWeight:"normal",fontSize:".85em", borderBottom:"solid black .1em", textAlign:"justify"}}>Please input your details into one of the following options to proceed...</div>
                 <br></br>
                 <div>Recovery by Email (Get Temp Password)</div>

@@ -58,8 +58,8 @@ export default function TimeSheetSearch({endpoint, UserData = null})
                 'employee':['id','name']
             }
         },
-        AddComponent:<TimeSheetCreate endpoint = {endpoint} UserData={UserData}/>,
-        EditComponent:null,
+        add_endpoint:endpoint,
+        AddComponent:TimeSheetCreate,
         DetailTblConfig:
         {
             col_map:
@@ -109,29 +109,18 @@ export default function TimeSheetSearch({endpoint, UserData = null})
                     'timesheet':['id']
                 }
             },
-            AddComponent:null,
-            EditComponent:null,
+            AddComponent:TimeSheetCreate,
+            add_endpoint:endpoint,
             DetailTblConfig:{},
         }
     });
-
-    useEffect(() =>
-    {
-        if(UserData === null)
-        {
-            let currentTblConfig = {...TblConfig};
-            currentTblConfig.AddComponent = <TimeSheetCreate endpoint = {endpoint} UserData={UserData}/>
-            setTblConfig(currentTblConfig);
-        };
-
-    },[UserData, TblConfig, endpoint])
 
     return (
     <div className="App-Table">
         <div className="App-Title">
             Timesheets Reporting
         </div>
-        <Table config={TblConfig} nestedTblIndex = {0}></Table>
+        <Table config={TblConfig} nestedTblIndex = {0} UserData = {UserData}></Table>
     </div>
     );
 }

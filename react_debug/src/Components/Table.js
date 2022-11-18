@@ -16,15 +16,21 @@ function Table(
             col_map: {},
             uneditable:{},
             col_width:150,
+
             endpoint:"", 
+            start_query:{},
             extract_config:{},
             DetailTblConfig:{},
-            start_query:{}
+            add_endpoint:null,
+            AddComponent:null,
         },
         className="",
-        nestedTblIndex = 0
+        nestedTblIndex = 0,
+        UserData= null,
+        parentData=null
     }
 ){
+    let [TableValues, setTableValues] = useState([]);
     let [ShowRowDetail,setShowRowDetail] = useState(false);
     let [DetailTblConfig,setDetailTblConfig]=useState(config.DetailTblConfig);
     let [ShowDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -35,7 +41,7 @@ function Table(
     let CurrentDetailID = useRef(null);
     let CurrentEditDetails = useRef({});
     let [Editing,setEditing] = useState({});
-    let [TableValues, setTableValues] = useState([]);
+    let ParentData = useRef();
     let rows=[];
     let columns=[];
     let col_keys = Object.keys(config['col_map']);
@@ -52,7 +58,6 @@ function Table(
                 CurrentEditDetails.current = {};
                 return;
             };
-            
             let currentDetailTblConfig = {...DetailTblConfig};
             currentDetailTblConfig.start_query={"timesheet":{"operator":"equal","value":e.row['col1'] }};
             setDetailTblConfig(currentDetailTblConfig);
@@ -139,7 +144,7 @@ function Table(
             }
             else if(config['extract_config']['keys'][db_col] !== null)
             {
-                put_data[active][db_col] = default_value.split(" - ")[0];
+                put_data[active][db_col] = default_value.split(' - ')[0];
             }
         };
 
@@ -204,8 +209,11 @@ function Table(
             {
                 data['renderCell'] = (params) => 
                 {
+                    let field=col_keys[c];
+                    let key = config['extract_config'].keys[field];
+                    let cleaned_val  = config['extract_config'].methods[field](key,params.value);
                     return(
-                    <input db_col = {col_keys[c]} orig-val = {JSON.stringify(params.value).replace(/"/g,'')} disabled className = "Comp-Table-Input" defaultValue={params.value}></input>
+                    <input db_col = {col_keys[c]} orig-val = {JSON.stringify(cleaned_val).replace(/"/g,'')} disabled className = "Comp-Table-Input" defaultValue={cleaned_val}></input>
                     )
                 };
             }
@@ -213,8 +221,11 @@ function Table(
             {
                 data['renderCell'] = (params) => 
                 {
+                    let field=col_keys[c];
+                    let key = config['extract_config'].keys[field];
+                    let cleaned_val = config['extract_config'].methods[field](key,params.value);
                     return(
-                    <div db_col = {col_keys[c]}>{params.value}</div>
+                    <div db_col = {col_keys[c]}>{cleaned_val}</div>
                     )
                 };
             }
@@ -243,9 +254,7 @@ function Table(
             for(let c = 0; c < col_keys.length; c++)
             {
                 field=col_keys[c];
-                source=TableValues[i][field];
-                key = config['extract_config'].keys[field];
-                data[`col${c+1}`]=config['extract_config'].methods[field](key,source);
+                data[`col${c+1}`]=TableValues[i][field];
             };
             rows[i]=data;
         };
@@ -274,19 +283,25 @@ function Table(
         };
     },[DetailTblConfig]);
 
+
     useEffect(()=>
     {
-    },[Editing])
+        if(parentData)
+        {
+            ParentData.current = parentData;
+            ParentData.current['nestedData'] = TableValues;
+        };
+    },[ParentData,TableValues])
 
     return ( //First map is column titles; Second map is for data rows/columns
         <div id={`Table-N${nestedTblIndex}`} className={`Comp-Table ${className}`}>
             <div className="Buttons">
                 {
                     config.AddComponent !== null?
-                    <Add onClick={() => handleShowAddComp()} ></Add>
+                    <Add className = "Row-Options" onClick={() => handleShowAddComp()} ></Add>
                     :null
                 }
-                <Delete onClick={() => handleConfirmDelete()}></Delete>
+                <Delete className = "Row-Options" onClick={() => handleConfirmDelete()}></Delete>
                 {
                     ShowDeleteConfirm?
                     <div className="Confirm">
@@ -302,11 +317,10 @@ function Table(
                     ShowAddComp?
                     <div className="AddComponent">
                         <CloseIcon className="Close" onClick={() =>{setShowAddComp(false)}}/>
-                        {config.AddComponent}
+                        <config.AddComponent endpoint = {config.add_endpoint?config.add_endpoint:config.endpoint} UserData={UserData} CurrentData={ParentData.current}/>
                     </div>:
                     null
                 }
-
             </div>
 
             <Query config={config} setTableValues={setTableValues} nestedTblIndex={nestedTblIndex}></Query>
@@ -329,7 +343,7 @@ function Table(
             />
             {
                 ShowRowDetail && Object.keys(DetailTblConfig).length !== 0?
-                <Table className="Nested-Table" config={DetailTblConfig} nestedTblIndex={nestedTblIndex+1} AddComponent={null}></Table>
+                <Table className="Nested-Table" config={DetailTblConfig} nestedTblIndex={nestedTblIndex+1} parentData = {CurrentEditDetails.current}></Table>
                 :null
             }
         </div>

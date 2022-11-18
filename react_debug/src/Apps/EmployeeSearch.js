@@ -22,6 +22,7 @@ export default function EmployeeSearch({endpoint, UserData=null})
         {
             'id':true
         },
+        edit_config:null,
         col_width:150,
         start_query:{"id":{"operator":null,"value":null}},
         endpoint:endpoint,
@@ -50,8 +51,9 @@ export default function EmployeeSearch({endpoint, UserData=null})
                 'user':['id','username','first_name','last_name'],
             }
         },
-        AddComponent:<CreateLogin endpoint = {endpoint}/>,
+        AddComponent:CreateLogin,
         EditComponent:null,
+        add_endpoint:null,
         DetailTblConfig:{},
     });
 
@@ -61,7 +63,7 @@ export default function EmployeeSearch({endpoint, UserData=null})
         Admin Employee Management
         </div>
         <div className="Comp-Table">
-            <Table config={TblConfig} nestedTblIndex = {0}></Table>
+            <Table config={TblConfig} nestedTblIndex = {0} UserData = {UserData}></Table>
         </div>
     </div>
     );

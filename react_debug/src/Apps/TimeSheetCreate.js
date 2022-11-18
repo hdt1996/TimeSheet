@@ -5,11 +5,10 @@ import DateRangeIcon from '@mui/icons-material/DateRange';
 import TextField from "@mui/material/TextField";
 import {fetcherModify} from '../Utilities/Endpoints';
 import PostForm from '../Components/PostForm';
-import {getParentIntAttrib, buildDateTimeStr, alternativeBoolState, processDelData} from '../Utilities/Utils';
+import {getParentIntAttrib, buildDateTimeStr, alternativeBoolState, processDelData, buildCalendarStr} from '../Utilities/Utils';
 
-export default function TimeSheetCreate({endpoint, UserData = {}})
+export default function TimeSheetCreate({endpoint, UserData = null, CurrentData = null})
 {
-    let timesheet_fields = ['description','bill_rate','total_time','total_bill','employee'];
     let PostFormConfig= //For line items
     {
         num_rows:1,
@@ -20,14 +19,15 @@ export default function TimeSheetCreate({endpoint, UserData = {}})
         },
     };
 
-    let today = new Date();
-    let [CurrentDate,setCurrentDate] = useState(today.toLocaleString('en-us', { weekday:"long", year:"numeric", month:"short", day:"numeric"}));
-    let [ActiveCalendar,setActiveCalendar] = useState(false);
-    let TimeSheetData=useRef({'date':buildDateTimeStr(today)});
     let BillingLineData=useRef([{"id":null,"num_minutes":null,"memo":null}]);
+    let TimeSheetData=useRef({'date':buildDateTimeStr(new Date())});
+
+    let [CurrentDate,setCurrentDate] = useState(buildCalendarStr(new Date()));
     let [SubmissionTime,setSubmissionTime] = useState("Pending");
-    let [TextDisabled,setTextDisabled] = useState(false);
+    let [ActiveCalendar,setActiveCalendar] = useState(false);
     let [ModeLabel, setModeLabel] = useState("Create");
+
+    let [TextDisabled,setTextDisabled] = useState(false);
 
     let handleDateChange = (e) =>
     {
@@ -40,6 +40,10 @@ export default function TimeSheetCreate({endpoint, UserData = {}})
 
     function handleEmployeeIDValue()
     {
+        if(CurrentData)
+        {
+            return CurrentData.employee.id;
+        };
         if(UserData !== null && "Success" in UserData && "user" in UserData.Success && "employee" in UserData.Success)
         {
             if(!UserData.Success.user.is_superuser && UserData.Success.employee.id)
@@ -51,6 +55,10 @@ export default function TimeSheetCreate({endpoint, UserData = {}})
 
     function handleEmployeeIDInputStatus()
     {
+        if(CurrentData)
+        {
+            return TextDisabled
+        };
         if(UserData !== null && "Success" in UserData && "user" in UserData.Success && "employee" in UserData.Success)
         {
             if(!UserData.Success.user.is_superuser && UserData.Success.employee.id)
@@ -74,8 +82,21 @@ export default function TimeSheetCreate({endpoint, UserData = {}})
         let currTimeSheetData = TimeSheetData.current;
         currTimeSheetData[key] = e.target.value;
     };
+
+    function handleBillLineDelete(row_index)
+    {
+        let currentBillLineData = BillingLineData.current;
+        let db_field = 'num_minutes'
+        let total_time_element = document.querySelector('input[placeholder="total_time"]');
+        let total_bill_element = document.querySelector('input[placeholder="total_bill"]');
+        let bill_rate_element = document.querySelector('input[placeholder="bill_rate"]');
+        total_time_element.value = (parseFloat(total_time_element.value) - currentBillLineData[row_index][db_field]).toFixed(2);
+        total_bill_element.value = (parseFloat(total_time_element.value) *  parseFloat(bill_rate_element.value)/ 60.0).toFixed(2);
+    };
+
     function handleBillLineInputs(e, calculate = false)
     {
+
         let row_index = getParentIntAttrib(e,'placeholder',2)
         let currentBillLineData = BillingLineData.current;
         let db_field = e.target.getAttribute("db");
@@ -89,11 +110,14 @@ export default function TimeSheetCreate({endpoint, UserData = {}})
             currentBillLineData[row_index][db_field] = e.target.value;
             return;
         }
+
+        let total_time_element = document.querySelector('input[placeholder="total_time"]');
+        let total_bill_element = document.querySelector('input[placeholder="total_bill"]');
+        let bill_rate_element = document.querySelector('input[placeholder="bill_rate"]');
+
         if (db_field === 'num_minutes' && (e.target.value === '' || !/^(\d+)(\.\d*)?$/.test(e.target.value)))
         {
-            let total_time_element = document.querySelector('input[placeholder="total_time"]');
-            let total_bill_element = document.querySelector('input[placeholder="total_bill"]');
-            let bill_rate_element = document.querySelector('input[placeholder="bill_rate"]');
+
             total_time_element.value = (parseFloat(total_time_element.value) - currentBillLineData[row_index][db_field]).toFixed(2);
             total_bill_element.value = (parseFloat(total_time_element.value) *  parseFloat(bill_rate_element.value)/ 60.0).toFixed(2);
             currentBillLineData[row_index][db_field] = 0.00;
@@ -101,9 +125,6 @@ export default function TimeSheetCreate({endpoint, UserData = {}})
         };
         if(db_field === 'num_minutes' && /^(\d+)(\.\d*)?$/.test(e.target.value))
         {
-            let total_time_element = document.querySelector('input[placeholder="total_time"]');
-            let total_bill_element = document.querySelector('input[placeholder="total_bill"]');
-            let bill_rate_element = document.querySelector('input[placeholder="bill_rate"]');
             let parsed_val = parseFloat(e.target.value);
             total_time_element.value = (parseFloat(total_time_element.value)  - currentBillLineData[row_index][db_field] + parsed_val).toFixed(2);
             total_bill_element.value = (parseFloat(total_time_element.value) *  parseFloat(bill_rate_element.value)/ 60.0).toFixed(2);
@@ -194,16 +215,27 @@ export default function TimeSheetCreate({endpoint, UserData = {}})
 
     useEffect(()=>
     {
-        if(Object.keys(TimeSheetData).length === 0)
-        {
-            let emptyTimeSheetData = TimeSheetData.current;
-            for(let i = 0; i < timesheet_fields.length; i++)
+        if(CurrentData)
+        {   
+            setModeLabel("Update");
+            let current_data = JSON.parse(JSON.stringify(CurrentData));
+            let line_item_data = [...current_data['nestedData']];
+            delete current_data['nestedData'];
+            current_data['employee'] = current_data['employee'].id;
+            BillingLineData.current = [];
+            for(let i = 0; i < line_item_data.length; i++)
             {
-                emptyTimeSheetData[timesheet_fields[i]]=null;
+                
+                line_item_data[i]['timesheet'] = line_item_data[i]['timesheet'].id;
+                for(let f of ['date_added','date_modified'])
+                {
+                    delete line_item_data[i][f];
+                }
+                BillingLineData.current.push(line_item_data[i]);
             };
-        };
-    });
-
+            TimeSheetData.current = current_data;
+        }
+    },[])
 
     return ( 
     <div className="App-Timesheet">
@@ -212,11 +244,17 @@ export default function TimeSheetCreate({endpoint, UserData = {}})
         </div>
         <div className="Row">
             <div id="Field-TimesheetTotals" className="Field-TimesheetTotals">
+                <TextField
+                    label="Timesheet ID"
+                    placeholder="id"
+                    value={CurrentData?"Exists":"New"}
+                    disabled = {true}
+                    className={"TimeSheet-Locked"}
+                />
                 <div className= "Date">
                     <TextField
                         id = "Value"
                         placeholder={CurrentDate}
-                        margin="normal"
                         disabled = {true}
                         className={TextDisabled?"TimeSheet-Locked":"Field-Text"}
                     />
@@ -237,9 +275,8 @@ export default function TimeSheetCreate({endpoint, UserData = {}})
                     </div>
                 </div>
                 <TextField
-                    label="Employee_ID"
+                    label="Employee ID"
                     placeholder="employee"
-                    margin="normal"
                     value={handleEmployeeIDValue()}
                     onChange={(e)=>{handleTimeSheetInputs(e)}}
                     disabled = {handleEmployeeIDInputStatus()}
@@ -248,8 +285,7 @@ export default function TimeSheetCreate({endpoint, UserData = {}})
                 <TextField
                     label="Billing Rate (Hourly)"
                     placeholder="bill_rate"
-                    margin="normal"
-                    defaultValue={0}
+                    defaultValue={CurrentData?CurrentData.bill_rate:0}
                     onChange={(e)=>{handleTimeSheetInputs(e, true)}}
                     disabled = {TextDisabled}
                     className={TextDisabled?"TimeSheet-Locked Field-Edit":"Field-Text Field-Edit"}
@@ -257,16 +293,14 @@ export default function TimeSheetCreate({endpoint, UserData = {}})
                 <TextField
                     label="Total Time (Minutes)"
                     placeholder="total_time"
-                    margin="normal"
-                    defaultValue={0}
+                    defaultValue={CurrentData?CurrentData.total_time:0}
                     disabled = {true}
                     className={TextDisabled?"TimeSheet-Locked Field-Edit":"Field-Text Field-Edit"}
                 />
                 <TextField
                     label="Total Bill"
                     placeholder="total_bill"
-                    margin="normal"
-                    defaultValue={0}
+                    defaultValue={CurrentData?CurrentData.total_bill:0}
                     disabled = {true}
                     className={TextDisabled?"TimeSheet-Locked Field-Edit":"Field-Text Field-Edit"}
                 />
@@ -291,11 +325,11 @@ export default function TimeSheetCreate({endpoint, UserData = {}})
             Billing Line Items
         </div>
         <div className="Form">
-            <PostForm BillingLineData = {BillingLineData} inputChange = {handleBillLineInputs} config={PostFormConfig}></PostForm>
+            <PostForm BillingLineData = {BillingLineData} inputChange = {handleBillLineInputs} deleteChange = {handleBillLineDelete} config={PostFormConfig} CurrentData={CurrentData?CurrentData['nestedData']:null}></PostForm>
         </div>
         <div className="Footer">
             <div className="Submit-Time">
-                <div className = "Row">
+                <div className = "Footer-Row">
                     <div>Status:</div> 
                     <div>{SubmissionTime}</div>
                 </div>
