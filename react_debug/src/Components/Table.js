@@ -129,6 +129,7 @@ function Table(
         let row_element = e.target.parentNode.parentNode.parentNode.parentNode;
         let id = row_element.getAttribute('data-id');
         let inputs = row_element.querySelectorAll('input[db_col]');
+        let uneditables = row_element.querySelectorAll('div[db_col]');
         let put_data = {...config['edit_config']['data']};
         let active = config['edit_config']['active'];
         put_data[active]['id'] = id;
@@ -146,6 +147,16 @@ function Table(
             {
                 put_data[active][db_col] = default_value.split(' - ')[0];
             }
+        };
+
+        for(let i = 0; i < uneditables.length; i++)
+        {
+            let default_value = uneditables[i].getAttribute('orig-val');
+            let db_col = uneditables[i].getAttribute('db_col');
+            if(config['extract_config']['keys'][db_col] !== null)
+            {
+                put_data[active][db_col] = default_value.split(' - ')[0];
+            };
         };
 
         let data = await fetcherModify("PUT",put_data,config.endpoint);
@@ -166,7 +177,6 @@ function Table(
             inputs[i].setAttribute('orig-val',inputs[i].value);
             inputs[i].setAttribute('disabled',true);
         };
-        let uneditables = row_element.querySelectorAll('div[db_col]');
         for(let i = 0; i < uneditables.length; i++)
         {
             let db_col = uneditables[i].getAttribute('db_col');
@@ -225,7 +235,7 @@ function Table(
                     let key = config['extract_config'].keys[field];
                     let cleaned_val = config['extract_config'].methods[field](key,params.value);
                     return(
-                    <div db_col = {col_keys[c]}>{cleaned_val}</div>
+                    <div db_col = {col_keys[c]} orig-val = {JSON.stringify(cleaned_val).replace(/"/g,'')}>{cleaned_val}</div>
                     )
                 };
             }

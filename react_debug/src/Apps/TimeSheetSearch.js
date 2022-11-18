@@ -21,7 +21,8 @@ export default function TimeSheetSearch({endpoint, UserData = null})
         {
             'id':true,
             'total_time':true,
-            'total_bill':true
+            'total_bill':true,
+            'employee':true
         },
         edit_config:
         {
