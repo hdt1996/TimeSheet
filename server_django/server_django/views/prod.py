@@ -7,6 +7,11 @@ from ..serializer import *
 import django.contrib.auth as auth
 from app_payroll.models import *
 from app_payroll.serializer import *
+from django.conf import settings
+from utils.py.development import Development
+import traceback
+DEV = Development(proj_dir = 'Timesheet',test_dir = 'Timesheet/tests',log_dir = 'Timesheet/logs')
+
 
 @method_decorator(ensure_csrf_cookie,name='get')
 class GetCSRFToken(APIView):
@@ -120,20 +125,25 @@ class CheckAuth(APIView):
     @method_decorator(csrf_exempt,name="get")
     # May not be necessary for production but good for debugging authentication
     def get(self, request):
-        if not request.user.is_authenticated:
-            return Response({'Error':"Not authenticated"})
+        try:
+            if not request.user.is_authenticated:
+                return Response({'Error':"Not authenticated"})
 
-        employee_query = Employees.objects.filter(user = request.user.id) #Should always
-        employee_data = {}
-        user_data = {}
+            employee_query = Employees.objects.filter(user = request.user.id) #Should always
+            employee_data = {}
+            user_data = {}
 
-        if len(employee_query) > 0:
-            employee_data = dict(EmployeeGETSerializer(instance = employee_query[0], many = False).data)
-            user_data = employee_data.pop('user')
-        else:
-            user_query = User.objects.get(id = request.user.id)
-            user_data = UserGetSerializer(instance = user_query[0], many=False).data
-        return Response({'Success':{'user':user_data, 'employee':employee_data}})
+            if len(employee_query) > 0:
+                employee_data = dict(EmployeeGETSerializer(instance = employee_query[0], many = False).data)
+                user_data = employee_data.pop('user')
+            else:
+                user = User.objects.get(id = request.user.id)
+                user_data = UserGetSerializer(instance = user, many=False).data
+            return Response({'Success':{'user':user_data, 'employee':employee_data}})
+        except Exception as e:
+            print(DEV.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest=False, exception = e))
+            #TODO send email to IT Software team of severe server error to fix asap
+            return Response(DEV.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest=False, exception = e), status = status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
     @method_decorator(csrf_exempt,name="post")
