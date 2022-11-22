@@ -235,7 +235,7 @@ export default function TimeSheetCreate({endpoint, UserData = null, CurrentData 
             };
             TimeSheetData.current = current_data;
         }
-    },[])
+    },[CurrentData])
 
     return ( 
     <div className="App-Timesheet">
@@ -243,7 +243,7 @@ export default function TimeSheetCreate({endpoint, UserData = null, CurrentData 
             TimeSheet Entry
         </div>
         <div className="Row">
-            <div id="Field-TimesheetTotals" className="Field-TimesheetTotals">
+            <div id="Fields" className="Fields">
                 <TextField
                     label="Timesheet ID"
                     placeholder="id"

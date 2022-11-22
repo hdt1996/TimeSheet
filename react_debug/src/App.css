@@ -1,19 +1,38 @@
 .Hidden{
   visibility: hidden !important;
 }
+
+.App-Title{
+  flex:1;
+  min-height:2.5em;
+  max-height:2.5em;
+  background-color: rgb(113, 190, 162);
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size:1.5em;
+}
+
+.App-Table{
+  display:flex;
+  flex-direction: column;
+  flex:30;
+}
+
 .App-Timesheet .TimeSheet-Locked{
   background-color: rgb(195, 195, 201);
   pointer-events: none;
   user-select: none !important;
 }
 
-.App-Timesheet .Row
-{
+.App-Timesheet .Row{
   min-height:26.25em;
   max-height: 26.25em;
   background-color: rgb(194, 233, 200);
   display:flex;
 }
+
 .App-Timesheet .Footer{
   display:flex;
   max-height:4em;
@@ -25,8 +44,8 @@
   background-color: rgb(191, 231, 217);
   border-bottom-left-radius: .5em;
 }
-.App-Timesheet .Submit-Time .Footer-Row
-{
+
+.App-Timesheet .Submit-Time .Footer-Row{
   display:flex;
   align-items: center;
   height:100%;
@@ -39,15 +58,18 @@
   bottom:.1em;
   left:.1em;
 }
-.App-Timesheet .Submit-Time .Footer-Row div:first-child{
-  flex:.5
-}
+
 .App-Timesheet .Submit-Time .Footer-Row div{
   flex:2;
   display:flex;
   justify-content: center;
   border-radius: .45em;
 }
+
+.App-Timesheet .Submit-Time .Footer-Row div:first-child{
+  flex:.5
+}
+
 
 .App-Timesheet .Submit-Button{
   display:flex;
@@ -56,6 +78,7 @@
   background-color:rgb(191, 231, 217);
   border-bottom-right-radius: .5em;
 }
+
 .App-Timesheet .Submit-Button button{
   width:fit-content;
   margin-left:.5em;
@@ -66,7 +89,6 @@
   margin-bottom:.1em;
   margin-right:.1em;
 }
-
 
 .App-Timesheet .Submit-Button button{
   outline:none;
@@ -84,7 +106,7 @@
 }
 
 
-.Field-TimesheetTotals{
+.App-Timesheet .Fields{
   flex:1;
   display:flex;
   flex-direction: column;
@@ -94,22 +116,24 @@
   padding-top:0em;
 }
 
-.Field-TimesheetTotals .Date{
+.App-Timesheet .Fields .Date{
   display:flex;
   flex-direction: row;
   position:relative;
   min-width: 14em;
 }
 
-.Field-TimesheetTotals .Date #Value{
+.App-Timesheet .Fields .Date #Value{
   flex:1;
 
 }
-.Field-TimesheetTotals .Date #Value::placeholder{
+
+.App-Timesheet .Fields .Date #Value::placeholder{
   font-size:.85em !important;
   opacity: 1;
 }
-.Field-TimesheetTotals .Date .Icon{
+
+.App-Timesheet .Fields .Date .Icon{
   position:absolute;
   width:2em;
   height:1.5em;
@@ -118,56 +142,42 @@
   transform: translate(0, -50%);
 }
 
-.Field-Edit input{
+.App-Timesheet .Field-Edit input{
   display:flex;
   text-align: end;
 }
-.Field-Text{
+
+.App-Timesheet .Field-Text{
   background-color: white;
 }
-.Field-Description{
+
+.App-Timesheet .Field-Description{
   flex:3;
   min-width:25em;
   padding-right:2.5em;
 }
 
-.Field-Calendar{
+.App-Timesheet .Field-Calendar{
   position:absolute;
   z-index:2;
 }
 
-.react-datepicker{
+.App-Timesheet .react-datepicker{
   position:absolute;
   background-color: white;
   border:solid black .1em;
   border-radius:.5em;
   z-index:2;
-  top:1.8em;
-}
-
-.react-datepicker__current-month{
-  text-align: center;
+  top:2.75em;
 }
 
 .Main-Home{
-  background-color: #a4d7bd;
   min-height: 100vh;
   min-width: 100vw;
   display:flex;
   flex-direction: column;
+}
 
-}
-.App-Title{
-  flex:1;
-  min-height:2.5em;
-  max-height:2.5em;
-  background-color: rgb(113, 190, 162);
-  display:flex;
-  justify-content: center;
-  align-items: center;
-  font-weight: bold;
-  font-size:1.5em;
-}
 .Main-Body{
   flex:1;
   display:flex;
@@ -175,33 +185,26 @@
   background-color: rgb(126, 191, 162);
 }
 
-
 .Main-Body .App-Timesheet{
   display:flex;
   flex-direction: column;
   flex:30;
 }
 
-.App-Table{
-  display:flex;
-  flex-direction: column;
-  flex:30;
-  margin:1em;
-  margin-top:0;
-
-}
-
-.Comp-SideMenu
-{
+.Comp-SideMenu{
   display:flex;
   flex-direction: row;
 }
+
 .Comp-SideMenu .Menu{
   display:flex;
   flex-direction: column;
-  width:15em;
+  width:12em;
   transition: all .5s ease;
+}
 
+.Comp-SideMenu .Menu div{
+  max-height:2em
 }
 .Comp-SideMenu .Transition{
   width:0;
@@ -212,7 +215,7 @@
   width:.5em;
   display:flex;
   flex-direction: column;
-  background-color: rgb(100, 109, 100);
+  background-color: rgb(69, 71, 69);
   position:relative;
 }
 
@@ -220,6 +223,7 @@
   cursor:grab;
   background-color:rgb(125, 133, 125);
 }
+
 .Comp-SideMenu #before:hover::after{
   content:"Double Click to Collapse";
 }
@@ -228,9 +232,7 @@
   content:"Double Click to Expand";
 }
 
-
 .Comp-SideMenu .Collapse:hover::after{
-
   position:absolute;
   top:.70em;
   left:100%;
@@ -246,15 +248,13 @@
   font-weight: bold;
 }
 
-.Comp-SideMenu .Menu div:hover
-{
+.Comp-SideMenu .Menu div:hover{
   background-color: rgb(152, 184, 173) !important;
   font-size:1.05em;
   cursor:pointer;
 }
 
-.Comp-SideMenu .Menu #lighter
-{
+.Comp-SideMenu .Menu #lighter{
   display:flex;
   flex:1;
   justify-content: center;
@@ -262,16 +262,15 @@
   background-color: rgb(179, 212, 201);
 }
 
-.Comp-SideMenu .Menu #darker
-{
+.Comp-SideMenu .Menu #darker{
   display:flex;
   flex:1;
   justify-content: center;
   align-items: center;
   background-color: rgb(165, 203, 190);
 }
-.Comp-SideMenu .Menu div .Link
-{
+
+.Comp-SideMenu .Menu div .Link{
   white-space: nowrap;
   text-decoration: none;
   overflow-x:hidden;
@@ -284,6 +283,7 @@
   align-items: center;
   text-align: center;
 }
+
 .Comp-Query{
   display:flex;
   flex:1;
@@ -317,15 +317,18 @@
   font-size: 1.25em;
   border-radius:.5em;
 }
+
 .Comp-Query .Filter button:active{
   width:5em;
   background-color: transparent;
 }
+
 .Comp-Query .Filter button:focus{
   width:5em;
   background-color: transparent;
   outline: none;
 }
+
 .Comp-Query .Filter button:hover{
   background-color: gainsboro;
   cursor:pointer;
@@ -338,12 +341,15 @@
   justify-content: center;
   align-items: center;
 }
+
 .Comp-Query div input:first-child{
   width:70%;
 }
+
 .Comp-Query div input{
   width:25%;
 }
+
 .Comp-Table{
   flex:1;
   overflow-y:scroll;
@@ -357,8 +363,7 @@
   border:none;
 }
 
-.Comp-Table-Input:not([disabled])
-{
+.Comp-Table-Input:not([disabled]){
   border: solid black .1em;
   background-color: rgb(211, 243, 225);
 }
@@ -386,8 +391,7 @@
   background-color: rgb(141, 240, 207);
 }
 
-.Comp-Table-Edit .Options button:nth-child(2)
-{
+.Comp-Table-Edit .Options button:nth-child(2){
   border-radius:.75em;
   background-color: rgb(137, 219, 246);
 }
@@ -424,10 +428,10 @@
   cursor:pointer;
 }
 
-
 .Comp-Table .Buttons .AddComponent::-webkit-scrollbar{
   display:none;
 }
+
 .Comp-Table .Buttons .AddComponent{
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  
@@ -445,6 +449,7 @@
   display:flex;
   flex-direction: column-reverse;
 }
+
 .Comp-Table .Buttons .AddComponent .Close{
   position:absolute;
   height:1.5em;
@@ -463,6 +468,7 @@
   background-color: rgb(204, 129, 129);
   cursor:pointer;
 }
+
 .Comp-Table .Buttons .Confirm{
   position:absolute;
   display:flex;
@@ -477,11 +483,13 @@
   z-index:1;
   border:solid black .125em;
 }
+
 .Comp-Table .Buttons .Confirm div{
   display:flex;
   flex-direction: row;
   margin-top:.5em;
 }
+
 .Comp-Table .Buttons .Confirm div button{
   border-radius: .5em;
   width:5em;
@@ -494,7 +502,9 @@
   cursor:pointer;
 }
 
-.Comp-Table::-webkit-scrollbar {display:none;}
+.Comp-Table::-webkit-scrollbar {
+  display:none;
+}
 
 .Comp-Table .Nested-Table{
   background-color: rgb(196, 226, 213) !important;
@@ -509,8 +519,7 @@
   background-color: rgb(196, 226, 213) !important;
 }
 
-.Comp-Table .Nested-Table .Comp-Table-Input:not([disabled])
-{
+.Comp-Table .Nested-Table .Comp-Table-Input:not([disabled]){
   border: solid black .1em;
   background-color: rgb(171, 218, 197) !important;
 }
@@ -518,6 +527,7 @@
 #Comp-PostForm #lighter{
   background-color:rgb(191, 231, 217);
 }
+
 #Comp-PostForm #darker{
   background-color:rgb(192, 222, 212);
 }
@@ -533,9 +543,11 @@
 .Comp-PostForm-Row .Index{
   max-width:3em;
 }
+
 .Comp-PostForm-Row .Delete{
   z-index:2;
 }
+
 .Comp-PostForm-Row .Delete .Icon{
   width:fit-content;
   height:1.5em;
@@ -545,10 +557,12 @@
 .Comp-PostForm-Row .Delete .Icon path{
   pointer-events: none;
 }
+
 .Comp-PostForm-Row .Delete:hover{
   cursor:pointer;
   background-color: rgba(185, 175, 175, 0.487);
 }
+
 .Comp-PostForm-Add{
   position:relative;
   left:1em;
@@ -557,6 +571,7 @@
   align-items: center;
   height:2.5em;
 }
+
 .Comp-PostForm-Add .Button{
   height:100%;
   width:auto;
@@ -565,6 +580,7 @@
   cursor:pointer;
   background-color: rgba(185, 175, 175, 0.487);
 }
+
 .Comp-PostForm-Time:hover{
   background-color: blue;
 }
@@ -580,6 +596,7 @@
   padding:1.5em;
   font-size:.8em;
 }
+
 .Comp-CreateLogin .Input .Col input::placeholder{
   font-size: .75em;
 }
@@ -602,10 +619,27 @@
   position:relative;
 }
 
+.Comp-CreateLogin .react-datepicker-wrapper{
+  position:absolute;
+  top:0;
+  transform: translate(15%,17%);
+}
+
+.Comp-CreateLogin .react-datepicker{
+  position:absolute;
+  background-color: white;
+  border:solid black .1em;
+  border-radius:.5em;
+  z-index:2;
+  top:0em;
+  left:-6.4em;
+}
+
 .Comp-CreateLogin .Input .Col .Date .Value{
   position:relative;
   width:100%;
 }
+
 .Comp-CreateLogin .Input .Col .Date .Icon{
   position:absolute;
   width:2em;
@@ -613,7 +647,6 @@
   right:-.5em;
   top:.5em;
 }
-
 
 .Comp-CreateLogin .Input .Col .ShowPass svg:hover{
   background-color: rgb(190, 190, 244);
@@ -646,20 +679,22 @@
   display:flex;
   flex-direction: row;
 }
+
 .Comp-CreateLogin .Input .Col .Labels{
   flex:1;
   font-weight: bold;
 }
 
-
 .Comp-CreateLogin .Input .Col .Password{
   display:flex;
   align-items: center;
 }
+
 .Comp-CreateLogin .Input .Col .Password div{
   position:relative;
   height:inherit;
 }
+
 .Comp-CreateLogin .Input .Col .Password div svg{
   height:1em;
 }
@@ -683,11 +718,11 @@
 .Comp-CreateLogin div a{
   font-weight: normal;
 }
+
 .Comp-CreateLogin div a:hover{
   cursor:pointer;
   font-weight: bold;
 }
-
 
 .Comp-Login{
   background-color: rgb(202, 225, 228);
@@ -698,6 +733,7 @@
   border-radius: .5em;
   border:solid black .1em;
 }
+
 .Comp-Login .CL-Row{
   flex:1;
   display:flex;
@@ -707,6 +743,7 @@
   padding-right:2em;
   align-items: center;
 }
+
 .Comp-Login .CL-Row button{
   width:100%;
   background-color: rgb(215, 215, 237);
@@ -723,14 +760,17 @@
   margin-bottom:1em;
   margin-top:.5em;
 }
+
 .Comp-Login .CL-Row div{
   font-weight: bold;
   width:100%;
 }
+
 .Comp-Login .CL-Row .Password{
   display:flex;
   align-items: center;
 }
+
 .Comp-Login .CL-Row .Password div{
   flex:1;
 }
@@ -757,6 +797,7 @@
   font-weight: normal;
   padding:.25em;
 }
+
 .Comp-Login .CL-Row div a:hover{
   cursor:pointer;
   font-weight: bold;
@@ -771,6 +812,7 @@
   border-radius: .5em;
   border:solid black .1em;
 }
+
 .Comp-Forgot .CF-Row{
   flex:1;
   display:flex;
@@ -778,22 +820,27 @@
   padding:2em;
   align-items: center;
 }
+
 .Comp-Forgot .CF-Row button{
   width:100%;
   background-color: rgb(215, 215, 237);
   border-radius: .25em;
 }
+
 .Comp-Forgot .CF-Row input{
   margin-bottom:1em;
 }
+
 .Comp-Forgot .CF-Row div{
   font-weight: bold;
   width:100%;
 }
+
 .Comp-Forgot .CF-Row .Password{
   display:flex;
   align-items: center;
 }
+
 .Comp-Forgot .CF-Row .Password div{
   flex:1;
 }
@@ -806,7 +853,6 @@
   cursor:pointer;
   font-weight: bold;
 }
-
 
 #navbarSupportedContent .SignIn{
   display:flex;
@@ -853,10 +899,12 @@
   margin:.4em;
   font-size:.7em;
 }
+
 #navbarSupportedContent .SignIn .Logged-In .Options button:hover{
   cursor:pointer;
   background-color: rgb(241, 246, 240);
 }
+
 #navbarSupportedContent .SignIn .Logged-In .Col:first-child:hover{
   cursor:pointer;
   background-color: rgb(241, 246, 240);
@@ -874,10 +922,12 @@
   font-size:.7em;
   border-radius:.5em;
 }
+
 #navbarSupportedContent .SignIn .Logged-In .Col div:first-child{
   border-bottom: solid rgba(0, 0, 0, 0.618) .1em;
   border-bottom-style: dashed;
 }
+
 #navbarSupportedContent .SignIn .Logged-In .Col div{
   flex:1;
   width:100%;
@@ -885,6 +935,7 @@
   justify-content: center;
   align-items: center;
 }
+
 #navbarSupportedContent .SignIn .Button{
   border-radius: .5em;
   width:5em;
@@ -912,7 +963,6 @@
   border-radius: 50%;
   height:1.5em;
   width:1.5em;
-
   padding:.125em;
   border:solid black .1em;
 }

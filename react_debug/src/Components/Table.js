@@ -257,9 +257,7 @@ function Table(
         for(let i = 0; i < TableValues.length; i++) //set rows and data
         {
             let data = {};
-            let source;
             let field;
-            let key;
             data['id']=TableValues[i].id;
             for(let c = 0; c < col_keys.length; c++)
             {
@@ -301,7 +299,7 @@ function Table(
             ParentData.current = parentData;
             ParentData.current['nestedData'] = TableValues;
         };
-    },[ParentData,TableValues])
+    },[parentData,TableValues])
 
     return ( //First map is column titles; Second map is for data rows/columns
         <div id={`Table-N${nestedTblIndex}`} className={`Comp-Table ${className}`}>
