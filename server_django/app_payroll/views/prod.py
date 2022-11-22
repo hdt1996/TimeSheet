@@ -33,6 +33,7 @@ class EmployeeAdminView(APIView):
         fixed_selectors = {} #{'operator':'greater','value':10} # Contrary to 'selectors' from request header. This is a query that cannot be modified as determined by admin or back-end engineers
         allowed_fields = "*" #{"'id': True, 'name': True"} # This controls fields that can be used within 'selectors' from request header; asterisks * means all fields
         try:
+            # validate request headers
             select_obj = processSelectors(request = request, fixed_selectors= fixed_selectors, allowed_fields= allowed_fields, model = Employees)
             if isinstance(select_obj, Response):
                 return select_obj
@@ -55,7 +56,9 @@ class EmployeeAdminView(APIView):
         # Summary: for posting only single entry to Employee Table aka first Clock-In
         try:
             req_body = request.data
-            """ DATA VALIDATION START"""
+
+            """ DATA VALIDATION START """
+
             data_valid = True
             if not isinstance(req_body,dict):
                 data_valid = False
@@ -66,7 +69,8 @@ class EmployeeAdminView(APIView):
 
             if not data_valid:
                 return Response({"Error":"Input data is not valid"}, status = status.HTTP_403_FORBIDDEN)
-            """ DATA VALIDATION END"""
+
+            """ DATA VALIDATION END """
 
             data = dict(serialized_employees.data)
             Employees.objects.create(**data)
@@ -83,7 +87,9 @@ class EmployeeAdminView(APIView):
         allowed_fields = "*" #{"'id': True, 'name': True"} # This controls fields that can be used within 'selectors' from request header; asterisks * means all fields
         try:
             req_body = request.data
+
             """ DATA VALIDATION START"""
+
             data_valid = True
             if not isinstance(req_body,dict):
                 data_valid = False
@@ -91,14 +97,16 @@ class EmployeeAdminView(APIView):
             serialized_employees = EmployeePUTSerializer(data = req_body, many = False)  #False to serialize single object only. req_body contains fields-value pairs to UPDATE entry (Different from get's implementation)
             if not serialized_employees.is_valid():
                 data_valid = False
-            
+
             if not data_valid:
                 return Response({"Error":"Input data is not valid"}, status = status.HTTP_403_FORBIDDEN)
+
+            """ DATA VALIDATION END"""
 
             select_obj = processSelectors(request = request, fixed_selectors= fixed_selectors, allowed_fields= allowed_fields, model =Employees )
             if isinstance(select_obj, Response):
                 return select_obj
-            """ DATA VALIDATION END"""
+            
 
             sel_dict = buildQuery(selectors= select_obj, fixed_selectors=fixed_selectors)
             table_query = Employees.objects.filter(**sel_dict)
@@ -120,15 +128,18 @@ class EmployeeAdminView(APIView):
         allowed_fields = {'id':True} #{"'id': True, 'name': True"} # This controls fields that can be used within 'selectors' from request header; asterisks * means all fields
 
         try:
-            """ DATA VALIDATION START """
+            # Validate request headers
             select_obj = processSelectors(request = request, fixed_selectors= fixed_selectors, allowed_fields= allowed_fields, model = Employees )
             if isinstance(select_obj, Response):
                 return select_obj
+
+            """ DATA VALIDATION START """
 
             ids = select_obj.get('id').get('value')
             if ids == None or not isinstance(ids, list) or \
                 (isinstance(ids, list) and not any(i.isdigit() if isinstance(i,str) else isinstance(i, int) for i in ids)) :
                 return Response({"Error":"Input data is not valid"}, status = status.HTTP_403_FORBIDDEN)
+
             """ DATA VALIDATION END """
 
             sel_dict = {'id__in':ids}
@@ -161,17 +172,20 @@ class LineItemsView(APIView):
         fixed_selectors = {} #{'operator':'greater','value':10} # Contrary to 'selectors' from request header. This is a query that cannot be modified as determined by admin or back-end engineers
         allowed_fields = "*" #{"'id': True, 'name': True"} # This controls fields that can be used within 'selectors' from request header; asterisks * means all fields
         try:
-            """ DATA VALIDATION START """
+            # Validate request headers
             select_obj = processSelectors(request = request, fixed_selectors= fixed_selectors, allowed_fields= allowed_fields, model = LineItems)
             if isinstance(select_obj, Response):
                 return select_obj
 
+            """ DATA VALIDATION START """
+
             timesheet_id = select_obj.get('timesheet').get('value')
             if timesheet_id == None or (isinstance(timesheet_id, str) and not timesheet_id.isdigit()):
                 return Response({"Error":"Input data is not valid"}, status = status.HTTP_403_FORBIDDEN)
+
             """ DATA VALIDATION END """
 
-            #Check that query is allowed
+            # validate query access
             check_access = verifyTimesheetQuery(request = request, id_list = timesheet_id, many = False) #Can only check once we have the timesheet_id
             if isinstance(check_access, Response):
                 return check_access
@@ -195,19 +209,21 @@ class LineItemsView(APIView):
         fixed_selectors = {} #{'operator':'greater','value':10} # Contrary to 'selectors' from request header. This is a query that cannot be modified as determined by admin or back-end engineers
         allowed_fields = {'id':True} #{"'id': True, 'name': True"} # This controls fields that can be used within 'selectors' from request header; asterisks * means all fields
         try:
-            """ DATA VALIDATION START"""
+            # Validate request headers
             select_obj = processSelectors(request = request, fixed_selectors= fixed_selectors, allowed_fields= allowed_fields, model = LineItems)
             if isinstance(select_obj, Response):
                 return select_obj
+            
+            """ DATA VALIDATION START """
 
             line_item_ids = select_obj.get('id').get('value')
             if line_item_ids == None or not isinstance(line_item_ids, list) or \
                 (isinstance(line_item_ids, list) and not any(i.isdigit() if isinstance(i,str) else isinstance(i, int) for i in line_item_ids)): 
                 return Response({"Error":"Input data is not valid"}, status = status.HTTP_403_FORBIDDEN)
 
-            """ DATA VALIDATION END"""
+            """ DATA VALIDATION END """
 
-            #Check that query is allowed
+            # validate query access
             check_access = verifyLineItemQuery(request = request, id_list = line_item_ids, many = True)
             if isinstance(check_access, Response):
                 return check_access
@@ -238,7 +254,8 @@ class LineItemsView(APIView):
     def put(self, request):
         try:
             line_item_data = request.data['LineItemsData']
-            """ DATA VALIDATION START"""
+
+            """ DATA VALIDATION START """
             data_valid = True
             if not isinstance(line_item_data, dict):
                 data_valid = False
@@ -250,11 +267,11 @@ class LineItemsView(APIView):
             if not data_valid:
                 return Response({"Error":"Input data is not valid"}, status = status.HTTP_403_FORBIDDEN)
             
-            """ DATA VALIDATION END"""
+            """ DATA VALIDATION END """
 
             line_item_id = line_item_data.pop('id')
 
-            #Check that query is allowed
+            # validate query access
             check_access = verifyLineItemQuery(request = request, id_list = line_item_id, many = False)
             if isinstance(check_access, Response):
                 return check_access
@@ -295,10 +312,13 @@ class TimeSheetView(APIView):
         fixed_selectors = {} #{'operator':'greater','value':10} # Contrary to 'selectors' from request header. This is a query that cannot be modified as determined by admin or back-end engineers
         allowed_fields = "*" #{"'id': True, 'name': True"} # This controls fields that can be used within 'selectors' from request header; asterisks * means all fields
         try:
+
+            # validate user/employee
             employee = getEmployeeByUser(request)
             if isinstance(employee, Response): #If user is authenticated and there is no corresponding employee object
                 return employee
 
+            # validate request headers
             select_obj = processSelectors(request = request, fixed_selectors= fixed_selectors, allowed_fields= allowed_fields, model = TimeSheet)
             if isinstance(select_obj, Response):
                 return select_obj
@@ -330,6 +350,8 @@ class TimeSheetView(APIView):
             timesheet_data = request.data['TimeSheetData']
             line_item_data = request.data['LineItemsData']
             # Process Timesheet and Line Items data in request
+
+            # validate user/employee
             employee = getEmployeeByUser(request)
             if isinstance(employee, Response): #If user is authenticated and there is no corresponding employee object
                 return employee
@@ -351,8 +373,8 @@ class TimeSheetView(APIView):
             if not data_valid:
                 return Response({"Error":"Input data is not valid"}, status = status.HTTP_403_FORBIDDEN)
 
-            """ DATA VALIDATION END
-            """
+            """ DATA VALIDATION END """
+
             #Process employee foreign key and use to create new timesheet object (employee required)
             serialized_timesheet = dict(serialized_timesheet.data) #Copy to mutate later
             del timesheet_data
@@ -389,14 +411,15 @@ class TimeSheetView(APIView):
             timesheet_data = request.data['TimeSheetData']
             line_item_data = request.data['LineItemsData']
 
+            # validate user/employee
             employee = getEmployeeByUser(request)
             if isinstance(employee, Response): #If user is authenticated and there is no corresponding employee object
                 return employee
 
+            """ DATA VALIDATION START """
+
             serialized_timesheet = TimeSheetPUTSerializer(data = timesheet_data, many = False)
             serialized_line_items = LineItemsPUTSerializer(data = line_item_data, many = True)
-
-            """ DATA VALIDATION START"""
             data_valid = True
             if not isinstance(timesheet_data,dict) or not isinstance(line_item_data,list) or timesheet_data.get('id') == None:
                 data_valid = False
@@ -407,7 +430,7 @@ class TimeSheetView(APIView):
             if not data_valid:
                 return Response({'Error':'Line Items - Input data is not valid'}, status = status.HTTP_403_FORBIDDEN)
 
-            """ DATA VALIDATION END"""
+            """ DATA VALIDATION END """
 
             timesheet_id = timesheet_data.pop('id') #Okay since we have check that id is not None above
             serialized_timesheet = dict(serialized_timesheet.data)
@@ -462,15 +485,21 @@ class TimeSheetView(APIView):
         fixed_selectors = {} #{'operator':'greater','value':10} # Contrary to 'selectors' from request header. This is a query that cannot be modified as determined by admin or back-end engineers
         allowed_fields = {'id':True} #{"'id': True, 'name': True"} # This controls fields that can be used within 'selectors' from request header; asterisks * means all fields
         try:
+            # validate request headers
             select_obj = processSelectors(request = request, fixed_selectors= fixed_selectors, allowed_fields= allowed_fields, model = TimeSheet)
             if isinstance(select_obj, Response):
                 return select_obj
+
+            """ DATA VALIDATION START """
 
             ids = select_obj.get('id').get('value')
             if ids == None or not isinstance(ids, list) or \
                 (isinstance(ids, list) and not any(i.isdigit() if isinstance(i,str) else isinstance(i, int) for i in ids)) :
                 return Response({"Error":"Input data is not valid"}, status = status.HTTP_403_FORBIDDEN)
                 
+            """ DATA VALIDATION END """
+
+            # validate query access
             check_access = verifyTimesheetQuery(request, ids, many = True)
             if isinstance(check_access, Response):
                 return check_access

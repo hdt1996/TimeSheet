@@ -253,7 +253,7 @@
   font-weight: bold;
 }
 
-.Comp-SideMenu .Menu div:hover{
+.Comp-SideMenu .Menu div:not([class="App-Title"]):hover{
   background-color: rgb(152, 184, 173) !important;
   font-size:1.05em;
   cursor:pointer;

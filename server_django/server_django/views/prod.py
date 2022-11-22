@@ -24,6 +24,9 @@ class CreateLoginView(APIView):
     def post(self,request): #Endpoint for creating users and employee accounts. Assume that this web service is only accessible to internal users
         user_data = request.data['user']
         employee_data=request.data['employee']
+
+        """ DATA VALIDATION START """
+
         data_valid = True
         if not isinstance(user_data,dict) or not isinstance(employee_data,dict):
             data_valid = False
@@ -35,6 +38,8 @@ class CreateLoginView(APIView):
         if not data_valid:
             return Response({'Error':'Invalid Data'},status=status.HTTP_403_FORBIDDEN)
 
+        """ DATA VALIDATION END """
+        
         employee_data['name'] = f"{user_data['first_name']} {user_data['last_name']}"
         username = user_data.pop('username')
         password = user_data.pop('password')
@@ -68,6 +73,9 @@ class LoginView(APIView):
     permission_classes = (permissions.AllowAny,)
     def post(self,request):
         req_body = request.data
+
+        """ DATA VALIDATION START """
+
         data_valid = True
         if not isinstance(req_body,dict):
             data_valid = False
@@ -78,6 +86,8 @@ class LoginView(APIView):
             data_valid = False
         if not data_valid:
             return Response({'Error':'Invalid Data'},status=status.HTTP_403_FORBIDDEN)
+
+        """ DATA VALIDATION END """
 
         username = req_body["username"]
         #Here no need to use get method since passing serializer implies that these keys exist
@@ -140,6 +150,7 @@ class CheckAuth(APIView):
                 user = User.objects.get(id = request.user.id)
                 user_data = UserGetSerializer(instance = user, many=False).data
             return Response({'Success':{'user':user_data, 'employee':employee_data}})
+
         except Exception as e:
             print(DEV.traceRelevantErrors(error_log=traceback.format_exc().split('File "'), script_loc=str(settings.ROOT_DIR), latest=False, exception = e))
             #TODO send email to IT Software team of severe server error to fix asap
@@ -150,9 +161,9 @@ class CheckAuth(APIView):
     def post(self,request):
         # Verify password for sensitive profile information updates
         req_body = request.data #Should contain only password string. Over HTTPS, this does not need to be salted from client side
-        data_valid = True
         if not isinstance(req_body,str):
             return Response({"Error":"Data not valid"}, status = status.HTTP_403_FORBIDDEN)
+
         username = request.user #str dunder gives username 
         if username == 'AnonymousUser':
             return Response({"Error":"Must be signed for this security feature"}, status = status.HTTP_400_BAD_REQUEST)
