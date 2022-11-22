@@ -12,6 +12,7 @@
   align-items: center;
   font-weight: bold;
   font-size:1.5em;
+  text-align: center;
 }
 
 .App-Table{
@@ -196,6 +197,10 @@
   flex-direction: row;
 }
 
+.Comp-SideMenu .App-Title{
+  background-color: rgb(167, 192, 180);
+}
+
 .Comp-SideMenu .Menu{
   display:flex;
   flex-direction: column;
@@ -312,9 +317,10 @@
 .Comp-Query .Filter button{
   position:absolute;
   top:-1.9em;
-  left:1em;
+  left:.5em;
   width:5em;
-  font-size: 1.25em;
+  font-size: 1.1em;
+  padding:0;
   border-radius:.5em;
 }
 

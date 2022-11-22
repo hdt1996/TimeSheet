@@ -27,6 +27,9 @@ function SideMenu(
     return ( 
         <div className="Comp-SideMenu">
             <div className="Menu">
+            <div className="App-Title">
+                Applications
+            </div>
             {
                 Object.keys(MenuLinks).map((menu_item, index)=>
                 {

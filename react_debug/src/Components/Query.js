@@ -137,7 +137,7 @@ function Query(
         <div className="Comp-Query">
             <div className="Filter">
                 <ClearAllIcon className="Clear" onClick={(e) => {handleQueryClear(e)}}></ClearAllIcon>
-                <button id="Button" onClick = {() =>getQuery()}>Search</button>
+                <button id="Button" onClick = {() =>getQuery()}>Query</button>
             </div>
             
             {
