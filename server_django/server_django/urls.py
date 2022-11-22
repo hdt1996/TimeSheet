@@ -15,7 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from .views import *
+import os
+if os.environ.get("DEBUG"): #We need both for running manage.py commands such as static collection or migrations
+    from .views.debug import *
+else:
+    from .views.prod import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),

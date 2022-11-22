@@ -4,15 +4,15 @@ from rest_framework import status
 # from rest_framework.authtoken.models import Token (Not using JWT Token this time for the exercise since it may take me more time than necessary to finish; Using DB Sessions instead)
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect, csrf_exempt #ensure_csrf_cookie, 
-from .models import *
-from .serializer import *
-from .query import *
+from ..models import *
+from ..serializer import *
+from ..query import *
 from utils.py.development import Development
 import os, traceback
 if os.environ.get('DEBUG'):
-    from .permissions.debug import *
+    from ..permissions.debug import *
 else:
-    from .permissions.production import *
+    from ..permissions.production import *
 from django.conf import settings
 
 DEV = Development(proj_dir = 'Timesheet',test_dir = 'Timesheet/tests',log_dir = 'Timesheet/logs')

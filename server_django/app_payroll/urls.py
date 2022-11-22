@@ -14,7 +14,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path
-from .views import *
+import os
+if os.environ.get("DEBUG"): #We need both for running manage.py commands such as static collection or migrations
+    from .views.debug import *
+else:
+    from .views.prod import *
 
 urlpatterns = [
     path('employees/',EmployeeAdminView.as_view()),
