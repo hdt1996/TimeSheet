@@ -1,6 +1,12 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {fetcherSelect} from '../Utilities/Endpoints';
 import ClearAllIcon from '@mui/icons-material/ClearAll';
+import InfoIcon from '@mui/icons-material/Info';
+import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
+import {alternativeBoolState} from '../Utilities/Utils'
+import HelpIcon from '@mui/icons-material/Help';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 function Query(
     {
         config=
@@ -16,6 +22,8 @@ function Query(
 ){
     let columns=[];
     let col_keys = Object.keys(config['col_map']);
+    let [ShowInfo,setShowInfo]= useState(false);
+    let [ShowHelp,setShowHelp]= useState(false);
 
     for(let i = 0; i < col_keys.length; i++)
     {
@@ -132,26 +140,115 @@ function Query(
         };
     },[config, nestedTblIndex, col_keys]);
 
-
+    let OpKeys = Object.keys(operator_map)
     return (
         <div className="Comp-Query">
             <div className="Filter">
-                <ClearAllIcon className="Clear" onClick={(e) => {handleQueryClear(e)}}></ClearAllIcon>
+                <div className="Clear" onClick={(e) => {handleQueryClear(e)}}>CLR</div>
                 <button id="Button" onClick = {() =>getQuery()}>Query</button>
             </div>
-            
             {
                 columns.map((col, index)=>
                 {
                     let db_col = col_keys[index];
                     return (
                     <div style={{width:`${config['col_width']}px`}} key={index}>
-                        <input placeholder = "Enter filter" onChange={(e) => {handleValueChange(e,db_col)}}></input>
-                        <input placeholder = "____" onChange={(e) => {handleOperatorChange(e,db_col)}}></input>
+                        <input placeholder = "Query Value" onChange={(e) => {handleValueChange(e,db_col)}}></input>
+                        <input placeholder = "FLTR" onChange={(e) => {handleOperatorChange(e,db_col)}}></input>
                     </div>
                     )
                 })
             }
+            <div className = "Help-Me" style = {{width:`${config['col_width']}px`}}>
+                <div className = "Wrapper">
+                    <InfoIcon onClick = {() => alternativeBoolState(ShowInfo,setShowInfo)}/>
+                    <HelpIcon onClick = {() => alternativeBoolState(ShowHelp,setShowHelp)}/>
+                    {
+                        ShowInfo?
+                        <>
+                        <div className = "Text">
+                            <div>FLTR Options</div>
+                            <br></br>
+                            {
+                                OpKeys.map((op, index)=>
+                                <Row key = {index} className = "Col">
+                                    <Col>{op}</Col>
+                                    <Col>{operator_map[op]}</Col>
+                                </Row>
+                            )}
+
+                        </div>
+                        <ChatBubbleIcon className = "Icon"></ChatBubbleIcon>
+                        </>
+                        :null
+                    }
+
+                    {
+                        ShowHelp?
+                        <>
+                        <div className = "Text">
+
+                            <Row>
+                                Query Tool
+                            </Row>
+                            <Row>
+                                <li>
+                                    Click CLR to reset query
+                                </li>
+                            </Row>
+                            <Row>
+                                <li>
+                                    Click + to add new entry
+                                </li>
+                            </Row>
+                            <Row>
+                                Table Editing
+                            </Row>
+                            <Row>
+                                <li>
+                                    Reset undoes changes
+                                </li>
+                            </Row>
+                            <Row>
+                                <li>
+                                    Save commits changes
+                                </li>
+                            </Row>
+                            <Row>
+                                General
+                            </Row>
+                            <Row>
+                                <li>
+                                    Double-click row to expand
+                                </li>
+                            </Row>
+                            <Row>
+                                <li>
+                                    Tick row(s) to mark deletion
+                                </li>
+                            </Row>
+                            <Row>----------------------------</Row>
+                            <Row>
+                                <p>
+                                    Hover over column labels
+                                    for more options
+                                </p>
+                            </Row>
+                        </div>
+                        <ChatBubbleIcon className = "Icon"></ChatBubbleIcon>
+                        </>
+                        
+                        :null
+                    }
+
+                </div>
+            </div>
+
+            <div className = "Help-Me" style = {{width:`${config['col_width']}px`}}>
+                <div className = "Wrapper" >
+
+                </div>
+            </div>
         </div>
     );
   }
