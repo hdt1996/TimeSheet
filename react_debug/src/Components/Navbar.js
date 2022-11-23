@@ -64,39 +64,39 @@ function Navbar({config={'title':'Title','sections':['Section1','Section2','Sect
           <input className="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"></input>
           <button className="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
         </form>
-        <div className="SignIn">
+        <div className="flxrowend pdlftp5e fitwd">
           {
             RenderLogin?
-            <div className="Navbar-Auth">
-              <CloseIcon className="Close" onClick={() =>{setRenderLogin(false)}}/>
+            <div className="NavAuth">
+              <CloseIcon className="NavClose" onClick={() =>{setRenderLogin(false)}}/>
               <Login setRenderLogin={setRenderLogin} setRenderCreate={setRenderCreate} setRenderForgot={setRenderForgot} setUserData={setUserData}></Login>
             </div>
             :
             RenderCreate?
-            <div className="Navbar-Auth">
-              <CloseIcon className="Close" onClick={() =>{setRenderCreate(false)}}/>
+            <div className="NavAuth">
+              <CloseIcon className="NavClose" onClick={() =>{setRenderCreate(false)}}/>
               <CreateLogin setRenderLogin={setRenderLogin} setRenderCreate={setRenderCreate} setRenderForgot={setRenderForgot}></CreateLogin>
             </div>
             :
             RenderForgot?
-            <div className="Navbar-Auth">
-              <CloseIcon className="Close" onClick={() =>{setRenderForgot(false)}}/>
+            <div className="NavAuth">
+              <CloseIcon className="NavClose" onClick={() =>{setRenderForgot(false)}}/>
               <ForgotLogin setRenderLogin={setRenderLogin} setRenderCreate={setRenderCreate} setRenderForgot={setRenderForgot}></ForgotLogin>
             </div>
             :
             UserData && !UserData.Error?
-            <div className="Logged-In">
-              <div className = "Col" onClick={() => {alternativeBoolState(ShowUserOptions, setShowUserOptions)}}>
+            <div className="Logged-In disflxrctr">
+              <div className = "LICol disflxcctr pdh1e" onClick={() => {alternativeBoolState(ShowUserOptions, setShowUserOptions)}}>
                 <div>Currently</div>
                 <div>{UserData.Success.user.username}</div>
               </div>
-              <div className = "Col">
+              <div className = "LICol disflxcctr pdh1e">
                 <div>Employee ID</div>
                 <div>{UserData.Success.employee.id}</div>
               </div>
               {
                 ShowUserOptions?
-                <div className="Options">
+                <div className="LIOptions disflxcol flxcolend">
                   <button onClick = {() => {sendSignOut()}}>
                     Sign Out
                   </button>
@@ -108,7 +108,7 @@ function Navbar({config={'title':'Title','sections':['Section1','Section2','Sect
               }
             </div>
             :
-            <button className="Button" onClick={() => {setRenderLogin(true)}}>
+            <button className="LIButton" onClick={() => {setRenderLogin(true)}}>
               Sign In
             </button>
           }

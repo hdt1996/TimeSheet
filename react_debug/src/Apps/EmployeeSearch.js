@@ -59,7 +59,7 @@ export default function EmployeeSearch({endpoint, UserData=null})
 
     return (
     <div className="App-Table">
-        <div className="App-Title">
+        <div className="mxht2p5e bktitleclr1 disflxrctr flx1 fntsz1p5e fntbld">
         Admin Employee Management
         </div>
         <div className="Comp-Table">

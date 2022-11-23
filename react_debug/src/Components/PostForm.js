@@ -27,13 +27,13 @@ function PostForm(
     let par_children = parent_element.children;
     //Make copy of 2nd to last element
     let new_clone = par_children[par_children.length-2].cloneNode(true); //Clone contains attributes but not hydrated event listeners
-  
+
     //Before we insert, we need to update the placeholder which is the actual programmatic index of the rows
     //List starts with zero but on the frontend we use 1 as starting point
     let updated_placeholder = parseInt(new_clone.getAttribute('placeholder'))+1; //Initial clone has placeholder of 0, we increment
 
     new_clone.setAttribute('placeholder',updated_placeholder) //update
-    new_clone.querySelector(".Index").innerHTML = updated_placeholder + 1; //The index shown is the placeholder plus one since we do not start from zero
+    new_clone.querySelector("#index").innerHTML = updated_placeholder + 1; //The index shown is the placeholder plus one since we do not start from zero
     new_clone.setAttribute("id",alternative_shades[ColorIndex]);
     //We will use this to feed to onKeyUp event handler #TODO
 
@@ -48,7 +48,7 @@ function PostForm(
 
     //Now we add the delete event listener
     //Get the delete div from the clone
-    let clone_delete_icon = new_clone.querySelector(".Delete");
+    let clone_delete_icon = new_clone.querySelector("#delete");
     clone_delete_icon.onclick=(e)=>{handleDelete(e)};
 
     //This is it for hydrating the new clone!
@@ -63,8 +63,6 @@ function PostForm(
     {
       ColorIndex++;
     };
-
-
   };
 
   function handleDelete(e){
@@ -83,7 +81,7 @@ function PostForm(
     // No need to rehydrate elements since arguments for array functions
     {
       par_children[index].setAttribute("placeholder",index);
-      par_children[index].querySelector(".Index").innerHTML = index+1;
+      par_children[index].querySelector("#index").innerHTML = index+1;
     };
 
     if(ColorIndex === 0){
@@ -96,14 +94,14 @@ function PostForm(
   };
 
     return (
-      <Form id="Comp-PostForm">
+      <Form id="Comp-PostForm" className="flx1 disflxcol wd100pct">
       {
         !CurrentData?
         rows.map((r, rindex)=>
         {                
           return (
-            <Row key = {rindex} className="Comp-PostForm-Row" placeholder={`${rindex}`}>
-              <Col className="Index">
+            <Row key = {rindex} className="flxctr brdbblkp1eo4 mrgn0 pdp25e" placeholder={`${rindex}`}>
+              <Col id="index" className="mxwd3e">
                 {rindex+1}
               </Col>
               {
@@ -117,8 +115,8 @@ function PostForm(
                   )
                 })
               }
-              <div className="Delete" onClick={(e)=>{handleDelete(e)}}>
-                <Delete className="Icon"/>
+              <div id = "delete" className="z2 hovcursor hovclr1" onClick={(e)=>{handleDelete(e)}}>
+                <Delete className="mnht1p5e mnwd1p5e noclick noclickpath" />
               </div>
             </Row>
           )
@@ -127,8 +125,8 @@ function PostForm(
         CurrentData.map((r, rindex)=>
         {                
           return (
-            <Row key = {rindex} className="Comp-PostForm-Row" placeholder={`${rindex}`}>
-              <Col className="Index">
+            <Row key = {rindex} className="pdvp5e flxctr brdbblkp1eo4 pdp25e" placeholder={`${rindex}`}>
+              <Col id="index" className="mxwd3e">
                 {rindex+1}
               </Col>
               {
@@ -142,16 +140,16 @@ function PostForm(
                   )
                 })
               }
-              <div className="Delete" onClick={(e)=>{handleDelete(e)}}>
-                <Delete className="Icon"/>
+              <div id = "delete" className="z2 hovcursor hovclr1" onClick={(e)=>{handleDelete(e)}}>
+                <Delete className="mnht1p5e mnwd1p5e  noclick noclickpath"/>
               </div>
             </Row>
           )
         })
       }
 
-      <div className="Comp-PostForm-Add">
-        <Add className="Button" onClick={()=>{handleAdd()}}></Add>
+      <div className="z2 disflxrow flxrowend">
+        <Add id="add" className="mnht1p5e mnwd1p5e hovcursor hovclr1 noclickpath " onClick={()=>{handleAdd()}}></Add>
       </div>
     </Form>
     );

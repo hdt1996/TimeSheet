@@ -140,17 +140,19 @@ export default function TimeSheetCreate({endpoint, UserData = null, CurrentData 
             alert(`Successfully ${custom}`);
         };
 
-        let all_inputs = document.querySelector(".App-Timesheet .Form").querySelectorAll("input");
+        let form_element = document.getElementById("Form")
+        let all_inputs = form_element.querySelectorAll("input");
+        
         for(let i = 0; i < all_inputs.length;i++)
         {
-            all_inputs[i].classList.add("TimeSheet-Locked");
+            all_inputs[i].classList.add("locked");
         };
-        let add_button = document.querySelector(".Comp-PostForm-Add").querySelector(".Button");
-        add_button.classList.add("TimeSheet-Locked");
-        let delete_buttons = document.querySelectorAll(".Comp-PostForm-Row .Delete");
+        let add_button = form_element.querySelector("#add");
+        add_button.classList.add("locked");
+        let delete_buttons = document.querySelectorAll("#delete");
         for(let i = 0; i < delete_buttons.length; i++)
         {
-            delete_buttons[i].classList.add("TimeSheet-Locked");
+            delete_buttons[i].classList.add("locked");
         };
         setTextDisabled(true);
         setSubmissionTime(`${time_label} ${new Date().toLocaleString('en-us', { weekday:"long", year:"numeric", month:"short", day:"numeric"})}`);
@@ -158,17 +160,19 @@ export default function TimeSheetCreate({endpoint, UserData = null, CurrentData 
 
     function unfreezeTimesheet()
     {
-        let all_inputs = document.querySelector(".App-Timesheet .Form").querySelectorAll("input");
+        let form_element = document.getElementById("Form")
+        let all_inputs = form_element.querySelectorAll("input");
+
         for(let i = 0; i < all_inputs.length;i++)
         {
-            all_inputs[i].classList.remove("TimeSheet-Locked");
+            all_inputs[i].classList.remove("locked");
         };
-        let add_button = document.querySelector(".Comp-PostForm-Add").querySelector(".Button");
-        add_button.classList.remove("TimeSheet-Locked");
-        let delete_buttons = document.querySelectorAll(".Comp-PostForm-Row .Delete");
+        let add_button = form_element.querySelector("#add");
+        add_button.classList.remove("locked");
+        let delete_buttons = document.querySelectorAll("#delete");
         for(let i = 0; i < delete_buttons.length; i++)
         {
-            delete_buttons[i].classList.remove("TimeSheet-Locked");
+            delete_buttons[i].classList.remove("locked");
         };
         setTextDisabled(false);
         setModeLabel("Update");
@@ -238,28 +242,27 @@ export default function TimeSheetCreate({endpoint, UserData = null, CurrentData 
     },[CurrentData])
 
     return ( 
-    <div className="App-Timesheet">
-        <div className="App-Title">
-            TimeSheet Entry
+    <div className="disflxcol flx30">
+        <div className="mxht2p5e bktitleclr1 disflxrctr flx1 fntsz1p5e fntbld">
+            Timesheet Entry
         </div>
-        <div className="Row">
-            <div id="Fields" className="Fields">
+        <div className="bkrowclr1 disflxrow mxht30e">
+            <div className="disflxcol flxcoleven flx5 pdnt1e mnwd18e">
                 <TextField
                     label="Timesheet ID"
                     placeholder="id"
                     value={CurrentData?"Exists":"New"}
                     disabled = {true}
-                    className={"TimeSheet-Locked"}
+                    className={"locked"}
                 />
-                <div className= "Date">
+                <div className= "posrel disflxrow" >
                     <TextField
-                        id = "Value"
                         placeholder={CurrentDate}
                         disabled = {true}
-                        className={TextDisabled?"TimeSheet-Locked":"Field-Text"}
+                        className={`flx1 ${TextDisabled?"locked":"bkwhite"}`}
                     />
-                    <DateRangeIcon className = "Icon" onClick ={() => {alternativeBoolState(ActiveCalendar,setActiveCalendar)}} ></DateRangeIcon>
-                    <div className={TextDisabled?"TimeSheet-Locked":""}>
+                    <DateRangeIcon className = "posabs ctr-right" onClick ={() => {alternativeBoolState(ActiveCalendar,setActiveCalendar)}} ></DateRangeIcon>
+                    <div className={TextDisabled?"locked":""}>
                     {
                         ActiveCalendar?
                         <DatePicker     
@@ -268,7 +271,7 @@ export default function TimeSheetCreate({endpoint, UserData = null, CurrentData 
                             placeholderText="mm/dd/yyyy" 
                             format = 'yyyy-MM-dd' 
                             onChange = {(e) =>handleDateChange((e))} 
-                            className = "Field-Calendar Field-Text">
+                            className = "posabsz2 bkwhite ">
 
                         </DatePicker>:null
                     } 
@@ -280,7 +283,7 @@ export default function TimeSheetCreate({endpoint, UserData = null, CurrentData 
                     value={handleEmployeeIDValue()}
                     onChange={(e)=>{handleTimeSheetInputs(e)}}
                     disabled = {handleEmployeeIDInputStatus()}
-                    className={TextDisabled?"TimeSheet-Locked Field-Edit":"Field-Text Field-Edit"}
+                    className={TextDisabled?"locked txtright":"bkwhite txtright"}
                 />
                 <TextField
                     label="Billing Rate (Hourly)"
@@ -288,25 +291,25 @@ export default function TimeSheetCreate({endpoint, UserData = null, CurrentData 
                     defaultValue={CurrentData?CurrentData.bill_rate:0}
                     onChange={(e)=>{handleTimeSheetInputs(e, true)}}
                     disabled = {TextDisabled}
-                    className={TextDisabled?"TimeSheet-Locked Field-Edit":"Field-Text Field-Edit"}
+                    className={TextDisabled?"locked txtright":"bkwhite txtright"}
                 />
                 <TextField
                     label="Total Time (Minutes)"
                     placeholder="total_time"
                     defaultValue={CurrentData?CurrentData.total_time:0}
                     disabled = {true}
-                    className={TextDisabled?"TimeSheet-Locked Field-Edit":"Field-Text Field-Edit"}
+                    className={TextDisabled?"locked txtright":"bkwhite txtright"}
                 />
                 <TextField
                     label="Total Bill"
                     placeholder="total_bill"
                     defaultValue={CurrentData?CurrentData.total_bill:0}
                     disabled = {true}
-                    className={TextDisabled?"TimeSheet-Locked Field-Edit":"Field-Text Field-Edit"}
+                    className={TextDisabled?"locked txtright":"bkwhite txtright"}
                 />
             </div>
 
-            <div className='Field-Description'>
+            <div className='flx30 mnwd25e'>
                 <TextField
                     multiline
                     fullWidth
@@ -317,30 +320,29 @@ export default function TimeSheetCreate({endpoint, UserData = null, CurrentData 
                     placeholder="description"
                     onChange={(e)=>{handleTimeSheetInputs(e)}}
                     disabled = {TextDisabled}
-                    className={TextDisabled?"TimeSheet-Locked":"Field-Text"}
+                    className={TextDisabled?"locked":"bkwhite"}
                 />
             </div>
         </div>
-        <div className="App-Title">
+        <div className="mxht2p5e mnht2p5e bktitleclr2 disflxrctr flx1 fntsz1p5e fntbld">
             Billing Line Items
         </div>
-        <div className="Form">
+        <div className="bkbodyclr1 flx1 disflxrow" id = "Form">
             <PostForm BillingLineData = {BillingLineData} inputChange = {handleBillLineInputs} deleteChange = {handleBillLineDelete} config={PostFormConfig} CurrentData={CurrentData?CurrentData['nestedData']:null}></PostForm>
         </div>
-        <div className="Footer">
-            <div className="Submit-Time">
-                <div className = "Footer-Row">
-                    <div>Status:</div> 
-                    <div>{SubmissionTime}</div>
+        <div className="flx1 mxht3e disflxrow">
+            <div className="disflxcol flx1 mxwd25e bkrowclr2 brdblrp5e ">
+                <div className = "flx1 Footer-Row disflxrctr posrel fntbld brdblkp125e brdradiusp5e bkbtnclr1">
+                    <div className = "disflxrctr brdradiusp5e flx1">Status:</div> 
+                    <div className = "disflxrctr brdradiusp5e flx4">{SubmissionTime}</div>
                 </div>
-
             </div>
-            <div className="Submit-Button">
+            <div className="ht100pct disflxrow flxrowend flx1 brdbrrp5e bkrowclr2">
                 {
                     TextDisabled?
-                    <button onClick={() => {window.location.reload()}}>New TimeSheet</button>
+                    <button className="ht100pct bkbtnclr1 brdradiusp5e brdblkp125e fntsz1p25e hovcursor hovclr2 pdh1e" onClick={() => {window.location.reload()}}>New TimeSheet</button>
                     :
-                    <button 
+                    <button className="ht100pct bkbtnclr1 brdradiusp5e brdblkp125e fntsz1p25e hovcursor hovclr2 pdh1e pdh1e"
                         onClick=
                         {
                             ModeLabel==="Create"?
@@ -351,21 +353,18 @@ export default function TimeSheetCreate({endpoint, UserData = null, CurrentData 
                             :
                             null
                         }
-                    >{
-                        ModeLabel}
+                    >
+                        {ModeLabel}
                     </button>
                 }
                 {
                     TextDisabled?
-                    <button onClick = {() =>{unfreezeTimesheet()}}>Update Current</button>
+                    <button className = "ht100pct bkbtnclr1 brdradiusp5e brdblkp125e fntsz1p25e hovcursor hovclr2 pdh1e mrgnlft1e" onClick = {() =>{unfreezeTimesheet()}}>Update Current</button>
                     :
                     null
                 }
-
-                
             </div>
         </div>
-
     </div>
     );
 };

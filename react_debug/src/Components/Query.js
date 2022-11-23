@@ -1,6 +1,5 @@
 import React, {useEffect, useState, useRef} from 'react';
 import {fetcherSelect} from '../Utilities/Endpoints';
-import ClearAllIcon from '@mui/icons-material/ClearAll';
 import InfoIcon from '@mui/icons-material/Info';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import {alternativeBoolState} from '../Utilities/Utils'
@@ -159,26 +158,26 @@ function Query(
                     )
                 })
             }
-            <div className = "Help-Me" style = {{width:`${config['col_width']}px`}}>
+            <div className = "HelpInfo" style = {{width:`${config['col_width']}px`}}>
                 <div className = "Wrapper">
-                    <InfoIcon onClick = {() => alternativeBoolState(ShowInfo,setShowInfo)}/>
-                    <HelpIcon onClick = {() => alternativeBoolState(ShowHelp,setShowHelp)}/>
+                    <InfoIcon className="z2 hovcursor" onClick = {() => alternativeBoolState(ShowInfo,setShowInfo)}/>
+                    <HelpIcon className="z2 hovcursor" onClick = {() => alternativeBoolState(ShowHelp,setShowHelp)}/>
                     {
                         ShowInfo?
                         <>
-                        <div className = "Text">
+                        <div className = "disflxcctr HelpText">
                             <div>FLTR Options</div>
-                            <br></br>
                             {
                                 OpKeys.map((op, index)=>
-                                <Row key = {index} className = "Col">
+                                <Row key = {index} className = "HelpLine">
                                     <Col>{op}</Col>
                                     <Col>{operator_map[op]}</Col>
                                 </Row>
                             )}
-
+                            <br></br>
+                            <Row>Note: ( in ) option simply needs comma separated values (i.e. 1,2,3...)</Row>
                         </div>
-                        <ChatBubbleIcon className = "Icon"></ChatBubbleIcon>
+                        <ChatBubbleIcon className = "HelpIcon"></ChatBubbleIcon>
                         </>
                         :null
                     }
@@ -186,67 +185,27 @@ function Query(
                     {
                         ShowHelp?
                         <>
-                        <div className = "Text">
+                        <div className = "disflxcol HelpText">
+                            <Row className = "HelpLabel">Query Tool (Top-most Row) Information</Row>
+                            <li>Click CLR to reset query (Default: SELECT * FROM)</li>
+                            <li>Use ( + ) for new entry. Re-query to see update</li>
+                            <li>Query Value takes numerical, string, or list</li>
+                            <li>FLTR query parameters can be found in ( i )</li>
 
-                            <Row>
-                                Query Tool
-                            </Row>
-                            <Row>
-                                <li>
-                                    Click CLR to reset query
-                                </li>
-                            </Row>
-                            <Row>
-                                <li>
-                                    Click + to add new entry
-                                </li>
-                            </Row>
-                            <Row>
-                                Table Editing
-                            </Row>
-                            <Row>
-                                <li>
-                                    Reset undoes changes
-                                </li>
-                            </Row>
-                            <Row>
-                                <li>
-                                    Save commits changes
-                                </li>
-                            </Row>
-                            <Row>
-                                General
-                            </Row>
-                            <Row>
-                                <li>
-                                    Double-click row to expand
-                                </li>
-                            </Row>
-                            <Row>
-                                <li>
-                                    Tick row(s) to mark deletion
-                                </li>
-                            </Row>
-                            <Row>----------------------------</Row>
-                            <Row>
-                                <p>
-                                    Hover over column labels
-                                    for more options
-                                </p>
-                            </Row>
+                            <Row className = "HelpLabel">Edit Button Options (Pencil Icon)</Row>
+                            <li>Reset restores row to original values from query</li>
+                            <li>Save commits changes (for updating or reverting)</li>
+                           
+                            <Row className = "HelpLabel">General</Row>
+                            <li>Double-click row to expand (Opens subtable)</li>
+                            <li>Tick checkboxes next to rows to mark for deletion</li>
+                            <li>Cursor over column names for sorting/filtering</li>
+                          
                         </div>
-                        <ChatBubbleIcon className = "Icon"></ChatBubbleIcon>
+                        <ChatBubbleIcon className = "HelpIcon"></ChatBubbleIcon>
                         </>
-                        
                         :null
                     }
-
-                </div>
-            </div>
-
-            <div className = "Help-Me" style = {{width:`${config['col_width']}px`}}>
-                <div className = "Wrapper" >
-
                 </div>
             </div>
         </div>
