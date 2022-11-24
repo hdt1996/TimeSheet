@@ -22,6 +22,7 @@ function Navbar({config={'title':'Title','sections':['Section1','Section2','Sect
       {
           alert(`${data['Success']}`);
           setUserData(null);
+          window.location.reload();
           return;
       };
       alert(data['Error']);

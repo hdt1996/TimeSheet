@@ -54,7 +54,7 @@ export default function EmployeeSearch({endpoint, UserData=null})
         AddComponent:CreateLogin,
         EditComponent:null,
         add_endpoint:null,
-        DetailTblConfig:{},
+        DetailTblConfig:null,
     });
 
     return (
@@ -62,9 +62,16 @@ export default function EmployeeSearch({endpoint, UserData=null})
         <div className="mxht2p5e bktitleclr1 disflxrctr flx1 fntsz1p5e fntbld">
         Admin Employee Management
         </div>
-        <div className="Comp-Table">
-            <Table config={TblConfig} nestedTblIndex = {0} UserData = {UserData}></Table>
-        </div>
+        {
+            UserData && UserData.Success && UserData.Success.user.is_superuser?
+            <div className="Comp-Table">
+                <Table config={TblConfig} nestedTblIndex = {0} UserData = {UserData}></Table>
+            </div>:
+            <div style={{backgroundColor:"white",color:"red",fontSize:"1.5em",display:"flex",justifyContent:"center",alignItems:"center",flex:"1"}}>
+                Not allowed... Please sign in as admin user.
+            </div>
+        }
+
     </div>
     );
 };

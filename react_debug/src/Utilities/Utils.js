@@ -46,9 +46,11 @@ function alternativeBoolState(CurrState, setCurState)
 {
   if(CurrState)
   {
+
     setCurState(false);
     return;
   };
+  console.log(CurrState)
   setCurState(true);
 };
 

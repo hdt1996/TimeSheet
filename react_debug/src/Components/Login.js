@@ -11,7 +11,7 @@ function Login({setRenderLogin, setRenderCreate, setRenderForgot, setUserData}) 
 
     function handleMouseUp()
     {
-        let element = document.querySelector("#Comp-Login-Password"); //Works much better than having a selectedPassword state!
+        let element = document.getElementById('login-password'); //Works much better than having a selectedPassword state!
         if(document.activeElement === element)
         {
             PassChar.current = [element.selectionStart,element.selectionEnd];
@@ -20,7 +20,7 @@ function Login({setRenderLogin, setRenderCreate, setRenderForgot, setUserData}) 
 
     function handleShowPassword(e)
     {
-        let pass_element = document.getElementById('Comp-Login-Password');
+        let pass_element = document.getElementById('login-password');
         pass_element.value = Password.current.join('');
         ShowPass.current = true;
     };
@@ -35,6 +35,7 @@ function Login({setRenderLogin, setRenderCreate, setRenderForgot, setUserData}) 
             Password.current = [];
             setUsername(null);
             setRenderLogin(false);
+            window.location.reload();
             return;
         };
         alert(data['Error']);
@@ -60,7 +61,7 @@ function Login({setRenderLogin, setRenderCreate, setRenderForgot, setUserData}) 
                 <div>Password</div>
                 <div className = "Password">
                     <Form.Control 
-                        placeholder="Enter your Password" id="Comp-Login-Password"
+                        placeholder="Enter your Password" id="login-password"
                         onChange = {(e) => {hidePasswordInput(e,Password,PassChar, ShowPass)}}
                     ></Form.Control>
                     <div className = "ShowPass" onClick = {(e) => {handleShowPassword(e)}}><VisibilityIcon></VisibilityIcon></div>

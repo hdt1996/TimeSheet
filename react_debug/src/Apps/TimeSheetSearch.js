@@ -112,7 +112,7 @@ export default function TimeSheetSearch({endpoint, UserData = null})
             },
             AddComponent:TimeSheetCreate,
             add_endpoint:endpoint,
-            DetailTblConfig:{},
+            DetailTblConfig:null,
         }
     });
 

@@ -1,5 +1,5 @@
 import Form from 'react-bootstrap/Form'
-import React, { useState, useEffect} from "react";
+import React from "react";
 
 function ForgotLogin({setRenderLogin, setRenderCreate, setRenderForgot}) {
 
@@ -11,11 +11,7 @@ function ForgotLogin({setRenderLogin, setRenderCreate, setRenderForgot}) {
                 <div>Recovery by Email (Get Temp Password)</div>
                 <Form.Control placeholder="Enter your recovery email"></Form.Control>
                 <div>Recovery by Username (Security Questions)</div>
-                <div className = "Password">
-                    <Form.Control 
-                        placeholder="Enter your username" id="Comp-Login-Password"
-                    ></Form.Control>
-                </div>
+                <Form.Control placeholder="Enter your username"></Form.Control>
 
                 <button type="button" id="button" onClick={()=>{}} >Initialize Account Recovery</button>
                 <br></br>

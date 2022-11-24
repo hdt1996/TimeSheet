@@ -5,7 +5,7 @@ import {createLogin} from '../Utilities/Endpoints';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import {buildDateTimeStr, hidePasswordInput} from '../Utilities/Utils';
+import {buildDateTimeStr, hidePasswordInput, alternativeBoolState} from '../Utilities/Utils';
 
 function CreateLogin({setRenderLogin, setRenderCreate, setRenderForgot}) {
     let FirstName= useRef(null);
@@ -27,11 +27,26 @@ function CreateLogin({setRenderLogin, setRenderCreate, setRenderForgot}) {
 
     function handleMouseUp()
     {
-        let element = document.querySelector("#Comp-Login-Password"); //Works much better than having a selectedPassword state!
+        let element = document.getElementById("create-password"); //Works much better than having a selectedPassword state!
         if(document.activeElement === element)
         {
             PassChar.current = [element.selectionStart,element.selectionEnd];
         };
+    };
+    
+    let handleDateChange = (e) =>
+    {
+        let date = new Date(e)
+        let date_format = date.toLocaleString('en-us', { weekday:"long", year:"numeric", month:"short", day:"numeric"});
+        setCurrentDate(date_format);
+        StartDate.current = buildDateTimeStr(date);
+    };
+
+    function handleShowPassword(e)
+    {
+        let pass_element = document.getElementById("create-password");
+        pass_element.value = Password.current.join('');
+        ShowPass.current = true;
     };
 
     function makeSignUpData()
@@ -70,31 +85,6 @@ function CreateLogin({setRenderLogin, setRenderCreate, setRenderForgot}) {
         alert(data['Error']);
     };
 
-    let renderCalendar = () =>
-    {
-        if(ActiveCalendar === true)
-        {
-            return setActiveCalendar(false)
-        };
-        setActiveCalendar(true);
-    };
-
-    let handleDateChange = (e) =>
-    {
-        let date = new Date(e)
-        let date_format = date.toLocaleString('en-us', { weekday:"long", year:"numeric", month:"short", day:"numeric"});
-        setCurrentDate(date_format);
-        StartDate.current = buildDateTimeStr(date);
-    };
-
-    function handleShowPassword(e)
-    {
-        let pass_element = document.getElementById('Comp-Login-Password');
-        pass_element.value = Password.current.join('');
-        ShowPass.current = true;
-    };
-
-
     useEffect(()=>
     {
         window.addEventListener('mouseup',handleMouseUp);
@@ -114,7 +104,7 @@ function CreateLogin({setRenderLogin, setRenderCreate, setRenderForgot}) {
                     <div className="Labels">New Employee Password</div>
                     <div className = "Password">
                         <Form.Control 
-                            placeholder="Enter your Password (required)" id="Comp-Login-Password"
+                            placeholder="Enter your Password (required)" id="create-password"
                             onChange = {(e) => {hidePasswordInput(e,Password,PassChar, ShowPass)}}
                         >
                         </Form.Control>
@@ -123,7 +113,7 @@ function CreateLogin({setRenderLogin, setRenderCreate, setRenderForgot}) {
                     <div className="Labels">Start date</div>
                     <div className= "Date">
                         <Form.Control className="Value" placeholder={CurrentDate}></Form.Control>
-                        <DateRangeIcon className = "Icon" onClick ={() => {renderCalendar()}} ></DateRangeIcon>
+                        <DateRangeIcon className = "Icon" onClick ={() => {alternativeBoolState(ActiveCalendar,setActiveCalendar)}} ></DateRangeIcon>
                         <div >
                         {
                             ActiveCalendar?

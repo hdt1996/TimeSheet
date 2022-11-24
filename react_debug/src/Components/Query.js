@@ -1,177 +1,117 @@
-import React, {useEffect, useState, useRef} from 'react';
-import {fetcherSelect} from '../Utilities/Endpoints';
+import React from 'react';
 import InfoIcon from '@mui/icons-material/Info';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import {alternativeBoolState} from '../Utilities/Utils'
 import HelpIcon from '@mui/icons-material/Help';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-function Query(
+import {Query as QueryCore} from '../Core/Query';
+
+export default class Query extends QueryCore
+{
+    constructor(props)
     {
-        config=
-        {
+        super(props);
+        this.config=props.config;
+        /*{
             col_map:{},
             col_width:150,
             start_query:{},
             endpoint:''
-        },
-        setTableValues,
-        nestedTblIndex={"current":0}
-    },
-){
-    let columns=[];
-    let col_keys = Object.keys(config['col_map']);
-    let [ShowInfo,setShowInfo]= useState(false);
-    let [ShowHelp,setShowHelp]= useState(false);
-
-    for(let i = 0; i < col_keys.length; i++)
-    {
-        columns.push(i);
-    };
-
-    let firstQuery = useRef(false);
-    let QueryOptions = useRef({});  // Will be updated when input boxes are updated onChange
-
-    const operator_map = // I could have used Django's direct ORM statements as value, but I think it is better to abstract/hide the back-end arguments
-    {
-        '=':'equal',
-        '>':'greater',
-        '>=':'greater-equal',
-        '<':'lesser',
-        '<=':'lesser-equal',
-        '^':'startswith',
-        'ctn':'contains',
-        'in':'in'
-    };
-
-    function validateQueryValue(operator, field, value_element)
-    {
-        if(!(operator in operator_map))
+        }*/
+        this.operator_map = //I could have used Django's direct ORM statements as value, but I think it is better to abstract/hide the back-end arguments
         {
-            QueryOptions.current[field]['operator']=null;
-            QueryOptions.current[field]['value']=null;
-            return;
+            '=':'equal',
+            '>':'greater',
+            '>=':'greater-equal',
+            '<':'lesser',
+            '<=':'lesser-equal',
+            '^':'startswith',
+            'ctn':'contains',
+            'in':'in'
+        };
+        this.setTableValues=props.setTableValues;
+        this.nestedTblIndex=props.nestedTblIndex;
+        this.firstQuery = React.createRef();
+        this.firstQuery.current = false;
+        this.QueryOptions = React.createRef();
+        this.QueryOptions.current = {}; // Will be updated when input boxes are updated onChange
+
+        this.columns = [];
+        this.col_keys = Object.keys(props.config['col_map']);
+        this.OpKeys = Object.keys(this.operator_map)
+        this.state = 
+        {
+            ShowInfo:false,
+            ShowHelp:false
         };
 
-        QueryOptions.current[field]['operator']=operator_map[operator];
-        if(operator === 'in')
+        for(let i = 0; i < this.col_keys.length; i++)
         {
-            try
+            this.columns.push(i);
+        };
+    }
+
+    componentDidMount()
+    {
+        let currentQueryOptions = this.QueryOptions.current;
+        if(Object.keys(currentQueryOptions).length === 0)
+        {
+            for(let i = 0; i < this.col_keys.length; i++)
             {
-                let parsed_val = JSON.parse(`[${value_element.value}]`);
-                QueryOptions.current[field]['value']=parsed_val;
-                value_element.style.backgroundColor = "white";
-            }
-            catch
-            {
-                QueryOptions.current[field]['value']=[];
-                value_element.style.backgroundColor = "red";
-            };
-            return;
-        };
-        value_element.style.backgroundColor = "white";
-        QueryOptions.current[field]['value']=value_element.value;
-    };
-
-    function handleQueryClear(e)
-    {
-        let currentQueryOptions = QueryOptions.current;
-        for(let i = 0; i < col_keys.length; i++)
-        {
-            currentQueryOptions[col_keys[i]]={operator:null,value:null};
-        };
-        let comp_element = e.target.parentNode.parentNode;
-        let input_elements = comp_element.querySelectorAll('input');
-        for(let inp = 0; inp < input_elements.length; inp++)
-        {
-            input_elements[inp].value = null;
-        };
-    };
-
-    function handleOperatorChange(e, field)
-    {   
-        let operator = e.target.value;
-        let value_element = e.target.parentNode.children[0];
-        validateQueryValue(operator, field, value_element);
-    };
-
-    function handleValueChange(e, field)
-    {   
-        let operator_element = e.target.parentNode.children[1];
-        validateQueryValue(operator_element.value,field, e.target);
-    };
-
-    async function getQuery()
-    {
-        let data = await fetcherSelect('GET',QueryOptions.current, config.endpoint);
-        if(data['Error'])
-        {
-            alert(data['Error']);
-            return;
-        }
-        setTableValues(data);
-    };
-
-    useEffect(()=>
-    {
-        if(Object.keys(QueryOptions.current).length === 0)
-        {
-            let emptyQueryOptions = QueryOptions.current;
-            for(let i = 0; i < col_keys.length; i++)
-            {
-                emptyQueryOptions[col_keys[i]]={operator:null,value:null};
+                currentQueryOptions[this.col_keys[i]]={operator:null,value:null};
             };
         };
-        let start_query_keys = Object.keys(config['start_query'])
-        if(start_query_keys.length !== 0 && !firstQuery.current)
+        let start_query_keys = Object.keys(this.config['start_query']);
+        if(start_query_keys.length !== 0 && !this.firstQuery.current)
         {
-            let currentQueryOptions = QueryOptions.current;
             let key;
             for(let i = 0; i < start_query_keys.length; i++)
             {
                 key = start_query_keys[i];
-                currentQueryOptions[key]=config['start_query'][key];
+                currentQueryOptions[key]=this.config['start_query'][key];
             };
-            let activeTable = document.getElementById(`Table-N${nestedTblIndex}`);
-            let filter_element = activeTable.querySelector(".Comp-Query .Filter #Button");
+            let activeTable = document.getElementById(`Table-N${this.nestedTblIndex}`);
+            let filter_element = activeTable.querySelector("#query");
             filter_element.click();
-            firstQuery.current = true;
+            this.firstQuery.current = true;
         };
-    },[config, nestedTblIndex, col_keys]);
-
-    let OpKeys = Object.keys(operator_map)
-    return (
-        <div className="Comp-Query">
+    };
+   
+    render()
+    {
+        return(
+            <div className="Comp-Query">
             <div className="Filter">
-                <div className="Clear" onClick={(e) => {handleQueryClear(e)}}>CLR</div>
-                <button id="Button" onClick = {() =>getQuery()}>Query</button>
+                <div className="Clear" onClick={(e) => {this.handleQueryClear(e)}}>CLR</div>
+                <button id="query" onClick = {() =>this.getQuery()}>Query</button>
             </div>
             {
-                columns.map((col, index)=>
+                this.columns.map((col, index)=>
                 {
-                    let db_col = col_keys[index];
+                    let db_col = this.col_keys[index];
                     return (
-                    <div style={{width:`${config['col_width']}px`}} key={index}>
-                        <input placeholder = "Query Value" onChange={(e) => {handleValueChange(e,db_col)}}></input>
-                        <input placeholder = "FLTR" onChange={(e) => {handleOperatorChange(e,db_col)}}></input>
+                    <div style={{width:`${this.config['col_width']}px`}} key={index}>
+                        <input placeholder = "Query Value" onChange={(e) => {this.handleValueChange(e,db_col)}}></input>
+                        <input placeholder = "FLTR" onChange={(e) => {this.handleOperatorChange(e,db_col)}}></input>
                     </div>
                     )
                 })
             }
-            <div className = "HelpInfo" style = {{width:`${config['col_width']}px`}}>
+            <div className = "HelpInfo" style = {{width:`${this.config['col_width']}px`}}>
                 <div className = "Wrapper">
-                    <InfoIcon className="z2 hovcursor" onClick = {() => alternativeBoolState(ShowInfo,setShowInfo)}/>
-                    <HelpIcon className="z2 hovcursor" onClick = {() => alternativeBoolState(ShowHelp,setShowHelp)}/>
+                    <InfoIcon className="z2 hovcursor" onClick = {() => alternativeBoolState(this.state.ShowInfo,(value) => {this.setState({'ShowInfo':value})})}/>
+                    <HelpIcon className="z2 hovcursor" onClick = {() => alternativeBoolState(this.state.ShowHelp,(value) => {this.setState({'ShowHelp':value})})}/>
                     {
-                        ShowInfo?
+                        this.state.ShowInfo?
                         <>
                         <div className = "disflxcctr HelpText">
                             <div>FLTR Options</div>
                             {
-                                OpKeys.map((op, index)=>
+                                this.OpKeys.map((op, index)=>
                                 <Row key = {index} className = "HelpLine">
                                     <Col>{op}</Col>
-                                    <Col>{operator_map[op]}</Col>
+                                    <Col>{this.operator_map[op]}</Col>
                                 </Row>
                             )}
                             <br></br>
@@ -183,7 +123,7 @@ function Query(
                     }
 
                     {
-                        ShowHelp?
+                        this.state.ShowHelp?
                         <>
                         <div className = "disflxcol HelpText">
                             <Row className = "HelpLabel">Query Tool (Top-most Row) Information</Row>
@@ -209,8 +149,8 @@ function Query(
                 </div>
             </div>
         </div>
-    );
-  }
+        )
+    }
+}
   
-  export default Query;
   

@@ -1,347 +1,119 @@
 
-import React, {useState,useEffect, useRef} from 'react';
+import React from 'react';
 import {DataGrid} from '@mui/x-data-grid/DataGrid/DataGrid'
 import Delete from '@mui/icons-material/Delete';
 import Add from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
-import {fetcherSelect, fetcherModify} from '../Utilities/Endpoints';
-import {processDelData} from '../Utilities/Utils';
 import Query from './Query';
+import {Table as TableCore} from '../Core/Table'
 
-function Table(
+export default class Table extends TableCore
+{
+    constructor(props)
     {
-        config=
+        super(props);
+        this.config=props.config;
+        this.state = 
         {
-            col_map: {},
-            uneditable:{},
-            col_width:150,
+            TableGrid:[[],[]],
+            ShowRowDetail:false,
+            ShowDeleteConfirm:false,
+            ShowAddComp:false,
+            Selected_IDs:[],
+            Editing:{}
+        };
+        this.DeleteSuccess = React.createRef();
+        this.CurrentDetailID = React.createRef();
+        this.CurrentEditDetails = React.createRef();
+        this.ParentData = React.createRef();
+        this.TableValues = React.createRef();
+        this.DetailTblConfig = React.createRef();
 
-            endpoint:"", 
-            start_query:{},
-            extract_config:{},
-            DetailTblConfig:{},
-            add_endpoint:null,
-            AddComponent:null,
-        },
-        className="",
-        nestedTblIndex = 0,
-        UserData= null,
-        parentData=null
-    }
-){
-    let [TableValues, setTableValues] = useState([]);
-    let [ShowRowDetail,setShowRowDetail] = useState(false);
-    let [DetailTblConfig,setDetailTblConfig]=useState(config.DetailTblConfig);
-    let [ShowDeleteConfirm, setShowDeleteConfirm] = useState(false);
-    let [ShowAddComp, setShowAddComp] = useState(false);
-    let [Selected_IDs,setSelected_IDs] = useState([]);
-    let SelectedRows = useRef([]);
-    let DeleteSuccess = useRef(false);
-    let CurrentDetailID = useRef(null);
-    let CurrentEditDetails = useRef({});
-    let [Editing,setEditing] = useState({});
-    let ParentData = useRef();
-    let rows=[];
-    let columns=[];
-    let col_keys = Object.keys(config['col_map']);
-
-    let handleRowClicked = null;
-    if(Object.keys(config.DetailTblConfig).length !== 0)
-    {
-        handleRowClicked = (e) =>
+        this.DetailTblConfig.current = props.config["DetailTblConfig"];
+        this.DeleteSuccess.current = false;
+        this.CurrentDetailID.current = null;
+        this.CurrentEditDetails.current = {};
+        this.ParentData.current = null;
+        this.TableValues.current = [];
+        this.col_keys = Object.keys(props.config['col_map']);
+        
+        if(!this.config.DetailTblConfig)
         {
-            setShowRowDetail(false);
-            if(ShowRowDetail && CurrentDetailID.current === e.row['col1'])
-            {
-                CurrentDetailID.current = null;
-                CurrentEditDetails.current = {};
-                return;
-            };
-            let currentDetailTblConfig = {...DetailTblConfig};
-            currentDetailTblConfig.start_query={"timesheet":{"operator":"equal","value":e.row['col1'] }};
-            setDetailTblConfig(currentDetailTblConfig);
-            CurrentDetailID.current = e.row['col1'];
-            for(let  i = 0; i < col_keys.length; i++)
-            {
-                CurrentEditDetails.current[col_keys[i]] = e.row[`col${i+1}`]
-            };
+            this.handleRowClicked = function(){};
         };
     };
 
-    function handleConfirmDelete(){
-        if(Selected_IDs.length > 0 && !ShowAddComp)
-        {
-            setShowDeleteConfirm(true);
-        };
-    };
-
-
-    function handleShowAddComp(){
-        if(!ShowDeleteConfirm)
-        {
-            setShowAddComp(true);
-        };
-    };
-
-    async function handleSelectedDelete(ids)
+    componentDidUpdate(prevProps, prevState)
     {
-        let data = await fetcherSelect('DELETE',{'id':{'value':Selected_IDs}}, config.endpoint);
-        if(data['Error'])
+        if(this.props.parentData && this.TableValues.current.length > 0) //will become null after next remount
         {
-            alert(data['Error']);
-            return;
+            this.ParentData.current = this.props.parentData;
+            this.ParentData.current['nestedData'] = this.TableValues.current;
         };
-        alert(processDelData(data, 'Deleted Entries: '));
-        DeleteSuccess.current=true;
-        setShowDeleteConfirm(false);
-    };
-
-    function handleEditCell(e)
-    {
-        let row_element = e.target.parentNode.parentNode.parentNode;
-        let currEditing = {...Editing}
-        currEditing[row_element.getAttribute('data-id')] = true;
-        let inputs = row_element.querySelectorAll('input');
-        for(let i = 0; i < inputs.length; i++)
+        if(this.CurrentDetailID.current && !this.state.ShowRowDetail)
         {
-            inputs[i].removeAttribute('disabled');
+            this.setState({"ShowRowDetail":true});
         };
-        setEditing(currEditing);
-    };
-
-    function handleEditReset(e)
-    {
-        let row_element = e.target.parentNode.parentNode.parentNode.parentNode;
-        let currEditing = {...Editing}
-        delete currEditing[row_element.getAttribute('data-id')];
-        let inputs = row_element.querySelectorAll('input');
-        for(let i = 0; i < inputs.length; i++)
+        if(this.DeleteSuccess.current)
         {
-            inputs[i].value = inputs[i].getAttribute('orig-val');
-            inputs[i].setAttribute('disabled',true);
-        };
-        setEditing(currEditing);
-    };
-
-    async function handleEditSave(e)
-    {
-        let row_element = e.target.parentNode.parentNode.parentNode.parentNode;
-        let id = row_element.getAttribute('data-id');
-        let inputs = row_element.querySelectorAll('input[db_col]');
-        let uneditables = row_element.querySelectorAll('div[db_col]');
-        let put_data = {...config['edit_config']['data']};
-        let active = config['edit_config']['active'];
-        put_data[active]['id'] = id;
-        for(let i = 0; i < inputs.length; i++)
-        {
-            let default_value = inputs[i].getAttribute('orig-val');
-            let curr_value = inputs[i].value;
-            let db_col = inputs[i].getAttribute('db_col');
-
-            if(curr_value !== '' && curr_value !== default_value)
-            {
-                put_data[active][db_col] = curr_value;
-            }
-            else if(config['extract_config']['keys'][db_col] !== null)
-            {
-                put_data[active][db_col] = default_value.split(' - ')[0];
-            }
-        };
-
-        for(let i = 0; i < uneditables.length; i++)
-        {
-            let default_value = uneditables[i].getAttribute('orig-val');
-            let db_col = uneditables[i].getAttribute('db_col');
-            if(config['extract_config']['keys'][db_col] !== null)
-            {
-                put_data[active][db_col] = default_value.split(' - ')[0];
-            };
-        };
-
-        let data = await fetcherModify("PUT",put_data,config.endpoint);
-        if(data['Error'])
-        {
-            alert(data['Error']);
-            return
-        };
-
-        let currEditing = {...Editing};
-        delete currEditing[row_element.getAttribute('data-id')];
-        for(let i = 0; i < inputs.length; i++)
-        {
-            let db_col = inputs[i].getAttribute('db_col');
-            let key = config['extract_config'].keys[db_col];
-            let source = data[active][db_col];
-            inputs[i].value = config['extract_config'].methods[db_col](key,source);
-            inputs[i].setAttribute('orig-val',inputs[i].value);
-            inputs[i].setAttribute('disabled',true);
-        };
-        for(let i = 0; i < uneditables.length; i++)
-        {
-            let db_col = uneditables[i].getAttribute('db_col');
-            let key = config['extract_config'].keys[db_col];
-            let source = data[active][db_col];
-            uneditables[i].innerHTML = config['extract_config'].methods[db_col](key,source); 
-        };
-        setEditing(currEditing);
-
-    };
-    function addEditCell()
-    {
-        let data = {};
-        data['field'] = `col${col_keys.length + 1}`;
-        data['headerName'] = ''
-        data['width']=config['col_width'];
-        data['renderCell'] = (params) => 
-            <div className="Comp-Table-Edit">
-            {
-                Editing[params.id]?
-                <div className = "Options">
-                    <button onClick = {(e) => {handleEditSave(e)}}>Save</button>
-                    <button onClick = {(e) => {handleEditReset(e)}}>Reset</button>
-                </div>:
-                <EditIcon onClick = {(e) => handleEditCell(e)}/>
-            }
-            </div>;
-        columns[col_keys.length + 1] = data;
-    };
-
-    function buildColumns()
-    {
-        for(let c = 0; c < col_keys.length; c++)
-        {
-            let data = {};
-            data['field'] = `col${c+1}`;
-            data['headerName'] = config['col_map'][col_keys[c]];
-            data['width']=config['col_width'];
-            if(!(col_keys[c] in config['uneditable']))
-            {
-                data['renderCell'] = (params) => 
-                {
-                    let field=col_keys[c];
-                    let key = config['extract_config'].keys[field];
-                    let cleaned_val  = config['extract_config'].methods[field](key,params.value);
-                    return(
-                    <input db_col = {col_keys[c]} orig-val = {JSON.stringify(cleaned_val).replace(/"/g,'')} disabled className = "Comp-Table-Input" defaultValue={cleaned_val}></input>
-                    )
-                };
-            }
-            else
-            {
-                data['renderCell'] = (params) => 
-                {
-                    let field=col_keys[c];
-                    let key = config['extract_config'].keys[field];
-                    let cleaned_val = config['extract_config'].methods[field](key,params.value);
-                    return(
-                    <div db_col = {col_keys[c]} orig-val = {JSON.stringify(cleaned_val).replace(/"/g,'')}>{cleaned_val}</div>
-                    )
-                };
-            }
-            columns[c] = data;
-        };
-        if(config.edit_config)
-        {
-            addEditCell();
-        };
-
-    };
-    if(TableValues.length > 0)
-    {
-        buildColumns();
-    }
-
-    if(Object.keys(config['extract_config']).length !== 0)
-    {
-        for(let i = 0; i < TableValues.length; i++) //set rows and data
-        {
-            let data = {};
-            let field;
-            data['id']=TableValues[i].id;
-            for(let c = 0; c < col_keys.length; c++)
-            {
-                field=col_keys[c];
-                data[`col${c+1}`]=TableValues[i][field];
-            };
-            rows[i]=data;
-        };
-    };
-
-    useEffect(()=>
-    {
-        let activeTable = document.getElementById(`Table-N${nestedTblIndex}`);
-        SelectedRows.current = activeTable.querySelectorAll('div[aria-selected="true"]')
-        if(DeleteSuccess.current && SelectedRows.current.length > 0)
-        {
+            let activeTable = document.getElementById(`Table-N${this.props.nestedTblIndex}`);
             let SelectAllBox = activeTable.querySelector('input[aria-label="Unselect all rows"]');
-            let filter_element = activeTable.querySelector(".Comp-Query .Filter #Button");
+            let filter_element = activeTable.querySelector("#query");
             filter_element.click();
-            DeleteSuccess.current = false;
+            this.DeleteSuccess.current = false;
             SelectAllBox.click();
-            setShowRowDetail(false);
+            this.setState({"ShowRowDetail":false})
         };
-    },[ShowDeleteConfirm, nestedTblIndex]);
 
-    useEffect(() =>
+    };
+    shouldComponentUpdate(nextProps, nextState)
     {
-        if(CurrentDetailID.current)
-        {
-            setShowRowDetail(true);
-        };
-    },[DetailTblConfig]);
+        return true;
+    };
 
-
-    useEffect(()=>
+    render()
     {
-        if(parentData)
-        {
-            ParentData.current = parentData;
-            ParentData.current['nestedData'] = TableValues;
-        };
-    },[parentData,TableValues])
-
-    return ( //First map is column titles; Second map is for data rows/columns
-        <div id={`Table-N${nestedTblIndex}`} className={`Comp-Table ${className}`}>
+        return ( //First map is column titles; Second map is for data rows/columns
+        <div id={`Table-N${this.props.nestedTblIndex}`} className={`Comp-Table ${this.props.className}`}>
             <div className="Buttons">
                 {
-                    config.AddComponent !== null?
-                    <Add className = "Row-Options" onClick={() => handleShowAddComp()} ></Add>
+                    this.config.AddComponent !== null?
+                    <Add className = "Row-Options" onClick={() => this.handleShowAddComp()} ></Add>
                     :null
                 }
-                <Delete className = "Row-Options" onClick={() => handleConfirmDelete()}></Delete>
+                <Delete className = "Row-Options" onClick={() => this.handleConfirmDelete()}></Delete>
                 {
-                    ShowDeleteConfirm?
+                    this.state.ShowDeleteConfirm?
                     <div className="Confirm">
                         <span><strong>Confirm Deletion?</strong></span>
                         <div>
-                            <button onClick = {() => handleSelectedDelete()}>Yes</button>
-                            <button onClick={()=>setShowDeleteConfirm(false)} >No</button>
+                            <button onClick = {() => this.handleSelectedDelete()}>Yes</button>
+                            <button onClick={()=>this.setState({"ShowDeleteConfirm":false})} >No</button>
                         </div>
                     </div>:
                     null
                 }
                 {
-                    ShowAddComp?
+                    this.state.ShowAddComp?
                     <div className="AddComponent">
-                        <CloseIcon className="Close" onClick={() =>{setShowAddComp(false)}}/>
-                        <config.AddComponent endpoint = {config.add_endpoint?config.add_endpoint:config.endpoint} UserData={UserData} CurrentData={ParentData.current}/>
+                        <CloseIcon className="Close" onClick={() =>this.setState({"ShowAddComp":false})}/>
+                        <this.config.AddComponent endpoint = {this.config.add_endpoint?this.config.add_endpoint:this.config.endpoint} UserData={this.props.UserData} CurrentData={this.ParentData.current}/>
                     </div>:
                     null
                 }
             </div>
 
-            <Query config={config} setTableValues={setTableValues} nestedTblIndex={nestedTblIndex}></Query>
+            <Query config={this.config} setTableValues={(value) => {this.buildGrid(value)}} nestedTblIndex={this.props.nestedTblIndex}></Query>
             <DataGrid
-                rows={rows}
-                columns={columns}
+                rows={this.state.TableGrid[0]}
+                columns={this.state.TableGrid[1]}
                 checkboxSelection
                 onCellKeyDown={(params, events) => events.stopPropagation()}
                 editMode='row'
                 rowBuffer={100}
                 pageSize={100}
-                onRowDoubleClick={handleRowClicked}
-                onSelectionModelChange={(id) =>setSelected_IDs(id)}
+                onRowDoubleClick={(e) => {this.handleRowClicked(e)}}
+                onSelectionModelChange={(id) => this.setState({"Selected_IDs":id})}
                 sx={{
                     "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
                        outline: "none !important",
@@ -350,12 +122,12 @@ function Table(
                 disableSelectionOnClick
             />
             {
-                ShowRowDetail && Object.keys(DetailTblConfig).length !== 0?
-                <Table className="Nested-Table" config={DetailTblConfig} nestedTblIndex={nestedTblIndex+1} parentData = {CurrentEditDetails.current}></Table>
+                this.state.ShowRowDetail && this.DetailTblConfig.current?
+                <Table className="Nested-Table" config={this.DetailTblConfig.current} nestedTblIndex={this.props.nestedTblIndex+1} parentData = {this.CurrentEditDetails.current}></Table>
                 :null
             }
         </div>
-    );
-}
+        )
+    };
+};
 
-export default Table;

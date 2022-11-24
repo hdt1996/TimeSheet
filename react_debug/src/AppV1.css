@@ -207,7 +207,7 @@
   background-color: rgb(131, 192, 150);
   padding:1em;
   border-radius:.5em;
-  z-index:1;
+  z-index:3;
   border:solid black .125em;
 }
 
