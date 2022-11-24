@@ -30,6 +30,11 @@ class TableEvents{
             alert(data['Error']);
             return;
         };
+        if(data['detail'])
+        {
+            alert(data['detail']);
+            return;
+        };
         alert(processDelData(data, 'Deleted Entries: '));
         this.DeleteSuccess.current=true;
         this.setState({"ShowDeleteConfirm":false});
@@ -102,6 +107,11 @@ class TableEvents{
         if(data['Error'])
         {
             alert(data['Error']);
+            return
+        };
+        if(data['detail'])
+        {
+            alert(data['detail']);
             return
         };
 

@@ -192,12 +192,19 @@ export default function TimeSheetCreate({endpoint, UserData = null, CurrentData 
     async function putData()
     {
         let data = await fetcherModify("PUT",{"TimeSheetData":TimeSheetData.current,"LineItemsData":BillingLineData.current},endpoint);
-        if(data["Error"])
+        if(data['Error'])
         {
-            alert(data["Error"])
+            alert(data['Error'])
             setSubmissionTime("Failed");
             return;
         };
+        if(data['detail'])
+        {
+            alert(data['detail'])
+            setSubmissionTime("Failed");
+            return;
+        };
+        console.log(data);
         let del_str = processDelData(data.DeletedLineItems, '\nDeleted: Timesheet Entries ');
         TimeSheetData.current['id'] = data['TimeSheetData'].id;
         processNewData(data);
@@ -207,12 +214,19 @@ export default function TimeSheetCreate({endpoint, UserData = null, CurrentData 
     async function postData()
     {
         let data = await fetcherModify("POST",{"TimeSheetData":TimeSheetData.current,"LineItemsData":BillingLineData.current},endpoint);
-        if(data["Error"])
+        if(data['Error'])
         {
-            alert(data["Error"])
+            alert(data['Error'])
             setSubmissionTime("Failed");
             return;
         };
+        if(data['detail'])
+        {
+            alert(data['detail'])
+            setSubmissionTime("Failed");
+            return;
+        };
+        console.log(data);
         processNewData(data);
         freezeTimesheet("Created", `Created: Timesheet Entry ${data['TimeSheetData'].id}`);
     }

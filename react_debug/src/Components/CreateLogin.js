@@ -76,13 +76,18 @@ function CreateLogin({setRenderLogin, setRenderCreate, setRenderForgot}) {
     async function sendSignUp()
     {
         let data = await createLogin(makeSignUpData());
-        if(!data["Error"])
+        if(data['Error'])
         {
-            alert(`Successfully Created User Entry ${data['User'].id}\nSuccessfully Created Employee Entry ${data['Employee'].id}\nReady to close`);
-            if(setRenderCreate){setRenderCreate(false)};
+            alert(data['Error']);
             return;
         };
-        alert(data['Error']);
+        if(data['detail'])
+        {
+            alert(data['detail']);
+            return;
+        };
+        alert(`Successfully Created User Entry ${data['User'].id}\nSuccessfully Created Employee Entry ${data['Employee'].id}\nReady to close`);
+        if(setRenderCreate){setRenderCreate(false)};
     };
 
     useEffect(()=>

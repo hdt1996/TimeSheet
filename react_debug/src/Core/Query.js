@@ -68,6 +68,11 @@ export class Query extends Component{
             alert(data['Error']);
             return;
         };
+        if(data['detail'])
+        {
+            alert(data['detail']);
+            return;
+        };
         this.setTableValues(data);
     };
 }
