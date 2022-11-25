@@ -77,10 +77,12 @@ class TimeSheet(models.Model):
         lineitems=self.lineitems_set.all()
         total= sum([item.num_minutes for item in lineitems])
         return total
+        
     def getEmployee(self) -> str:
         if self.employee == None:
             return "Unassigned Employee"
         return self.employee.name
+        
     class Meta:
         verbose_name = 'TimeSheet'
         verbose_name_plural = 'TimeSheet'

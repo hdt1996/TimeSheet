@@ -50,7 +50,6 @@ function alternativeBoolState(CurrState, setCurState)
     setCurState(false);
     return;
   };
-  console.log(CurrState)
   setCurState(true);
 };
 

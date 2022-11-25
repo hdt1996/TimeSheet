@@ -20,7 +20,6 @@ function SideMenu(
         {
             element.classList.remove("easewidth0")
         };
-        console.log(element.classList)
     };
 
     const alternative_shades = ["lighter","darker"];

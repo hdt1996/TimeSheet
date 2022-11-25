@@ -9,6 +9,7 @@ from ..serializer import *
 from ..query import *
 from utils.py.development import Development
 import os, traceback
+from decimal import Decimal
 if os.environ.get('DEBUG'):
     from ..permissions.debug import *
 else:
@@ -242,7 +243,7 @@ class LineItemsView(APIView):
             # using id is always safe to assume that only one or no entries exist since it is a primary key
             table_query.delete()
             timesheet_entry.total_time = timesheet_entry.getTotalMinutes()
-            timesheet_entry.total_bill = timesheet_entry.total_time * timesheet_entry.bill_rate
+            timesheet_entry.total_bill = timesheet_entry.total_time * timesheet_entry.bill_rate/Decimal('60')
             timesheet_entry.save()
             return Response(serialized_data, status = status.HTTP_200_OK)
 
@@ -291,7 +292,7 @@ class LineItemsView(APIView):
             timesheet_entry = table_query[0].timesheet
             # using id is always safe to assume that only one or no entries exist since it is a primary key
             timesheet_entry.total_time = timesheet_entry.getTotalMinutes()
-            timesheet_entry.total_bill = timesheet_entry.total_time * timesheet_entry.bill_rate
+            timesheet_entry.total_bill = timesheet_entry.total_time * timesheet_entry.bill_rate/Decimal('60')
             timesheet_entry.save()
             return Response({"LineItemsData":serialized_line_items}, status = status.HTTP_200_OK)
 
@@ -394,7 +395,7 @@ class TimeSheetView(APIView):
                 line_item_objects.append(new_entry)
 
             new_timesheet.total_time = new_timesheet.getTotalMinutes()
-            new_timesheet.total_bill = new_timesheet.total_time * new_timesheet.bill_rate
+            new_timesheet.total_bill = new_timesheet.total_time * new_timesheet.bill_rate/Decimal('60')
             new_timesheet.save()
             serialized_line_items = LineItemsGETSerializer(instance = line_item_objects, many = True).data
             serialized_timesheet = TimeSheetGETSerializer(instance = new_timesheet).data #Ready to be sent as JSON
@@ -417,7 +418,6 @@ class TimeSheetView(APIView):
                 return employee
 
             """ DATA VALIDATION START """
-
             serialized_timesheet = TimeSheetPUTSerializer(data = timesheet_data, many = False)
             serialized_line_items = LineItemsPUTSerializer(data = line_item_data, many = True)
             data_valid = True
@@ -469,7 +469,7 @@ class TimeSheetView(APIView):
                 line_items_query = LineItems.objects.filter(timesheet = timesheet_id) #Get current list of line items after deleting
                 line_item_data = LineItemsGETSerializer(instance = line_items_query, many = True).data
             timesheet_entry.total_time = timesheet_entry.getTotalMinutes()
-            timesheet_entry.total_bill = timesheet_entry.total_time * timesheet_entry.bill_rate
+            timesheet_entry.total_bill = timesheet_entry.total_time * timesheet_entry.bill_rate/Decimal('60')
             timesheet_entry.save()
             serialized_timesheet = TimeSheetGETSerializer(instance = timesheet_entry, many=False).data
             return Response({"TimeSheetData":serialized_timesheet, "LineItemsData":line_item_data, "DeletedLineItems":deleted_lines_response}, status = status.HTTP_200_OK)

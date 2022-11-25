@@ -40,7 +40,7 @@ class TableEvents{
         this.setState({"ShowDeleteConfirm":false});
     };
 
-    handleEditCell(e)
+    initEdits(e)
     {
         let row_element = e.target.parentNode.parentNode.parentNode;
         let currEditing = {...this.state.Editing}
@@ -49,6 +49,35 @@ class TableEvents{
         for(let i = 0; i < inputs.length; i++)
         {
             inputs[i].removeAttribute('disabled');
+            inputs[i].onkeyup = (e) => 
+            {
+                if(!e.target.hasAttribute("changed"))
+                {
+                    e.target.setAttribute("changed",true);
+                };
+            }
+        };
+        this.setState({"Editing":currEditing});
+    };
+
+    postSaveEdits(row_element, data,editables)
+    {
+        let id = row_element.getAttribute('data-id');
+        let active = this.config['edit_config']['active'];
+        let extract_fkeys = this.config['extract_config']['keys']
+        let currEditing = {...this.state.Editing};
+        let extract_methods = this.config['extract_config']["methods"];
+        delete currEditing[id];
+        for(let i = 0; i < editables.length; i++)
+        {   
+            let db_col = editables[i].getAttribute('db_col');
+            let key = extract_fkeys[db_col];
+            let source = data[active][db_col];
+            let new_val = extract_methods[db_col](key,source);
+            editables[i].setAttribute('placeholder',new_val);
+            editables[i].value = null;
+            editables[i].setAttribute('orig-val',new_val);
+            editables[i].setAttribute('disabled',true);
         };
         this.setState({"Editing":currEditing});
     };
@@ -70,20 +99,19 @@ class TableEvents{
     async handleEditSave(e)
     {
         let row_element = e.target.parentNode.parentNode.parentNode.parentNode;
-        let id = row_element.getAttribute('data-id');
-        let inputs = row_element.querySelectorAll('input[db_col]');
+        let editables = row_element.querySelectorAll('input[db_col]');
         let uneditables = row_element.querySelectorAll('div[db_col]');
         let put_data = {...this.config['edit_config']['data']};
         let active = this.config['edit_config']['active'];
         let extract_fkeys = this.config['extract_config']['keys']
-        put_data[active]['id'] = id;
-        for(let i = 0; i < inputs.length; i++)
+        put_data[active]['id'] = row_element.getAttribute('data-id');
+        for(let i = 0; i < editables.length; i++)
         {
-            let default_value = inputs[i].getAttribute('orig-val');
-            let curr_value = inputs[i].value;
-            let db_col = inputs[i].getAttribute('db_col');
+            let default_value = editables[i].getAttribute('orig-val');
+            let curr_value = editables[i].value;
+            let db_col = editables[i].getAttribute('db_col');
 
-            if(curr_value !== '' && curr_value !== default_value)
+            if(editables[i].hasAttribute("changed") && curr_value !== default_value)
             {
                 put_data[active][db_col] = curr_value;
             }
@@ -102,7 +130,6 @@ class TableEvents{
                 put_data[active][db_col] = default_value.split(' - ')[0];
             };
         };
-
         let data = await fetcherModify("PUT",put_data,this.config.endpoint);
         if(data['Error'])
         {
@@ -114,27 +141,7 @@ class TableEvents{
             alert(data['detail']);
             return
         };
-
-        let currEditing = {...this.state.Editing};
-        let extract_methods = this.config['extract_config']["methods"];
-        delete currEditing[id];
-        for(let i = 0; i < inputs.length; i++)
-        {
-            let db_col = inputs[i].getAttribute('db_col');
-            let key = extract_fkeys[db_col];
-            let source = data[active][db_col];
-            inputs[i].value = extract_methods[db_col](key,source);
-            inputs[i].setAttribute('orig-val',inputs[i].value);
-            inputs[i].setAttribute('disabled',true);
-        };
-        for(let i = 0; i < uneditables.length; i++)
-        {
-            let db_col = uneditables[i].getAttribute('db_col');
-            let key = extract_fkeys[db_col];
-            let source = data[active][db_col];
-            uneditables[i].innerHTML = extract_methods[db_col](key,source); 
-        };
-        this.setState({"Editing":currEditing});
+        this.postSaveEdits(row_element,data, editables)
     };
 
     handleRowClicked(e)
@@ -170,7 +177,7 @@ class TableBuilder{
                     <button onClick = {(e) => {this.handleEditSave(e)}}>Save</button>
                     <button onClick = {(e) => {this.handleEditReset(e)}}>Reset</button>
                 </div>:
-                <EditIcon onClick = {(e) => this.handleEditCell(e)}/>
+                <EditIcon onClick = {(e) => this.initEdits(e)}/>
             }
             </div>;
         return data;
@@ -191,29 +198,40 @@ class TableBuilder{
             };
             rows.push(data);
         };
-        return  rows;
+        return rows;
     };
 
     buildColumns()
     {
         let columns = [];
         let extract_fkeys = this.config['extract_config']['keys'];
-        let extract_methods = this.config['extract_config']['methods']
+        let extract_methods = this.config['extract_config']['methods'];
         for(let c = 0; c < this.col_keys.length; c++)
         {
             let data = {};
             data['field'] = `col${c+1}`;
             data['headerName'] = this.config['col_map'][this.col_keys[c]];
             data['width']=this.config['col_width'];
-            if(!(this.col_keys[c] in this.config['uneditable']))
+            if(!(this.col_keys[c] in this.config['uneditable'])) //not uneditable
             {
                 data['renderCell'] = (params) => 
                 {
                     let field=this.col_keys[c];
                     let key = extract_fkeys[field];
                     let cleaned_val  = extract_methods[field](key,params.value);
+                    let orig_val;
+                    if(extract_fkeys[field] !== null)
+                    {
+                        orig_val = cleaned_val.split(' - ')[0];
+                    }
+                    else
+                    {
+                        orig_val = JSON.stringify(params.value).replace(/"/g,'');
+                    }
                     return(
-                    <input db_col = {this.col_keys[c]} orig-val = {JSON.stringify(cleaned_val).replace(/"/g,'')} disabled className = "Comp-Table-Input" defaultValue={cleaned_val}></input>
+                    <input db_col = {this.col_keys[c]} orig-val = {orig_val} className = "Comp-Table-Input" disabled 
+                        placeholder= {JSON.stringify(cleaned_val).replace(/"/g,'')}
+                    ></input>
                     )
                 };
             }
@@ -225,11 +243,12 @@ class TableBuilder{
                     let key = extract_fkeys[field];
                     let cleaned_val = extract_methods[field](key,params.value);
                     return(
-                    <div db_col = {this.col_keys[c]} orig-val = {JSON.stringify(cleaned_val).replace(/"/g,'')}>{cleaned_val}</div>
+                    <div db_col = {this.col_keys[c]} orig-val = {cleaned_val}>{cleaned_val}</div>
                     )
                 };
             }
             columns.push(data);
+            
         };
         if(this.config.edit_config)
         {
@@ -243,7 +262,7 @@ class TableBuilder{
         this.TableValues.current = data;
         let rows = this.buildRows();
         let columns = this.buildColumns();
-        this.setState({"TableGrid":[rows,columns]});
+        this.setState({"TableGrid":[rows,columns]}, () => {});
     };
 };
 

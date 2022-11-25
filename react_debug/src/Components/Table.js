@@ -62,13 +62,8 @@ export default class Table extends TableCore
             filter_element.click();
             this.DeleteSuccess.current = false;
             SelectAllBox.click();
-            this.setState({"ShowRowDetail":false})
+            this.setState({"ShowRowDetail":false});
         };
-
-    };
-    shouldComponentUpdate(nextProps, nextState)
-    {
-        return true;
     };
 
     render()

@@ -121,7 +121,7 @@ export default function TimeSheetSearch({endpoint, UserData = null})
         <div className="mxht2p5e bktitleclr1 disflxrctr flx1 fntsz1p5e fntbld">
             Timesheets Reporting
         </div>
-        <Table config={TblConfig} nestedTblIndex = {0} UserData = {UserData}></Table>
+        <Table config={TblConfig} nestedTblIndex = {0} UserData = {UserData} className = ""></Table>
     </div>
     );
 }

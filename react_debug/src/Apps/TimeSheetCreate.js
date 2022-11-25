@@ -21,7 +21,6 @@ export default function TimeSheetCreate({endpoint, UserData = null, CurrentData 
 
     let BillingLineData=useRef([{"id":null,"num_minutes":null,"memo":null}]);
     let TimeSheetData=useRef({'date':buildDateTimeStr(new Date())});
-
     let [CurrentDate,setCurrentDate] = useState(buildCalendarStr(new Date()));
     let [SubmissionTime,setSubmissionTime] = useState("Pending");
     let [ActiveCalendar,setActiveCalendar] = useState(false);
@@ -191,7 +190,9 @@ export default function TimeSheetCreate({endpoint, UserData = null, CurrentData 
 
     async function putData()
     {
+        console.log({"TimeSheetData":TimeSheetData.current,"LineItemsData":BillingLineData.current})
         let data = await fetcherModify("PUT",{"TimeSheetData":TimeSheetData.current,"LineItemsData":BillingLineData.current},endpoint);
+        console.log(data);
         if(data['Error'])
         {
             alert(data['Error'])
@@ -204,7 +205,6 @@ export default function TimeSheetCreate({endpoint, UserData = null, CurrentData 
             setSubmissionTime("Failed");
             return;
         };
-        console.log(data);
         let del_str = processDelData(data.DeletedLineItems, '\nDeleted: Timesheet Entries ');
         TimeSheetData.current['id'] = data['TimeSheetData'].id;
         processNewData(data);
@@ -213,7 +213,9 @@ export default function TimeSheetCreate({endpoint, UserData = null, CurrentData 
 
     async function postData()
     {
+        console.log({"TimeSheetData":TimeSheetData.current,"LineItemsData":BillingLineData.current})
         let data = await fetcherModify("POST",{"TimeSheetData":TimeSheetData.current,"LineItemsData":BillingLineData.current},endpoint);
+        console.log(data)
         if(data['Error'])
         {
             alert(data['Error'])
@@ -226,13 +228,13 @@ export default function TimeSheetCreate({endpoint, UserData = null, CurrentData 
             setSubmissionTime("Failed");
             return;
         };
-        console.log(data);
         processNewData(data);
         freezeTimesheet("Created", `Created: Timesheet Entry ${data['TimeSheetData'].id}`);
     }
 
     useEffect(()=>
     {
+        console.log(CurrentData)
         if(CurrentData)
         {   
             setModeLabel("Update");
@@ -243,7 +245,6 @@ export default function TimeSheetCreate({endpoint, UserData = null, CurrentData 
             BillingLineData.current = [];
             for(let i = 0; i < line_item_data.length; i++)
             {
-                
                 line_item_data[i]['timesheet'] = line_item_data[i]['timesheet'].id;
                 for(let f of ['date_added','date_modified'])
                 {
@@ -253,7 +254,11 @@ export default function TimeSheetCreate({endpoint, UserData = null, CurrentData 
             };
             TimeSheetData.current = current_data;
         }
-    },[CurrentData])
+        else if (UserData) // Non existent timesheet but logged in
+        {
+            TimeSheetData.current['employee'] = UserData.Success.employee.id;
+        };
+    },[])
 
     return ( 
     <div className="disflxcol flx30">
@@ -354,7 +359,7 @@ export default function TimeSheetCreate({endpoint, UserData = null, CurrentData 
             <div className="ht100pct disflxrow flxrowend flx1 brdbrrp5e bkrowclr2">
                 {
                     TextDisabled?
-                    <button className="ht100pct bkbtnclr1 brdradiusp5e brdblkp125e fntsz1p25e hovcursor hovclr2 pdh1e" onClick={() => {window.location.reload()}}>New TimeSheet</button>
+                    <button className="ht100pct bkbtnclr1 brdradiusp5e brdblkp125e fntsz1p25e hovcursor hovclr2 pdh1e" onClick={() => {window.location.reload()}}>Add New</button>
                     :
                     <button className="ht100pct bkbtnclr1 brdradiusp5e brdblkp125e fntsz1p25e hovcursor hovclr2 pdh1e pdh1e"
                         onClick=
