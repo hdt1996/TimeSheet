@@ -125,7 +125,7 @@ function PostForm(
         CurrentData.map((r, rindex)=>
         {                
           return (
-            <Row key = {rindex} className="pdvp5e flxctr brdbblkp1eo4 pdp25e" placeholder={`${rindex}`}>
+            <Row key = {rindex} className="pdvp5e flxctr brdbblkp1eo4 mrgn0" placeholder={`${rindex}`}>
               <Col id="index" className="mxwd3e">
                 {rindex+1}
               </Col>

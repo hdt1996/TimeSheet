@@ -60,7 +60,7 @@ class Events{
         this.setState({"Editing":currEditing});
     };
 
-    postSaveEdits(row_element, data,editables)
+    postSaveEdits(row_element, data, editables, uneditables)
     {
         let id = row_element.getAttribute('data-id');
         let active = this.config['edit_config']['active'];
@@ -78,6 +78,13 @@ class Events{
             editables[i].value = null;
             editables[i].setAttribute('orig-val',new_val);
             editables[i].setAttribute('disabled',true);
+        };
+        for(let i = 0; i < uneditables.length; i++)
+        {
+            let db_col = uneditables[i].getAttribute('db_col');
+            let key = extract_fkeys[db_col];
+            let source = data[active][db_col];
+            uneditables[i].innerHTML = extract_methods[db_col](key,source);
         };
         this.setState({"Editing":currEditing});
     };
@@ -141,7 +148,7 @@ class Events{
             alert(data['detail']);
             return
         };
-        this.postSaveEdits(row_element,data, editables)
+        this.postSaveEdits(row_element,data, editables, uneditables)
     };
 
     handleRowClicked(e)
