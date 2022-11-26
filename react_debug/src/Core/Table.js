@@ -4,7 +4,7 @@ import {Component} from 'react';
 import EditIcon from '@mui/icons-material/Edit';
 import Extender from '../Utilities/Extender'
 
-class TableEvents{
+class Events{
     handleConfirmDelete()
     {
         if(this.state.Selected_IDs.length > 0 && !this.state.ShowAddComp)
@@ -162,7 +162,7 @@ class TableEvents{
     };
 }
 
-class TableBuilder{
+class DOM{
     addEditCell()
     {
         let data = {};
@@ -266,13 +266,11 @@ class TableBuilder{
     };
 };
 
-class Table extends Component
+export default class TableCore extends Component
 {
     constructor(props)
     {
         super(props);
-        this.__proto__ = Extender(this.__proto__, [TableBuilder, TableEvents]);
+        this.__proto__ = Extender(this.__proto__, [DOM, Events]);
     }
 }
-
-export {Table}

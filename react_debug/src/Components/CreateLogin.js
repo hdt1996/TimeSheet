@@ -42,7 +42,7 @@ function CreateLogin({setRenderLogin, setRenderCreate, setRenderForgot}) {
         StartDate.current = buildDateTimeStr(date);
     };
 
-    function handleShowPassword(e)
+    function handleShowPassword()
     {
         let pass_element = document.getElementById("create-password");
         pass_element.value = Password.current.join('');
@@ -110,10 +110,10 @@ function CreateLogin({setRenderLogin, setRenderCreate, setRenderForgot}) {
                     <div className = "Password">
                         <Form.Control 
                             placeholder="Enter your Password (required)" id="create-password"
-                            onChange = {(e) => {hidePasswordInput(e,Password,PassChar, ShowPass)}}
+                            onChange = {(e) => {hidePasswordInput(e, Password, PassChar, ShowPass)}}
                         >
                         </Form.Control>
-                        <div className = "ShowPass" onClick = {(e) => {handleShowPassword(e)}} ><VisibilityIcon></VisibilityIcon></div>
+                        <div className = "ShowPass" onClick = {() => {handleShowPassword()}} ><VisibilityIcon></VisibilityIcon></div>
                     </div>
                     <div className="Labels">Start date</div>
                     <div className= "Date">

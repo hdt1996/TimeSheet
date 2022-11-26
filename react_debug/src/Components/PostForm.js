@@ -7,7 +7,7 @@ import {getParentIntAttrib} from '../Utilities/Utils'
 import React from "react";
 function PostForm(
   {
-    config={num_rows:5,col_map:{}}, inputChange, deleteChange, BillingLineData, CurrentData = null
+    config={num_rows:5,col_map:{}}, inputChange, deleteChange, BillingLineData = [{}], CurrentData = null
   }
 )
 {

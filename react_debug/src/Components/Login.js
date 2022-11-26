@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef} from "react";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import {login} from '../Utilities/Endpoints';
 import {hidePasswordInput} from '../Utilities/Utils'
+
 function Login({setRenderLogin, setRenderCreate, setRenderForgot, setUserData}) {
     let Password = useRef([]);
     let PassChar = useRef([0,0]);

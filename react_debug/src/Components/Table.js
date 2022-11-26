@@ -5,7 +5,7 @@ import Delete from '@mui/icons-material/Delete';
 import Add from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import Query from './Query';
-import {Table as TableCore} from '../Core/Table'
+import TableCore from '../Core/Table'
 
 export default class Table extends TableCore
 {

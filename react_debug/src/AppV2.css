@@ -679,6 +679,32 @@
 }
 
 /* Visibility*/
+
+.plchldopac0 input::placeholder{
+    opacity: 0;
+}
+.plchldopacp1 input::placeholder{
+    opacity:.1
+}
+.plchldopacp2 input::placeholder{
+    opacity:.2
+}
+.plchldopacp3 input::placeholder{
+    opacity:.3
+}
+.plchldopacp4 input::placeholder{
+    opacity:.4;
+}
+.plchldopacp5 input::placeholder{
+    opacity:.5;
+}
+.plchldopacp75 input::placeholder{
+    opacity: .75;
+}
+.plchldopac1 input::placeholder{
+    opacity: 1 !important;
+}
+
 .opac0{
     opacity: 0;
 }
