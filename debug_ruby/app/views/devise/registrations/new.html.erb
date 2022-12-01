@@ -1,0 +1,40 @@
+<div class="sign-up disflxcctr">
+  <div class="lgn-label">
+    <h2>Sign up</h2>
+  </div>
+
+  <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+    <%= render "devise/shared/error_messages", resource: resource %>
+
+    <div class="field lgn-input">
+      <%= f.label :email , class: "fntbold"%><br />
+      <%= f.email_field :email, autofocus: true, autocomplete: "email", placeholder: "Enter your email" %>
+    </div>
+
+    <div class="field lgn-input">
+      <%= f.label :username , class: "fntbold"%><br />
+      <%= f.text_field :username, autofocus: true, autocomplete: "username", placeholder: "Enter your username" %>
+    </div>
+
+    <div class="field lgn-input">
+      <%= f.label :password , class: "fntbold"%>
+      <% if @minimum_password_length %>
+      <em>(<%= @minimum_password_length %> characters minimum)</em>
+      <% end %><br />
+      <%= f.password_field :password, autocomplete: "new-password", placeholder: "Enter your password" %>
+    </div>
+
+    <div class="field lgn-input">
+      <%= f.label :password_confirmation , class: "fntbold"%><br />
+      <%= f.password_field :password_confirmation, autocomplete: "new-password", placeholder: "Confirm your password" %>
+    </div>
+    <br/>
+    <div class="actions">
+      <%= f.submit "Sign up" , class: "lgn-button"%>
+    </div>
+  <% end %>
+  <br/>
+  <div class="lgn-options disflxcleft nochildlinks">
+    <%= render "devise/shared/links" %>
+  </div>
+</div>
