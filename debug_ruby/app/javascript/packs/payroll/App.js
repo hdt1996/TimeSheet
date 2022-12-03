@@ -1,7 +1,5 @@
 import React, { Component} from 'react';
 import {BrowserRouter, Routes, Route } from 'react-router-dom';
-import {getCSRF, checkAuth} from './Utilities/Endpoints'
-import Navbar from './Components/Navbar';
 import SideMenu from './Components/SideMenu';
 import LazyWrapper from './Utilities/LazyWrapper';
 import './AppV1.css';
@@ -35,13 +33,13 @@ export default class App extends Component {
 
   async getUserData()
   {
-    let data = await checkAuth();
-    this.setState({'UserData':data});
+    this.setState({'UserData':{"Success":{"user":{"is_superuser":true,"username":"filler"},"employee":{"id":0}}}})
+    //this.setState({'UserData':data});
   };
 
   componentDidMount()
   { 
-    getCSRF();
+    //getCSRF();
     this.getUserData();
   };
   
@@ -54,7 +52,7 @@ export default class App extends Component {
         <BrowserRouter>
           <SideMenu MenuLinks = {this.MenuLinks.current}/>
             <Routes>
-              <Route path = "/" />
+              <Route path = "/index" />
               <Route path = "/payroll/employee_search/" element={<LazyWrapper Comp = {<this.EmployeeSearch endpoint="/api/payroll/employees/" UserData = {this.state.UserData}/>}/>}/>
               <Route path = "/payroll/timesheet_create/" element={<LazyWrapper Comp = {<this.TimeSheetCreate endpoint="/api/payroll/timesheet/" UserData = {this.state.UserData}/>}/>}/>
               <Route path = "/payroll/timesheet_search/" element = {<LazyWrapper Comp = {<this.TimeSheetSearch endpoint="/api/payroll/timesheet/" UserData = {this.state.UserData}/>}/>}/>

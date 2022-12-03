@@ -16,6 +16,83 @@
 
 /* Navbar */
 
+.root_image{
+    position:fixed;
+    top:3em;
+    left:50%;
+    transform: translate(-50%,0);
+    z-index: -1;
+    width:0;
+    width:100%;
+    height:auto;
+}
+
+.root_hero{
+    position:relative;
+    height:fit-content;
+    font-size:1.25em;
+    font-weight: bold;
+    width: fit-content;
+    margin:auto;
+    background-color: rgba(100, 169, 144, 0.441);
+    border-radius: 1em;
+    padding:1em;
+    margin-top:7em;
+
+}
+
+.root_title{
+    font-weight: bold;
+}
+
+.root_divider{
+    border-bottom: solid black .1em;
+    width:100%;
+}
+
+.root_button{
+    background-color: rgb(5, 23, 161);
+    padding:1em;
+    padding-left: 2.5em;
+    padding-right: 2.5em;
+    border-radius:1em;
+    font-size:1.15em;
+    color:white;
+    margin-bottom:.5em;
+    user-select: none;
+}
+
+.root_button:hover{
+    cursor:pointer;
+    background-color: rgb(42, 62, 214);
+    color:white;
+    text-decoration: none;
+}
+
+.root_hero div a{
+    color:rgb(21, 51, 21) !important;
+    text-decoration: none;
+    background-color: rgb(191, 215, 204);
+    margin:1em;
+    padding:.75em;
+    border-radius:.5em;
+    border: solid black .2em;
+}
+
+.root_hero div a:hover{
+    cursor:pointer;
+    background-color: rgb(217, 234, 226);
+}
+
+.root_links{
+    flex-wrap:wrap;
+    justify-content: space-around !important;
+    width:60em;
+}
+
+.hidden{
+    display:none;
+}
 .nochildlinks a{
     text-decoration: none;
     color:black
