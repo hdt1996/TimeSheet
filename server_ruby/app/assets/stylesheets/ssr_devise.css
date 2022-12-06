@@ -1,0 +1,107 @@
+.btn-std{
+    font-size:1.25em;
+    background-color: rgb(207, 221, 215);
+    padding:.25em;
+    padding-right:1.25em;
+    padding-left:1.25em;
+    border-radius:.5em;
+    border:solid rgba(0, 0, 0, 0.445) .1em;
+}
+
+.btn-std:hover{
+    background-color: rgb(224, 234, 230);
+    cursor:pointer;
+}
+
+.hovfocushv:hover{
+    font-weight:700;
+}
+
+.login-image{
+    position:absolute;
+    top:65%;
+    transform: translate(-50%,0%);
+    right:-11em;
+    rotate: 90deg;
+    max-width:none !important;
+    width:auto;
+    height:44em !important;
+
+}
+
+.sign-up{
+    margin:auto;
+    width:fit-content;
+    height:fit-content;
+    padding:4em;
+    padding-top:1em;
+    padding-bottom: 2em;
+    background-color: rgb(204, 239, 222);
+    border-radius:1em;
+    border:solid rgba(36, 59, 41, 0.576) .25em;
+    font-size:1.25em;
+    margin:1em;
+}
+
+.sign-up div{
+    width:16em;
+}
+
+.forgot-pass{
+    margin:auto;
+    width:fit-content;
+    height:fit-content;
+    padding:4em;
+    padding-top:1em;
+    padding-bottom: 2em;
+    background-color: rgb(204, 239, 222);
+    border-radius:1em;
+    border:solid rgba(98, 107, 100, 0.576) .25em;
+    font-size:1.25em;
+    margin:1em;
+}
+
+.forgot-pass div{
+    width:18em;
+}
+
+.lgn-label{
+    border-bottom: solid rgba(40, 40, 40, 0.601) .1em;
+    text-align: center;
+}
+
+.lgn-label h2{
+    font-size:1.25em;
+}
+
+.lgn-input{
+    margin-top:1em;
+}
+
+.lgn-input input{
+    border-radius:.2em;
+    width:100%;
+}
+
+.lgn-button{
+    width:100%;
+    border-radius: .25em;
+    background-color: rgb(215, 215, 237);
+}
+
+.lgn-button:hover{
+    cursor: pointer;
+    background-color: rgb(228, 228, 241);
+}
+
+.lgn-options a{
+    font-size:.85em
+}
+
+.fntbold{
+    font-weight: bold;
+}
+
+.flx1{
+    flex:1
+}

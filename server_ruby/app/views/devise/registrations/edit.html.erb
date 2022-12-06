@@ -1,0 +1,112 @@
+<div class = "sign-up disflxrctr" style="height:max-content">
+  <div class="disflxcctr ht100pct mg-hz1e">
+
+    <% if !current_user.admin? %>
+
+      <h2>Edit <%= resource_name.to_s.humanize %></h2>
+
+      <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
+        <%= render "devise/shared/error_messages", resource: resource %>
+
+        <div class="field lgn-input">
+          <%= f.label :email, class: "fntbold" %><br />
+          <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+        </div>
+
+        <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
+          <div>Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
+        <% end %>
+
+        <div class="field lgn-input">
+          <%= f.label :password, class: "fntbold" %> <i>(leave blank if you don't want to change it)</i><br />
+          <%= f.password_field :password, autocomplete: "new-password" %>
+          <% if @minimum_password_length %>
+            <br />
+            <em><%= @minimum_password_length %> characters minimum</em>
+          <% end %>
+        </div>
+
+        <div class="field lgn-input">
+          <%= f.label :password_confirmation, class: "fntbold" %><br />
+          <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
+        </div>
+
+        <div class="field lgn-input">
+          <%= f.label :current_password, class: "fntbold" %> <i>(we need your current password to confirm your changes)</i><br />
+          <%= f.password_field :current_password, autocomplete: "current-password" %>
+        </div>
+
+        <br/>
+
+        <div class="actions">
+          <%= f.submit "Update" , class: "lgn-button" %>
+        </div>
+
+      <% end %>
+
+    </div>
+
+    <div class="disflxcctr ht100pct mg-hz1e">
+      <h2>Cancel my account</h3>
+      <br/>
+      <p>Unhappy? </p>
+      <%= button_to "Cancel my account", registration_path(resource_name), data: { confirm: "Are you sure?" }, method: :delete, class: "lgn-button"%>
+      
+      <div class="flx1 disflxrbr nochildlinks">
+        <%= link_to "Back", :back, class: "btn-std"%>
+      </div>
+    </div>
+    
+  <% else %>
+
+      <h2>Edit <%= resource_name.to_s.humanize %></h2>
+
+      <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
+        <%= render "devise/shared/error_messages", resource: resource %>
+
+        <div class="field lgn-input">
+          <%= f.label :email, class: "fntbold" %><br />
+          <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+        </div>
+
+        <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
+          <div>Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
+        <% end %>
+
+        <div class="field lgn-input">
+          <%= f.label :password, class: "fntbold" %> <i>(leave blank if you don't want to change it)</i><br />
+          <%= f.password_field :password, autocomplete: "new-password" %>
+          <% if @minimum_password_length %>
+            <br />
+            <em><%= @minimum_password_length %> characters minimum</em>
+          <% end %>
+        </div>
+
+        <div class="field lgn-input">
+          <%= f.label :password_confirmation, class: "fntbold" %><br />
+          <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
+        </div>
+
+        <br/>
+
+        <div class="actions">
+          <%= f.submit "Update" , class: "lgn-button" %>
+        </div>
+
+      <% end %>
+
+    </div>
+
+    <div class="disflxcctr ht100pct mg-hz1e">
+      <h2>Cancel my account</h3>
+      <br/>
+      <%= button_to "Delete user", registration_path(resource_name), data: { confirm: "Are you sure? Click OK to proceed." }, method: :delete, class: "lgn-button"%>
+      
+      <div class="flx1 disflxrbr nochildlinks">
+        <%= link_to "Back", :back, class: "btn-std"%>
+      </div>
+    </div>
+  <% end %>
+   
+
+</div>

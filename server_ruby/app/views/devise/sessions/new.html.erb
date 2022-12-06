@@ -1,0 +1,48 @@
+<section class="vh-100 vw-100 bg-dark">
+  <div class="container py-5 h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col h-100">
+        <div class="card card-registration h-100">
+          <div class="row g-0 h-100">
+            <div class="col-xl-6 d-none d-xl-block ovrflw-hidden" style="position:relative">
+              <%= image_tag 'login_image.jpg', class: "img-fluid login-image", alt: "" %>
+            </div>
+            <div class="col-xl-6">
+              <div class="card-body p-md-5 text-black">
+                <h3 class="mb-5 text-uppercase">SIGN IN</h3>
+                <%= form_for(resource, as: resource_name, class: "card-body p-md-5 text-black", url: session_path(resource_name)) do |f| %>
+                  
+
+                  <div class="form-outline mb-4">
+                    <label class="form-label" for="form3Example8">Username or Email</label>
+                    <%= f.text_field :login, autocomplete: "current-login", class: "form-control form-control-lg"%>
+                  </div>
+
+                  <div class="form-outline mb-4">
+                    <label class="form-label" for="form3Example8">Password</label>
+                     <%= f.password_field :password, autocomplete: "current-password", class: "form-control form-control-lg" %>
+                  </div>
+
+                  <% if devise_mapping.rememberable? %>
+                    <div class="field">
+                      <%= f.check_box :remember_me %>
+                      <%= f.label :remember_me %>
+                    </div>
+                  <% end %>
+                  <br/>
+                <div class="actions">
+                  <%= f.submit "Log in" , class: "lgn-button", style: "font-size: 1.45em"%>
+                </div>
+                <% end %>
+                <br/>
+                <div class="lgn-options disflxcleft nochildlinks" style="font-size: 1.25em">
+                  <%= render "devise/shared/links"%>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

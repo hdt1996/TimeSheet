@@ -1,0 +1,103 @@
+.hidden{
+    display:none;
+}
+.nochildlinks a{
+    text-decoration: none;
+    color:black
+}
+
+.disflxrctr{
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.disflxrtop{
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.disflxrbr{
+    display:flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: flex-end;
+}
+
+.disflxcleft{
+    display:flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+.disflxctop{
+    display:flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+.disflxcctr{
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.mg-hz1e{
+    margin-left:1em;
+    margin-right:1em;
+}
+.ht100pct{
+    height:100%;
+}
+.wd100pct{
+    width:100%;
+}
+
+.fnszp8e{
+    font-size: .8em;
+}
+
+.hovfocus:hover{
+    font-weight:600;
+}
+
+.posrel{
+    position:relative;
+}
+
+.posabs{
+    position:absolute;
+}
+
+.ovrflwx-hidden{
+    overflow-x:hidden;
+}
+
+.ovrflwy-hidden{
+    overflow-y:hidden;
+}
+
+.ovrflw-hidden{
+    overflow:hidden;
+}
+
+.z1{
+    z-index: 1;
+}
+
+.bkwhite{
+    background-color: white;
+}
+
+.bktrans{
+    background-color: transparent;
+}
+
+.op50{
+    opacity:.5
+}

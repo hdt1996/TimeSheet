@@ -1,0 +1,143 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, or any plugin's
+ * vendor/assets/stylesheets directory can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any other CSS/SCSS
+ * files in this directory. Styles in this file should be added after the last require_* statement.
+ * It is generally better to create a new file per style scope.
+ *
+ *= require_tree .
+ *= require_self
+ */
+
+/* Navbar */
+
+.bk_hero{
+    background-color: rgba(5, 63, 149, 0.211);
+}
+.img_container{
+    position:relative;
+    overflow:hidden;
+    width:100%;
+    height:35em;
+    border-radius:1em;
+    margin:auto;
+}
+
+.img_container img{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform: translate(-50%,-50%);
+    width:100%;
+    height:auto;
+}
+
+.card_image{
+    width:100%;
+    height:auto;
+    border-radius:.5em;
+}
+
+.home_button{
+    background-color: rgb(5, 23, 161);
+    padding-left: 2.5em;
+    padding-right: 2.5em;
+    border-radius:1em;
+    font-size:1.15em;
+    user-select: none;
+    margin:auto;
+    display:flex;
+}
+
+.home_button:hover{
+    cursor:pointer;
+    background-color: rgb(42, 62, 214);
+    color:white;
+    text-decoration: none;
+}
+.home_button a{
+    color:white;
+    padding:.5em;
+}
+.home_button a:hover{
+    color:white;
+    text-decoration: none;
+}
+
+.home_links a{
+    color:white !important;
+    text-decoration: none;
+    background-color: rgb(24, 59, 235);
+    margin:.75em;
+    padding:1em;
+    padding-left:1.5em;
+    padding-right:1.5em;
+    border-radius:.75em;
+    font-size:.8em;
+    font-weight: bold;
+}
+
+.home_links a:hover{
+    cursor:pointer;
+    background-color: rgb(19, 51, 211);
+}
+
+.home_links{
+    flex-wrap:wrap;
+    justify-content: space-between !important;
+    max-width:35em;
+}
+
+.inq-input input{
+    border-radius:.25em;
+    width:100%;
+}
+
+.inq-input textarea{
+    width:100%;
+    min-height:10em;
+    border-radius:.25em;
+}
+
+.inq-button{
+    width:100%;
+    border-radius: .25em;
+    background-color: rgb(128, 238, 157);
+    height:2em;
+    font-size:1.5em;
+    font-weight: 600;
+}
+
+.inq-button:hover{
+    cursor: pointer;
+    background-color: rgb(156, 247, 180);
+}
+
+.inq-label{
+    font-size:1.25em;
+    width:100%;
+    text-align: left;
+    font-weight: bold;
+}
+
+.inq-contact{
+    font-size:1.3em;
+    width:100%;
+    text-align: left;
+    font-weight: bold;
+    color:gold;
+}
+.table-wrapper thead tr th
+{
+    padding:1em;
+}
+.table-wrapper tbody tr td{
+    padding:1em;
+}
+
+

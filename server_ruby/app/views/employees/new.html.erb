@@ -1,0 +1,93 @@
+<section class="h-100 h-custom w-100" style="background-color: #8fc4b7;">
+  <div class="container py-5 h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-lg-8 col-xl-6">
+        <div class="card rounded-3">
+          <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-registration/img3.webp"
+            class="w-100" style="border-top-left-radius: .3rem; border-top-right-radius: .3rem;"
+            alt="Sample photo">
+          <div class="card-body p-4 p-md-5">
+            <h3 class="mb-4 pb-2 pb-md-0 mb-md-5 px-md-2">Employee Registration</h3>
+
+            
+            <%= form_with model: [ @user, @user.build_employee ], class: "px-md-2" do |f| %>  <!-- has_one relationship -->
+                <% if @user.errors.any? %>
+                  <div id="error_explanation">
+                    <h2>
+                      <%= I18n.t("errors.messages.not_saved",
+                                count: @user.errors.count,
+                                resource: @user.class.model_name.human.downcase)
+                      %>
+                    </h2>
+                    <ul>
+                      <% @user.errors.full_messages.each do |message| %>
+                        <li><%= message %></li>
+                      <% end %>
+                    </ul>
+                  </div>
+                <% end %>
+
+              <div class="form-outline mb-4">
+                  <label class="form-label">User ID</label>
+                  <div><%=@user.id%> - <%=@user.username%></div>
+              </div>
+              <div class="disflxrctr">
+                <div class="form-outline mb-4">
+                  <label class="form-label">User ID</label>
+                  <%= f.text_field :first_name, autofocus: true, autocomplete: "first_name", class: "form-control form-control-lg", disabled: true, value: @user.id%>
+                </div>
+                
+                <div class="form-outline mb-4 mx-4">
+                  <label class="form-label">Username</label>
+                  <%= f.text_field :first_name, autofocus: true, autocomplete: "first_name", class: "form-control form-control-lg", disabled: true, value: @user.username%>
+                </div>
+              </div>
+              <div class="form-outline mb-4">
+                <label class="form-label">Name</label>
+                <% if !@user.first_name && !@user.middle_name && !@user.last_name%>
+                  <%= f.text_field :first_name, autofocus: true, autocomplete: "first_name", class: "form-control form-control-lg", disabled: true, value: "nil"%>
+                <% else %>
+                  <%= f.text_field :first_name, autofocus: true, autocomplete: "first_name", class: "form-control form-control-lg", disabled: true, value: "#{@user.first_name} #{@user.middle_name} #{@user.last_name}"%>
+                <% end %>
+              </div>
+
+              <div class="form-outline mb-4">
+                  <label class="form-label">Personal Email</label>
+                  <%= f.text_field :email, autofocus: true, autocomplete: "first_name", class: "form-control form-control-lg", disabled: true, value: @user.email%>
+              </div>
+
+              <div class="form-outline mb-4">
+                  <label class="form-label">Work Email</label>
+                  <%= f.email_field :email, class: "form-control"%>
+              </div>
+
+              <div class="form-outline mb-4">
+                  <%= f.label :department %><br>
+                  <%= f.text_field :department, class: "form-control" %>
+              </div>
+              <div class="form-outline mb-4">
+                  <%= f.label :hourly %>
+                  <%= f.check_box :hourly%>
+              </div>
+              <div class="form-outline mb-4">
+                  <%= f.label :pay_rate %><br>
+                  <%= f.number_field :pay_rate, step: :any, class: "form-control"%>
+              </div>
+              <div class="form-outline mb-4">
+                  <%= f.label :photo %><br>
+                  <%= f.file_field :photo, accept: 'image/png,image/jpeg', class: "form-control"%>
+              </div>
+              <div class="form-outline mb-4">
+                  <%= f.label :onboard_docs %><br>
+                  <%= f.file_field :onboard_docs, accept: 'image/png,image/jpeg/pdf/doc/docx', class: "form-control"%>
+              </div>
+
+              <%= f.submit "Submit" , class: "btn btn-success btn-lg mb-1"%>
+            <% end %>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

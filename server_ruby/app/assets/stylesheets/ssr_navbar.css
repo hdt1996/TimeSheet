@@ -1,0 +1,23 @@
+.logged-in{
+    width:10em;
+    height:2.4em;
+    border-radius: .5em;
+    border: solid rgba(16, 38, 10, 0.307) .2em;
+    background-color: rgb(128, 238, 157);
+    margin-left:1em;
+}
+
+.logged-in li{
+    flex:1;
+    white-space: nowrap;
+    font-size: .9em;
+}
+
+.logged-in a:first-child{
+    user-select: none;
+    color: black;
+    font-weight: 600;
+}
+.logged-in .dropdown-menu{
+    z-index: 1;
+}

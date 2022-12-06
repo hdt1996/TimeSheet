@@ -1,0 +1,71 @@
+<section class="h-100 h-custom w-100" style="background-color: #8fc4b7;">
+  <div class="container py-5 h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-lg-8 col-xl-6">
+        <div class="card rounded-3">
+          <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-registration/img3.webp"
+            class="w-100" style="border-top-left-radius: .3rem; border-top-right-radius: .3rem;"
+            alt="Sample photo">
+          <div class="card-body p-4 p-md-5">
+            <h3 class="mb-4 pb-2 pb-md-0 mb-md-5 px-md-2">Employee Information</h3>
+
+            
+            <%= form_with model: [ @employee ], class: "px-md-2", html: { method: :put } do |f| %>  <!-- has_one relationship -->
+                <% if @employee.errors.any? %>
+                  <div id="error_explanation">
+                    <h2>
+                      <%= I18n.t("errors.messages.not_saved",
+                                count: @employee.errors.count,
+                                resource: @employee.class.model_name.human.downcase)
+                      %>
+                    </h2>
+                    <ul>
+                      <% @employee.errors.full_messages.each do |message| %>
+                        <li><%= message %></li>
+                      <% end %>
+                    </ul>
+                  </div>
+                <% end %>
+
+              <div class="form-outline mb-4">
+                  <label class="form-label">Work Email</label>
+                  <%= f.email_field :email, class: "form-control"%>
+              </div>
+
+              <div class="form-outline mb-4">
+                  <%= f.label :department %><br>
+                  <%= f.text_field :department, class: "form-control" %>
+              </div>
+              <div class="form-outline mb-4">
+                  <%= f.label :hourly %>
+                  <%= f.check_box :hourly%>
+              </div>
+              <div class="form-outline mb-4">
+                  <%= f.label :pay_rate %><br>
+                  <%= f.number_field :pay_rate, step: :any, class: "form-control"%>
+              </div>
+              <div class="form-outline mb-4">
+                  <label class="form-label">Current Photo</label><br/>
+                  <% if @photo.length > 0 %>
+                    <%= link_to @photo[0].file_name, media_download_path({:file_id => @photo[0]}) %>
+                  <% end %>
+                  <br/>
+                  <br/>
+                  <label class="form-label">Replace Photo</label><br/>
+                  <%= f.file_field :photo, accept: 'image/png,image/jpeg', class: "form-control"%>
+
+              </div>
+              <div class="form-outline mb-4">
+                  <%= f.label :onboard_docs %><br>
+                  <%= f.file_field :onboard_docs, accept: 'image/png,image/jpeg/pdf/doc/docx', class: "form-control"%>
+              </div>
+
+              <%= f.submit "Submit" , class: "btn btn-success btn-lg mb-1"%>
+            <% end %>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

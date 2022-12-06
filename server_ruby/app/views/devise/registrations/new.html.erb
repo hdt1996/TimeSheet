@@ -1,0 +1,77 @@
+<section class="vh-100 vw-100 bg-image"
+  style="background-image: url('https://mdbcdn.b-cdn.net/img/Photos/new-templates/search-box/img4.webp');">
+  <div class="mask d-flex align-items-center h-100 gradient-custom-3">
+    <div class="container h-100">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-12 col-md-9 col-lg-7 col-xl-6">
+          <div class="card" style="border-radius: 15px;">
+            <div class="card-body p-5">
+              <h2 class="text-uppercase text-center mb-4">Create an account</h2>
+
+              <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+                <%= render "devise/shared/error_messages", resource: resource %>
+                <div class="disflxrctr">
+                  <div class="form-outline mb-4">
+                    <%= f.label :first_name , class: "form-label"%><br />
+                    <%= f.text_field :first_name, autofocus: true, autocomplete: "first_name", class: "form-control form-control-lg"%>
+                  </div>
+                  
+                  <div class="form-outline mb-4 mx-4">
+                    <%= f.label :middle_name , class: "form-label"%><br />
+                    <%= f.text_field :middle_name, autofocus: true, autocomplete: "middle_name", class: "form-control form-control-lg"%>
+                  </div>
+
+                  <div class="form-outline mb-4">
+                    <%= f.label :last_name , class: "form-label"%><br />
+                    <%= f.text_field :last_name, autofocus: true, autocomplete: "last_name", class: "form-control form-control-lg"%>
+                  </div>
+                </div>
+
+                <div class="form-outline mb-4">
+                  <label class="form-label" >Username</label>
+                  <%= f.text_field :username, autofocus: true, autocomplete: "username", class: "form-control form-control-lg"%>
+                </div>
+
+                <div class="form-outline mb-4">
+                  <label class="form-label" >Your Email</label>
+                  <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control form-control-lg"%>
+                </div>
+
+                <div class="form-outline mb-4">
+                  <%= f.label :password , class: "form-label"%>
+                  <% if @minimum_password_length %>
+                  <em>(<%= @minimum_password_length %> characters minimum)</em>
+                  <% end %><br />
+                  <%= f.password_field :password, autocomplete: "new-password", class: "form-control form-control-lg" %>
+
+                </div>
+
+                <div class="form-outline mb-4">
+                  <%= f.label :password_confirmation , class: "form-label"%><br />
+                  <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control form-control-lg"%>
+                </div>
+
+                <div class="form-check d-flex justify-content-center mb-5">
+                  <input class="form-check-input me-2" type="checkbox" value="" id="form2Example3cg" />
+                  <!-- f.check_box :hourly,  class: "form-check-input me-2" -->
+                  <label class="form-check-label" >
+                    I agree all statements in <a href="#!" class="text-body"><u>Terms of service</u></a>
+                  </label>
+                </div>
+
+                <div class="d-flex justify-content-center">
+                    <%= f.submit "Register" , class: "btn btn-success btn-block btn-lg gradient-custom-4 text-body"%>
+                </div>
+
+                <p class="text-center text-muted mt-5 mb-0">Have already an account? <a href="#!"
+                    class="fw-bold text-body"><u><%= render "devise/shared/links" %></u></a>
+                </p>
+              <% end %>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
