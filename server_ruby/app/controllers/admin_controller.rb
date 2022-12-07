@@ -1,5 +1,5 @@
 class AdminController < ApplicationController
-  def index
+  def ssr_index
     @users = User.all()
   end
 end

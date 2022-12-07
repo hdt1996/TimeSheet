@@ -18,14 +18,8 @@ export default class App extends Component {
     this.MenuLinks=React.createRef();
     this.MenuLinks.current=
     {
-      "Timesheet Reports":'/payroll/timesheet_search/',
-      "Timesheet Entry":'/payroll/timesheet_create/',
-    };
-    this.NAV_CONFIG=
-    {
-      'title':'Accrualify',
-      'sections':['Home','Contact','About Us'],
-      'dropdowns':['Departments','Payroll','Accounting','Administration','Sales']
+      "Timesheet Reports":'/employees/timesheet_search/',
+      "Timesheet Entry":'/employees/timesheet_create/',
     };
   };
 
@@ -50,10 +44,9 @@ export default class App extends Component {
         <BrowserRouter>
           <SideMenu MenuLinks = {this.MenuLinks.current}/>
             <Routes>
-              <Route path = "/payroll/index" element={<div></div>}/>
-              <Route path = "/payroll/employee_search/" element={<LazyWrapper Comp = {<this.EmployeeSearch endpoint="/api/payroll/employees/" UserData = {this.state.UserData}/>}/>}/>
-              <Route path = "/payroll/timesheet_create/" element={<LazyWrapper Comp = {<this.TimeSheetCreate endpoint="/api/payroll/timesheet/" UserData = {this.state.UserData}/>}/>}/>
-              <Route path = "/payroll/timesheet_search/" element = {<LazyWrapper Comp = {<this.TimeSheetSearch endpoint="/api/payroll/timesheet/" UserData = {this.state.UserData}/>}/>}/>
+              <Route path = "/employees/index" element={<div></div>}/>
+              <Route path = "/employees/timesheet_create/" element={<LazyWrapper Comp = {<this.TimeSheetCreate endpoint="/api/employees/timesheet/" UserData = {this.state.UserData}/>}/>}/>
+              <Route path = "/employees/timesheet_search/" element = {<LazyWrapper Comp = {<this.TimeSheetSearch endpoint="/api/employees/timesheet/" UserData = {this.state.UserData}/>}/>}/>
             </Routes>
         </BrowserRouter>
       </div>

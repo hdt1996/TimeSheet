@@ -5,6 +5,7 @@
     border: solid rgba(16, 38, 10, 0.307) .2em;
     background-color: rgb(128, 238, 157);
     margin-left:1em;
+    margin-right:1em;
 }
 
 .logged-in li{

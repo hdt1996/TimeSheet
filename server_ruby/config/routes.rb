@@ -1,12 +1,13 @@
 Rails.application.routes.draw do
   get 'media/download'
   devise_for :users, :controllers => { registrations: 'users/registrations' }
-  get 'admin/index'
+  get 'admin/ssr_index'
 
   resources 'media'
   
   get 'employees/show'
   get 'employees/index'
+  get 'employees/new'
   get "employees/*path", to: 'employees#index', via: :all
   root 'root#index'
   get "*path", to: 'root#index', via: :get

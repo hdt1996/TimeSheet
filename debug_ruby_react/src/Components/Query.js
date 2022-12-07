@@ -84,7 +84,7 @@ export default class Query extends QueryCore
             <div className="Comp-Query">
             <div className="Filter">
                 <div className="Clear" onClick={(e) => {this.handleQueryClear(e)}}>CLR</div>
-                <button id="query" onClick = {() =>this.getQuery()}>Query</button>
+                <button id="query" onClick = {() =>this.getQuery()}>Run Query</button>
             </div>
             {
                 this.columns.map((col, index)=>

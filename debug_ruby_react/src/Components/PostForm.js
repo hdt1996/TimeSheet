@@ -100,25 +100,29 @@ function PostForm(
         rows.map((r, rindex)=>
         {                
           return (
-            <Row key = {rindex} className="flxctr brdbblkp1eo4 mrgn0 pdp25e" placeholder={`${rindex}`}>
-              <Col id="index" className="mxwd3e">
-                {rindex+1}
-              </Col>
-              {
-                col_titles.map((c, cindex) =>
+            <>
+              <Row key = {rindex} className="pdvp5e flxctr brdbblkp1eo4 mrgn0" placeholder={`${rindex}`}>
+                <Col id="index" className="mxwd3e">
+                  {rindex+1}
+                </Col>
                 {
-                  let db_attrib = col_keys[cindex];
-                  return (
-                    <Col key = {cindex}>
-                      <Form.Control onKeyUp = {(e) =>{inputChange(e, true)}} db = {db_attrib} id="form-control-db" placeholder={c} />
-                    </Col>
-                  )
-                })
-              }
-              <div id = "delete" className="z2 hovcursor hovclr1" onClick={(e)=>{handleDelete(e)}}>
-                <Delete className="mnht1p5e mnwd1p5e noclick noclickpath" />
-              </div>
-            </Row>
+                  col_titles.map((c, cindex) =>
+                  {
+                    let db_attrib = col_keys[cindex];
+                    return (
+                      <>
+                        <Col key = {cindex} class="mrgn0">
+                          <Form.Control onKeyUp = {(e) =>{inputChange(e, true)}} db = {db_attrib} id="form-control-db" placeholder={c} className="mrgn0"/>
+                        </Col> 
+                      </>
+                    )
+                  })
+                }
+                <div id = "delete" className="z2 hovcursor hovclr1 mxwd3e disflxrctr mrgnlftp5e" onClick={(e)=>{handleDelete(e)}}>
+                  <Delete className="mnht1p5e mnwd1p5e noclick noclickpath"/>
+                </div>
+              </Row>
+            </>
           )
         })
         :
@@ -134,14 +138,14 @@ function PostForm(
                 {
                   let db_attrib = col_keys[cindex];
                   return (
-                    <Col id="col" key = {cindex}>
+                    <Col key = {cindex}>
                       <Form.Control onKeyUp = {(e) =>{inputChange(e, true)}} db = {db_attrib} id="form-control-db" placeholder={c} defaultValue = {r[db_attrib]}/>
                     </Col>
                   )
                 })
               }
-              <div id = "delete" className="z2 hovcursor hovclr1" onClick={(e)=>{handleDelete(e)}}>
-                <Delete className="mnht1p5e mnwd1p5e  noclick noclickpath"/>
+              <div id = "delete" className="z2 hovcursor hovclr1 mxwd3e disflxrctr mrgnlftp5e" onClick={(e)=>{handleDelete(e)}}>
+                <Delete className="mnht1p5e mnwd1p5e noclick noclickpath"/>
               </div>
             </Row>
           )
@@ -149,7 +153,7 @@ function PostForm(
       }
 
       <div className="z2 disflxrow flxrowend">
-        <Add id="add" className="mnht1p5e mnwd1p5e hovcursor hovclr1 noclickpath " onClick={()=>{handleAdd()}}></Add>
+        <Add id="add" className="mnht1p5e mnwd2e hovcursor hovclr1 noclickpath " onClick={()=>{handleAdd()}}></Add>
       </div>
     </Form>
     );

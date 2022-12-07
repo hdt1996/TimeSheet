@@ -67,12 +67,12 @@ export default class TimeSheetCreate extends TimesheetCreateCore
     render()
     {
         return ( 
-        <div className="disflxcol flx30 fullsz">
+        <div className="disflxcol flx30">
             <div className="mxht2p5e bktitleclr1 disflxrctr flx1 fntsz1p5e fntbld">
                 Timesheet Entry
             </div>
             <div className="bkrowclr1 disflxrow mxht30e">
-                <div className="disflxcol flxcoleven flx5 pdnt1e pdt1e mnwd18e">
+                <div className="disflxcol flxcoleven flx5 pdnt1e mnwd18e">
                     <TextField
                         label="Timesheet ID"
                         placeholder="id"
@@ -134,7 +134,7 @@ export default class TimeSheetCreate extends TimesheetCreateCore
                     />
                 </div>
 
-                <div className='flx30 mnwd25e pd2e'>
+                <div className='flx30 mnwd25e mrgnh1p5e'>
                     <TextField
                         multiline
                         minRows={15}
@@ -147,14 +147,13 @@ export default class TimeSheetCreate extends TimesheetCreateCore
                     />
                 </div>
             </div>
-
-            <div className="bktitleclr3 flx1 disflxcol mrgnh2e pdv2e pdt0 brdradiusp5e ovflxhide ovflyhide" id = "Form" style={{height:"0em",minHeight:"fit-content"}}>
-                <div className="mxht2p5e mnht2p5e bktitleclr2 disflxrctr flx1 fntsz1p5e fntbld">
-                    Billing Line Items
-                </div>
+            <div className="mxht2p5e mnht2p5e bktitleclr2 disflxrctr flx1 fntsz1p5e fntbld">
+                Billing Line Items
+            </div>
+            <div className="bkbodyclr1 flx1 disflxrow" id = "Form">
                 <PostForm BillingLineData = {this.BillingLineData} inputChange = {(e, calc) => this.handleBillLineInputs(e,calc)} deleteChange = {(e) => this.handleBillLineDelete} config={this.PostFormConfig} CurrentData={this.props.CurrentData?this.props.CurrentData['nestedData']:null}></PostForm>
             </div>
-            <div className="flx1 mnht3e mxht3e disflxrow mrgnh2e" style={{marginBottom:"1em", marginTop:"1em"}}>
+            <div className="flx1 mxht3e disflxrow">
                 <div className="disflxcol flx1 mxwd25e bkrowclr2 brdblrp5e ">
                     <div className = "flx1 Footer-Row disflxrctr posrel fntbld brdblkp125e brdradiusp5e bkbtnclr1">
                         <div className = "disflxrctr brdradiusp5e flx1">Status:</div> 

@@ -1,4 +1,4 @@
-import getToken from '../Utilities/Token'
+import getToken from './Token'
 
 var domain = "http://server-django-prod.us-west-2.elasticbeanstalk.com";
 if(process.env.NODE_ENV === 'development')

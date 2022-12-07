@@ -27,7 +27,7 @@ function SideMenu(
     return ( 
         <div className="disflxrow fitmwd">
             <div className="disflxcol easewidth13 ovflxhide"  id="menu">
-                <div className="bktitleclr3 disflxrctr fntsz1p5e fntbld">
+                <div className="bktitleclr3 disflxrctr fntsz1p5e fntbld pdv1e">
                     Applications
                 </div>
                 {

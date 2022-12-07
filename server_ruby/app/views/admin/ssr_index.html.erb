@@ -20,7 +20,7 @@
                         <th>Created</th>
                         <th>Updated</th>
                         <th>Staff</th>
-                        <th></th>
+                        <th>User</th>
 
                     </tr>
                 </thead>
@@ -38,7 +38,7 @@
                                 <%= link_to user.employee.id, employees_show_path({:employee_id => user.employee}), method: :get%>
                             </td>
                         <% else %>
-                            <td><%= link_to "Set?", new_employee_path({:user_id => user}), method: :get%></td>
+                            <td><%= link_to "Set", new_employee_path({:user_id => user}), method: :get%></td>
                         <% end %>
                         <td><%= link_to "Edit", edit_user_registration_path(user)%></td>
                     </tr>

@@ -11,20 +11,13 @@ class EmployeesController < ApplicationController
     def show
         @employee = Employee.find(params[:employee_id])
         @photo = @employee.medium.where(category: "photo")
-        puts @photo.length
         @onboard_docs = @employee.medium.where(category: "onboard_docs")
     end
 
     def create
         user = User.find(params[:user_id])
         employee = user.build_employee(employee_params)
-        puts "MY EMPLOYEE PARAMS.........
-        
-        "
-        puts employee
-        puts employee.id
-
-        
+        employee.medium.build(file: medium_params, :category => "photo", :is_public => false)
         unless employee.save
             alert = "Failed: Could not register employee for #{user.username}"
             #redirect_back fallback_location: new_employee_path("test": 5), alert: notice. ==> Gives us params for user_id and employee_id without passing as arg.
@@ -32,16 +25,6 @@ class EmployeesController < ApplicationController
             redirect_to new_employee_path("user_id": user, "errors": employee.errors.full_messages), alert: notice and return #Works to pass in extra params
         end
         #employee.destroy
-
-        file_photo = employee.medium.build(file: medium_params, :category => "photo", :is_public => false, :employee_id => employee.id)
-        unless file_photo.save
-            puts "ERROR..................
-
-            "
-            puts file_photo.errors.full_messages
-        end
-
-        #file_onboard = employee
         notice = "Success: #{user.username} is now an employee"
         redirect_to admin_index_path, notice: notice
         
@@ -49,7 +32,7 @@ class EmployeesController < ApplicationController
 
     private
     def employee_params
-        params.require(:employee).permit(:email, :hourly, :department, :pay_rate)
+        emp_params = params.require(:employee).permit(:email, :hourly, :department, :pay_rate)
     end
 
     def medium_params
