@@ -1,17 +1,23 @@
 Rails.application.routes.draw do
-  get 'media/download'
   devise_for :users, :controllers => { registrations: 'users/registrations' }
-  get 'admin/ssr_index'
 
-  resources 'media'
-  
-  get 'employees/show'
   get 'employees/index'
-  get 'employees/new'
-  get "employees/*path", to: 'employees#index', via: :all
-  root 'root#index'
-  get "*path", to: 'root#index', via: :get
+  resources :employees, except: 'index'
+  get "employees/*path", to: 'employees#index', via: :get
 
+  get 'media/download'
+
+  namespace :admin do
+    resources :users
+  end
+  get '/admin/users*path', to: 'admin/users#index'
+  #scope :admin do
+  #  resources :users, module: 'admin', path: '/users'
+  #end
+
+  get "*path", to: 'root#index', via: :get
+  root 'root#index'
+  resources 'media'
 
   # resources __path__ means assign all CRUD routes without having to map each one (get... post.. etc.)
   resources :users do

@@ -1,6 +1,7 @@
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  attr_writer :login
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, authentication_keys: [:login]
   enum role: [:user, :moderator, :admin]
@@ -20,7 +21,7 @@ class User < ApplicationRecord
   end
   
   def login
-    self.username || self.email
+    @login || self.username || self.email
   end
 
   def self.find_for_database_authentication(warden_conditions)

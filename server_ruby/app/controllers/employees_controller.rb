@@ -9,7 +9,7 @@ class EmployeesController < ApplicationController
     end
 
     def show
-        @employee = Employee.find(params[:employee_id])
+        @employee = Employee.find(params[:id])
         @photo = @employee.medium.where(category: "photo")
         @onboard_docs = @employee.medium.where(category: "onboard_docs")
     end
@@ -26,7 +26,7 @@ class EmployeesController < ApplicationController
         end
         #employee.destroy
         notice = "Success: #{user.username} is now an employee"
-        redirect_to admin_index_path, notice: notice
+        redirect_to admin_path, notice: notice
         
     end
 

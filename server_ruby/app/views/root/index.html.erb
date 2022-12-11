@@ -52,13 +52,13 @@
 </style>
 
 <main>
-
   <div class="px-5 py-2 my-5 bk_hero shadow-lg">
     <div class="row flex-lg-row-reverse align-items-center py-5 flex-wrap" style="height:fit-content; min-height: 50em">
-      <div class="col-10 col-sm-8 col-lg-6 px-5" style="flex-grow:9999; height:100%;">
+      <div class="col-10 col-lg-6 px-5" style="flex-grow:9999; height:100%; min-width:50em">
         <div class="img_container shadow-lg" style="height:100%;min-height: 45em">
           <%= image_tag 'root_bk.jpg', alt: ""%>
         </div>
+        <br/>
       </div>
       <div class="col-10 col-sm-8 col-lg-6 card_bk d-flex flex-column px-5" style="font-size:1.25em; flex-grow:9999;  height:100%">
         <h1 class="display-5 fw-bold lh-1 mb-3">Complete Spend Management Platform</h1>
@@ -92,8 +92,8 @@
         <p class="lead">Innovative solution to handling workplace operations on our web platform integrated with large-scale automation and the latest technological advances. Click below to get started.</p>
         <br/>
         <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-          <%= button_to "ADMIN PORTAL", admin_ssr_index_path, :id => "open-contacts-dialog-btn",:class => "btn btn-primary btn-lg px-4 me-md-2", :method => :get %>
-          <%= button_to "EMPLOYEE PORTAL", employees_index_path, :id => "open-contacts-dialog-btn",:class => "btn btn-primary btn-lg px-4 me-md-2", :method => :get %>
+          <%= button_to "ADMIN PORTAL", admin_users_path, :id => "open-contacts-dialog-btn",:class => "btn btn-primary btn-lg px-4 me-md-2", :method => :get %>
+          <%= button_to "EMPLOYEE PORTAL", employees_path, :id => "open-contacts-dialog-btn",:class => "btn btn-primary btn-lg px-4 me-md-2", :method => :get %>
         </div>
 
       </div>

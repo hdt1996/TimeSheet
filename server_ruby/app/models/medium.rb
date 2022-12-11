@@ -14,9 +14,6 @@ class Medium < ApplicationRecord
         self.file_name = file.original_filename
         self.file_type = file.content_type
         self.file_size = file.size
-
         self.file_data = Base64.encode64(file.read) #Necessary because sending binary over the network may send unprintable characters
-
-       
     end
 end

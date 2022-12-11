@@ -1,5 +1,9 @@
 <div class="disflxcctr table-wrapper">
     <h1 >User Management</h1>
+    <div>
+        <%= link_to "BULK CREATE", admin_users_create_path%>
+    </div>
+    <br/>
     <% if !current_user %>
         <div style="color:red;font-size:1.5em;display:flex;justify-content:center;align-items:center,flex:1">
             Please sign in to use this feature.
@@ -35,7 +39,7 @@
                         <td><%= user.email %></td>
                         <% if user.employee %>
                             <td>
-                                <%= link_to user.employee.id, employees_show_path({:employee_id => user.employee}), method: :get%>
+                                <%= link_to user.employee.id, show_employee_path({:employee_id => user.employee}), method: :get%>
                             </td>
                         <% else %>
                             <td><%= link_to "Set", new_employee_path({:user_id => user}), method: :get%></td>
