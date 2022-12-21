@@ -10,16 +10,26 @@ class User < ApplicationRecord
   validates :username, presence: true, allow_blank: false, uniqueness: true 
   validates :email, length: { maximum: 50 }
   validates :first_name, presence: true, length: {maximum: 20}
-  validates :middle_name, length: {maximum: 20}
+  validates :middle_name, presence: false, length: {maximum: 20}
   validates :last_name, presence: true, length: {maximum: 20}
 
   after_initialize :set_default_role, :if => :new_record?
   has_one :employee
 
+  def self.export_column_names
+    cn_hash = {}
+    @column_names.each do |col|
+      cn_hash[col] = nil
+    end
+    cn_hash.except('encrypted_password','reset_password_token','reset_password_sent_at').map{|k, v| k}
+  end
+
   def set_default_role
     self.role ||= :user
   end
   
+
+
   def login
     @login || self.username || self.email
   end

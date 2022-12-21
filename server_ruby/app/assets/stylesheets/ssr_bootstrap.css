@@ -142,4 +142,18 @@
     padding:1em;
 }
 
+.table-mgmt{
+    background-color: #212529;
+    padding:.75em;
+    padding-left:1.5em;
+    padding-right:1.5em;
+    border-radius:.15em;
+}
 
+.table-mgmt h2{
+    color:white;
+}
+
+.table-mgmt-opt{
+    border-radius:.25em;
+}

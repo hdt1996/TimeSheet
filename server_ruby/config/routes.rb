@@ -8,18 +8,25 @@ Rails.application.routes.draw do
   get 'media/download'
 
   namespace :admin do
-    resources :users
+    resource :users, only: 'export' do
+      get 'export', to: 'users#export'
+    end
+    resources :users 
   end
+
+
   get '/admin/users*path', to: 'admin/users#index'
+  
   #scope :admin do
   #  resources :users, module: 'admin', path: '/users'
   #end
 
   get "*path", to: 'root#index', via: :get
   root 'root#index'
+
   resources 'media'
 
-  # resources __path__ means assign all CRUD routes without having to map each one (get... post.. etc.)
+  # resources __path__ means assign all CRUD routes/actions without having to map each one (get... post.. etc.)
   resources :users do
     resources :employees
   end
