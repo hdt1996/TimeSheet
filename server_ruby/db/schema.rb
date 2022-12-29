@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_12_11_004740) do
+ActiveRecord::Schema.define(version: 2022_12_29_171605) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -39,6 +39,11 @@ ActiveRecord::Schema.define(version: 2022_12_11_004740) do
     t.datetime "updated_at", precision: 6, null: false
     t.boolean "is_public", default: true
     t.index ["employee_id"], name: "index_media_on_employee_id"
+  end
+
+  create_table "user_searches", force: :cascade do |t|
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "users", force: :cascade do |t|

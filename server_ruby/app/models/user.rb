@@ -16,19 +16,17 @@ class User < ApplicationRecord
   after_initialize :set_default_role, :if => :new_record?
   has_one :employee
 
-  def self.export_column_names
-    cn_hash = {}
-    @column_names.each do |col|
-      cn_hash[col] = nil
-    end
-    cn_hash.except('encrypted_password','reset_password_token','reset_password_sent_at').map{|k, v| k}
+  def self.excluded_columns
+    ['encrypted_password','reset_password_token','reset_password_sent_at','remember_created_at']
   end
 
-  def set_default_role
+  def self.allowed_columns #static User.allowed_columns
+    column_names - excluded_columns
+  end
+
+  def set_default_role #instance
     self.role ||= :user
   end
-  
-
 
   def login
     @login || self.username || self.email

@@ -8,17 +8,19 @@
             alt="Sample photo">
           <div class="card-body p-4 p-md-5">
             <h3 class="mb-4 pb-2 pb-md-0 mb-md-5 px-md-2">Add Users</h3>
-
-            
-            <%= form_with url: admin_users_path, method: :post , class: "px-md-2" do |f| %>  <!-- has_one relationship -->
+            <%= form_with url: admin_users_path, method: :post , local: true, class: "px-md-2" do |f| %>  <!-- has_one relationship -->
               <div class="form-outline mb-4">
                   <label class="form-label" >CSV</label><i> ( Add one or multiple users. Column names should match below )</i><br /> 
-                 
                   <label class="form-label" >Required Columns</label><i> | first_name, middle_name, last_name, email, password |</i><br/>
                   <label class="form-label" >IMPORTANT</label><i> ( Passwords must be temporary and randomized for security )</i><br/>
-                  <%= f.file_field :csv, accept: 'image/png,image/jpeg', class: "form-control"%>
+                  <%= f.file_field :csv, accept: 'text/csv', class: "form-control" %>
               </div>
-              <%= f.submit "Submit" , class: "btn btn-success btn-lg mb-1"%>
+              <%= button_tag "Submit", class: "btn btn-success btn-lg mb-1",
+                data: 
+                {
+                  disable_with: 'Processing <div class="spinner-border text-primary" role="status"></div>'.html_safe,
+                } 
+              %>
             <% end %>
 
           </div>
