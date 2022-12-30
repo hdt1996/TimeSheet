@@ -1,0 +1,35 @@
+<div class="d-flex flex-row justify-content-between" style="flex: 1; max-width:fit-content; padding-top:.5em; padding-bottom:.5em;">
+    <div class="px-1">
+        Page
+    </div>
+    |
+    <% if current_page -2 > 0%>
+        <div class="px-1">
+            <input type = "submit" name="page" value="0" style="background-color:transparent; border: none; padding: 0"/>
+            ..
+        </div>
+    <% end %>
+    <% if current_page > 0%>
+        <div class="px-1">
+            <input type = "submit" name="page" value="<%= current_page - 1 %>" style="background-color:transparent; border: none; padding: 0"/>
+        </div>
+    <% end %>
+
+    <div class="px-1" style="border-bottom:solid black .1em">
+        <input type = "submit" name="page" value="<%= current_page%>" style="background-color:transparent; border: none; padding: 0"/>
+    </div>
+
+    <% if records.size > 0 && current_page < last_page%>
+        <div class="px-1">
+            <input type = "submit" name="page" value="<%= current_page + 1 %>" style="background-color:transparent; border: none; padding: 0"/>
+        </div>
+    <% end %>
+
+    <% if current_page + 2 < last_page%>
+        <div class="px-1">
+            ..
+            <input type = "submit" name="page" value="<%= last_page %>" style="background-color:transparent; border: none; padding: 0"/>
+        </div>
+    <% end %>
+    |
+</div>

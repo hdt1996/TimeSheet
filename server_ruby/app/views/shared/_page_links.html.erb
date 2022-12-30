@@ -1,0 +1,34 @@
+<div class="d-flex flex-row justify-content-between nochildlinks" style="flex: 1; max-width:fit-content; padding-top:.5em; padding-bottom:.5em;">
+    <div class="px-1">
+        Page
+    </div>
+
+    <% if current_page -2 > 0%>
+        <div class="px-1">
+            <%= link_to 0, {:controller => link_path, :page => 0}%>
+            ..
+        </div>
+    <% end %>
+    <% if current_page > 0%>
+        <div class="px-1">
+            <%= link_to current_page - 1, {:controller => link_path, :page => current_page - 1}%>
+        </div>
+    <% end %>
+
+    <div class="px-1" style="border-bottom:solid black .1em">
+        <%= link_to current_page, {:controller => link_path, :page => current_page}%>
+    </div>
+
+    <% if records.size > 0 && current_page < last_page%>
+        <div class="px-1">
+            <%= link_to current_page + 1, {:controller => link_path, :page => current_page + 1}%>
+        </div>
+    <% end %>
+
+    <% if current_page + 2 < last_page%>
+        <div class="px-1">
+            ..
+            <%= link_to last_page, {:controller => link_path, :page => last_page}%>
+        </div>
+    <% end %>
+</div>

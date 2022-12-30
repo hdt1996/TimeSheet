@@ -2,6 +2,7 @@ module Admin
   class UsersController < ApplicationController
     before_action :authenticate_admin, except: [:index]
     include CsvHandler
+    include QueryHandler
 
     def authenticate_admin
       if current_user && current_user.admin?
@@ -11,38 +12,8 @@ module Admin
     end
 
     def index
-      limit = 25
-      total_users = User.all.count
-      @last_page = total_users/limit
-      @columns = User.allowed_columns
-      @operators = 
-      {
-        "equal": '=',
-        "not equal": '!=',
-        "greater": '>', 
-        "less": '<',
-        "greater or equal": '>=', 
-        "less or equal": '<=', 
-        "in": ':', 
-        "starts with": '^', 
-        "ends with": '$', 
-        "contains": 'ctn'
-      }
       @page = params[:page].to_i
-      
-      if params[:user_search]
-        @users = User
-        search_params = query_params
-        @user_search = UserSearch.new(search_params)
-        search_oper = search_params[:operator]
-        search_params.except(:operator).each do |k, v|
-          @users = @users.where("#{k} #{@operators[search_oper.to_sym]} ?", v) #https://guides.rubyonrails.org/security.html Use inserted string since AR automatically escapes quotes/apostrophes
-        end
-        @users = @users.limit(limit).offset((@page)*limit).select(User.allowed_columns)
-      else
-        @user_search = UserSearch.new
-        @users = User.limit(limit).offset((@page)*limit).select(User.allowed_columns)
-      end
+      @users, @user_search, @field_map, @operators, @page_limit, @last_page = processQuery(User, Query::Users)
     end
 
     def edit
@@ -71,12 +42,6 @@ module Admin
     def export
       set_csv_stream(User)
       respond_to do |format| format.csv end #Use when streaming, if file already exists ready to serve: use send_file or send_data (binary)
-    end
-
-    private
-    def query_params
-      qp_hash = params.require(:user_search).permit(:operator, :staff, User.allowed_columns)
-      qp_hash.select{|k, v| !v.empty?}
     end
   end
 end

@@ -10,73 +10,74 @@
     <% else %>
         <div style="flex:1; width:100%;">
             <div style="width:100%">
-                <%= form_with model: @user_search, url: admin_users_path, method: :get , local: true do |f| %>  <!-- has_one relationship -->
-                    <div class="d-flex flex-row table-mgmt bg-secondary nochildlinks" >
-                        <div class="disflxrstart" style="width:fit-content;">
-                            <h5 class="text-dark" >Custom Query</h5>
+                <%= form_with url: admin_users_path, method: :get , local: true do |f| %>  <!-- has_one relationship -->
+                    <div class="d-flex flex-row bg-secondary nochildlinks" >
+                        <div class="disflxrstart" style="width:fit-content; align-items: center;">
+                            <h5 class="text-white" style="font-size:1.5em; padding:.5em;" >Custom Query</h5>
                         </div>
 
                         <div class="disflxrctr" style="flex:1; justify-content: flex-end">
                             <div class="p-2 table-mgmt-opt">
                                 <!--<%= button_to "Clear", export_admin_users_path(format: :csv), :class => "btn btn-md btn-dark p-2", :method => :get %> -->
+                                <%= button_tag "Clear", :type => :button, :onclick => "clearCustomQuery(event)", :class => "btn btn-dark btn-md"%>
                             </div>
                             <div class="p-2 table-mgmt-opt">
-                                <%= f.submit "Query" , class: "btn btn-md btn-dark p-2"%>
+                                <%= f.submit "Execute" , class: "btn btn-dark btn-md"%>
                             </div>
                         </div>
                     </div>
+
+                    
                     <div style="width:100%; overflow-x:scroll">
                         <table class="table table-secondary table-striped" data-sort-order="asc" style="margin-bottom:0;" >
                             <thead>
                                 <tr>
-                                    <th>Operator</th>
-                                    <% @columns.each do |attrib|%>
-                                        <th> <%= attrib %> </th>
+                                    <% @field_map.each do |k, v|%>
+                                        <th> <%= k %> </th>
                                     <% end %>
-                                    <th>Staff</th>
                                 </tr>
                             </thead>
                             <tbody>
+                                <% for i in 0..@user_search.num_customs%>
+                                    <tr>
+                                        <% @field_map.each do |k, v|%>
+                                            <td>
+                                                <%= f.collection_select "query[#{k}][#{i}][operator]", @operators.keys, :to_s, :to_s, 
+                                                    {:selected => @user_search.public_send(k.to_sym) && @user_search.public_send(k.to_sym)["#{i}"] ? 
+                                                        @user_search.public_send(k.to_sym)["#{i}"][:operator] : :equal}
+                                                %>
+                                                <%= f.public_send(v[:field], "query[#{k}][#{i}][value]", autofocus: true, class: "query-field-sh", 
+                                                    value: @user_search.public_send(k.to_sym) && @user_search.public_send(k.to_sym)["#{i}"] ? 
+                                                        @user_search.public_send(k.to_sym)["#{i}"][:value] : nil, 
+                                                    **v[:opts])
+                                                %>
+                                            </td>
+                                        <% end %>
+                                    </tr>
+                                <% end %>
+                                
                                 <tr>
-                                    <td><%= f.collection_select :operator, @operators.keys, :to_s, :to_s, {:selected => "equal"}%></td>
-                                    <td><%= f.number_field :id, autofocus: true, class: "query-field-sh", step: 0 %></td>
-                                    <td><%= f.email_field :email, autofocus: true, class: "query-field-lg"%></td>
-                                    <td><%= f.date_field :created_at, autofocus: true, class: "query-field-sh"%></td>
-                                    <td><%= f.date_field  :updated_at, autofocus: true, class: "query-field-sh"%></td>
-                                    <td><%= f.text_field :username, autofocus: true, class: "query-field-lg"%></td>
-                                    <td><%= f.text_field :role, autofocus: true, class: "query-field-sh"%></td>
-                                    <td><%= f.text_field :first_name, autofocus: true, class: "query-field-md"%></td>
-                                    <td><%= f.text_field :last_name, autofocus: true, class: "query-field-md"%></td>
-                                    <td><%= f.text_field :middle_name, autofocus: true, class: "query-field-md"%></td>
-                                    <td><%= f.number_field :staff, autofocus: true, class: "query-field-sh", step: 0%></td>
+                                    <td colspan="<%= @field_map.size %>">
+                                        <%= button_tag "Add Row", :type => :button, :onclick => "addCustomQuery(event)", :class => "btn btn-primary btn-md"%>
+                                        <%= f.hidden_field :num_customs, :value => 1%>
+                                    </td>
                                 </tr>
                             </tbody>
                             
                         </table>
+                        
                     </div>
-                <% end %>
+                    <br/>
+                    
+                    <div style="display:flex; justify-content: space-between">
+                        <%= f.collection_select :view, [25,50,100], :to_s, :to_s, {:selected => @page_limit}, onchange: 'this.form.submit()'%>
+                        <%= render 'shared/page_inplinks', {:current_page => @page, :last_page => @last_page, :records => @users, :link_path => admin_users_path} %>
+                    <% end %>
+                    
+                </div>
             </div>
-
             <br/>
-            <div class="d-flex flex-row justify-content-between nochildlinks" style="margin-left:auto;width:fit-content; padding-top:.5em; padding-bottom:.5em;">
-                <div class="px-1">
-                    Page
-                </div>
-                <% if @page > 0%>
-                    <div class="px-1">
-                        <%= link_to @page - 1, admin_users_path(:page => @page - 1)%>
-                    </div>
-                <% end %>
-                <div class="px-1" style="border-bottom:solid black .1em">
-                    <%= link_to @page, admin_users_path(:page => @page)%>
-                </div>
-                <% if @users.size > 0 && @page < @last_page%>
-                    <div class="px-1">
-                        <%= link_to @page + 1, admin_users_path(:page => @page + 1)%>
-                    </div>
-                <% end %>
-            </div>
-
+   
             <div class="d-flex flex-row table-mgmt nochildlinks" >
                 <div class="disflxrstart" style="width:fit-content;">
                     <h2 >User Management View</h2>
@@ -96,10 +97,9 @@
                 <table class="table table-dark table-striped table-bordered" data-sort-order="asc" style="margin-bottom:0;">
                     <thead>
                         <tr>
-                            <% @columns.each do |attrib|%>
-                                <th> <%= attrib %> </th>
+                            <% @field_map.each do |k, v|%>
+                                <th> <%= k %> </th>
                             <% end %>
-                            <th>Staff</th>
                             <th></th>
                         </tr>
 
@@ -124,7 +124,7 @@
                             <% end %>
                         <% else %>
                             <tr>
-                                <td colspan= <%= @columns.size+2%> >No Entries Found</td>
+                                <td colspan= <%= @field_map.keys.size+1%> >No Entries Found</td>
                             </tr>
                         <% end %>
                     </tbody>
@@ -133,3 +133,47 @@
         </div>
     <% end %>
 </div>
+
+<script>
+    function addCustomQuery(e)
+    {
+        let tr = e.target.closest('tr')//this is tr tag that contains button and hidden input counter
+        let num_customs = parseInt(tr.querySelector('input').value)
+        tr.querySelector('input').value = num_customs + 1; //increment converted int
+        let tbody = tr.parentNode;
+        let trs = tbody.children;
+        let clone = trs[Math.max(0,trs.length-2)].cloneNode(true);
+        let regex = /(\[\d+\])/g;
+        let clone_inps = clone.querySelectorAll('input');
+        let clone_sels = clone.querySelectorAll('select');
+        //clone will retain previous index. We will retrieve it and replace with incremented
+        let index = JSON.parse(clone_inps[0].getAttribute('name').match(regex))[0];
+        let name; 
+        let id;
+        for(let i = 0; i < clone_inps.length; i++) //Doesn't matter which since both arraylikes are 1 to 1
+        {
+            //Modifying inputs
+            clone_inps[i].value='';
+            clone_inps[i].removeAttribute('value');
+
+            [clone_inps, clone_sels].forEach(arr => 
+            {
+                name = arr[i].getAttribute('name');
+                id = arr[i].getAttribute('id');
+                arr[i].setAttribute('name', name.replace(regex,`[${index + 1}]`)); //incremented indices
+                arr[i].setAttribute('id', id.replace(regex,`[${index + 1}]`));
+            });
+        };
+        tbody.insertBefore(clone, tr);
+    };
+
+    function clearCustomQuery(e)
+    {
+        let form = e.target.closest('form');
+        let inps = form.querySelectorAll('input:not([type="submit"])');
+        inps.forEach(element => {
+            element.value='';
+            element.removeAttribute('value');
+        });
+    }
+</script>

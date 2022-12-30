@@ -1,6 +1,9 @@
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+
+  @@MAX_PAGINATION = 100
+  @@DEFAULT_PAGINATION=25
   attr_writer :login
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, authentication_keys: [:login]
@@ -39,6 +42,14 @@ class User < ApplicationRecord
     elsif conditions.has_key?(:username) || conditions.has_key?(:email)
       where(conditions.to_h).first
     end
+  end
+
+  def self.MAX_PAGINATION
+    @@MAX_PAGINATION
+  end
+
+  def self.DEFAULT_PAGINATION
+    @@DEFAULT_PAGINATION
   end
 
 end

@@ -161,14 +161,17 @@
 .query-field-sh{
     width:100%;
     min-width:5em;
+    margin-top:.5em;
 }
 
 .query-field-md{
     width:100%;
     min-width:7.5em;
+    margin-top:.5em;
 }
 
 .query-field-lg{
     width:100%;
     min-width:10em;
+    margin-top:.5em;
 }
