@@ -12,8 +12,7 @@ module Admin
     end
 
     def index
-      @page = params[:page].to_i
-      @users, @user_search, @field_map, @operators, @page_limit, @last_page = processQuery(User, Query::Users)
+      @users, @user_search, @field_map, @operators, @page_limit, @page, @last_page, @field_validators= processQuery(User, Query::Users)
     end
 
     def edit

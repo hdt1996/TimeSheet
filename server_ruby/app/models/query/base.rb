@@ -9,11 +9,20 @@ class Query::Base
     :less => '<',
     :greater_or_equal => '>=', 
     :less_or_equal => '<=', 
-    :in => ':', 
+    :in => 'IN', 
     :starts_with => '^', 
     :ends_with => '$', 
     :contains => 'ctn',
     :empty => '='
+  }
+
+  @@OPERATOR_VALIDATION=
+  {
+    :in => 
+    {
+      :number_field => '^(\d+\,)+\d+$',
+      :text_field => '^(([^\\\,\"]|(\\\")|(\\\,)|(\\\\))+\,)+([^\\\,\"]|(\\\")|(\\\,)|(\\\\))+$'
+    }
   }
 
   def self.OPERATORS
@@ -22,5 +31,9 @@ class Query::Base
 
   def self.MAX_CUSTOMS
     @@MAX_CUSTOMS
+  end
+
+  def self.OPERATOR_VALIDATION
+    @@OPERATOR_VALIDATION
   end
 end

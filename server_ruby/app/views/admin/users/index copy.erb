@@ -48,41 +48,19 @@
                                                     :onchange => "handleOperChange(event)"
                                                 %>
                                                 <% if @user_search.public_send(k.to_sym) && @user_search.public_send(k.to_sym)["#{i}"] %>
-                                                    <% if @user_search.public_send(k.to_sym)["#{i}"][:multiple] == true %>
-
-                                                        <%= f.public_send(v[:field], "query[#{k}][#{i}][value]", autofocus: true, class: "query-field-sh", 
-                                                            value:  @user_search.public_send(k.to_sym)["#{i}"][:value], **v[:opts])
-                                                        %>
-
-                                                        <%= f.text_field "query[#{k}][#{i}][value]", autofocus: true, :name => nil, :type => :hidden, class: "query-field-sh", 
-                                                            :f_type => v[:field].to_sym
-                                                        %>
-
-                                                        <%= f.hidden_field "query[#{k}][#{i}][multiple]", :value => @user_search.public_send(k.to_sym)["#{i}"][:multiple]%>
 
 
-                                                    <% else %>
-                                                        <%= f.public_send(v[:field], "query[#{k}][#{i}][value]", autofocus: true, class: "query-field-sh", 
-                                                            value:  @user_search.public_send(k.to_sym)["#{i}"][:value], **v[:opts])
-                                                        %>
-
-                                                        <%= f.text_field "query[#{k}][#{i}][value]", autofocus: true, :name => nil, :type => :hidden, class: "query-field-sh", 
-                                                            :f_type => v[:field].to_sym
-                                                        %>
-
-                                                        <%= f.hidden_field "query[#{k}][#{i}][multiple]", :value => @user_search.public_send(k.to_sym)["#{i}"][:multiple]%>
-                                                    <% end %>
-
-                                                <% else %>
-                                                    <%= f.public_send(v[:field], "query[#{k}][#{i}][value]", autofocus: true, class: "query-field-sh", **v[:opts])
-                                                    %>
-
-                                                    <%= f.text_field "query[#{k}][#{i}][value]", autofocus: true, :name => nil, :type => :hidden, class: "query-field-sh", :f_type => v[:field].to_sym
-                                                    %>
-
-                                                    <%= f.hidden_field "query[#{k}][#{i}][multiple]", :value => false%>
                                                 <% end %>
+                                                <%= f.public_send(v[:field], "query[#{k}][#{i}][value]", autofocus: true, class: "query-field-sh", 
+                                                    value: @user_search.public_send(k.to_sym) && @user_search.public_send(k.to_sym)["#{i}"] ? 
+                                                        @user_search.public_send(k.to_sym)["#{i}"][:value] : nil, 
+                                                    **v[:opts])
+                                                %>
+                                                <%= f.text_field "query[#{k}][#{i}][value]", autofocus: true, :name => nil, :type => :hidden, class: "query-field-sh", :f_type => v[:field].to_sym
+                                                %>
 
+                                                <%= f.hidden_field "query[#{k}][#{i}][multiple]", :value => @user_search.public_send(k.to_sym) && @user_search.public_send(k.to_sym)["#{i}"] ? 
+                                                    @user_search.public_send(k.to_sym)["#{i}"][:multiple] : false%>
                                             </td>
                                         <% end %>
                                     </tr>
@@ -165,10 +143,6 @@
         </div>
     <% end %>
 </div>
-
-<!--  LEFT OFF: need to double check operator handle logic. Look for onload or onrender event to create orig-type attribute without needing it to be in js function. Could possibly
-do click action inside event on load or leave rails to parse logic through html helpers -->
-
 
 <script>
     function addCustomQuery(e)

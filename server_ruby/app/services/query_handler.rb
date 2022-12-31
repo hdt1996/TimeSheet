@@ -1,9 +1,10 @@
 module QueryHandler
     def processQuery(table, query_model)
-        permit_map = table.allowed_columns.map{|k| [k.to_sym, (0..query_model.MAX_CUSTOMS.to_i).map{|index| [index, [:operator, :value]]}]}.to_h
+        permit_map = table.allowed_columns.map{|k| [k.to_sym, (0..query_model.MAX_CUSTOMS.to_i).map{|index| [index, [:operator, :value, :multiple]]}]}.to_h
         operators = query_model.OPERATORS
         field_map = query_model.FIELD_MAP
-        page_limit = [table.MAX_PAGINATION, params[:view].to_i > 0 ? params[:view].to_i : User.DEFAULT_PAGINATION].min
+        page_limit = [table.MAX_PAGINATION, params[:view].to_i > 0 ? params[:view].to_i : table.DEFAULT_PAGINATION].min
+        field_validators = query_model.OPERATOR_VALIDATION
         records = table
         if params[:query]
             query_hash = query_params(permit_map)
@@ -19,8 +20,9 @@ module QueryHandler
         end
         
         last_page = records.count/page_limit
-        records = records.limit(page_limit).offset((@page)*page_limit).select(User.allowed_columns)
-        return records, query_obj, field_map, operators, page_limit, last_page
+        page = params[:page].to_i #, last_page].min
+        records = records.limit(page_limit).offset((page)*page_limit).select(table.allowed_columns)
+        return records, query_obj, field_map, operators, page_limit, page, last_page, field_validators
     end
 
     private
