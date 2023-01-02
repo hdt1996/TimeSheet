@@ -1,0 +1,56 @@
+<div class="d-flex flex-row table-mgmt nochildlinks" >
+    <div class="disflxrstart" style="width:fit-content;">
+        <h2 >User Management View</h2>
+    </div>
+
+    <div class="disflxrctr" style="flex:1; justify-content: flex-end">
+        <div class="p-2 table-mgmt-opt">
+            <%= button_to "Export Table (csv)", {:controller => :"/#{controller}", :action => :export, :format => :csv}, 
+                :type => :button, :class => "btn btn-success", :method => :get
+            %>
+        </div>
+        <div class="p-2 table-mgmt-opt" style="padding-right:1em">
+            <%= button_to "Add Users", {:controller => :"/#{controller}", :action => :new}, :class => "btn btn-success", :method => :get %>
+        </div>
+    </div>
+</div>
+
+<div style="width:100%; overflow-x:scroll">
+    <table class="table table-dark table-striped table-bordered" data-sort-order="asc" style="margin-bottom:0;">
+        <thead>
+            <tr>
+                <% field_map.each do |k, v|%>
+                    <th> <%= k %> </th>
+                <% end %>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if records.length > 0 %>
+                <% records.each do |entry| %>
+                <tr>
+                    <% entry.attributes.each do |k, v|%>
+                        <td> <%= v %> </td>
+                    <% end %>
+                    <% associated.each do |a| %>
+                        <% fkey = entry.public_send(a)%>
+                        <% if fkey %>
+                            <td>
+                                <%= link_to fkey.id, fkey %>
+                            </td>
+                        <% else %>
+                            <td><%= link_to "Set", {:controller => :"/#{a}s", :action => :new, :"#{table_name}_id" => entry.id} %></td> 
+                            <!-- Use prefix backlash to signify controller name; since link_to is a get request, :url would just be another param -->
+                        <% end %>
+                    <% end %>
+                    <td><%= link_to "Edit", {:controller => "/#{controller}", :action => :edit, :id => entry.id} %></td>
+                </tr>
+                <% end %>
+            <% else %>
+                <tr>
+                    <td colspan= <%= field_map.keys.size+1%> >No Entries Found</td>
+                </tr>
+            <% end %>
+        </tbody>
+    </table>
+</div>

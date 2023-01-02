@@ -47,7 +47,7 @@
               <div class="form-outline mb-4">
                   <label class="form-label">Current Photo</label><br/>
                   <% if @photo.length > 0 %>
-                    <%= link_to @photo[0].file_name, media_download_path({:file_id => @photo[0]}) %>
+                    <%= link_to @photo[0].file_name, media_download_path({:id => @photo[0]}) %>
                   <% end %>
                   <br/>
                   <br/>

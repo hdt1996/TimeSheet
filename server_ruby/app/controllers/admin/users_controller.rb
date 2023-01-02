@@ -1,18 +1,20 @@
-module Admin
-  class UsersController < ApplicationController
-    before_action :authenticate_admin, except: [:index]
+class Admin::UsersController < Admin::Base
+    # this controller is necessary because we need completely different implementations of the actions below compared to Devise
+    #can also do module Admin with UserController defined in scope
     include CsvHandler
     include QueryHandler
-
-    def authenticate_admin
-      if current_user && current_user.admin?
-      else
-        redirect_to admin_users_path
+    
+    def query
+      request_format = params[:request_format]? params[:request_format] : :html
+      request.format = request_format
+      respond_to do |format|
+        format.html{
+         @records, @table_name, @associations, @query_obj, @field_map, @operators, @validators, @page_limit, @page, @last_page = processQuery(User, Query::Users, :associations => [:employee])
+        }
+        format.csv{
+          set_csv_stream(processQuery(User, Query::Users, :associations => [:employee], :all => true)[0])
+        }
       end
-    end
-
-    def index
-      @users, @user_search, @field_map, @operators, @page_limit, @page, @last_page, @field_validators= processQuery(User, Query::Users)
     end
 
     def edit
@@ -39,8 +41,9 @@ module Admin
     end
 
     def export
-      set_csv_stream(User)
-      respond_to do |format| format.csv end #Use when streaming, if file already exists ready to serve: use send_file or send_data (binary)
+      respond_to do |format| 
+        format.csv {set_csv_stream(User)}
+      end #Use when streaming, if file already exists ready to serve: use send_file or send_data (binary)
     end
   end
-end
+

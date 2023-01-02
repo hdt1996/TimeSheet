@@ -1,0 +1,88 @@
+<div class="better-scroll" style="width:100%; overflow-x:scroll; max-height:25em; overflow-y: scroll; padding-bottom:2.5em; background-color:#e2e3e5">
+    <table class="table table-secondary table-striped" data-sort-order="asc" style="margin-bottom:0; padding-bottom:10em;" >
+        <thead>
+            <tr>
+                <% field_map.each do |k, v|%>
+                    <th> <%= k %> </th>
+                <% end %>
+                <th>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for i in 0..query_obj.num_customs%>
+                <tr index="<%= i %>">
+                    <% field_map.each do |k, v|%>
+                        <td>
+                            <%= f.collection_select "query[#{k}][#{i}][operator]", operators, :to_s, :to_s, 
+                                {:selected => query_obj.public_send(k.to_sym) && query_obj.public_send(k.to_sym)["#{i}"] ? 
+                                    query_obj.public_send(k.to_sym)["#{i}"][:operator] : :equal},
+                                :event_handler => :handleQueryOpers
+                            %>
+                            <% if query_obj.public_send(k.to_sym) && query_obj.public_send(k.to_sym)["#{i}"] %>
+                                <% if query_obj.public_send(k.to_sym)["#{i}"][:multiple].to_sym == :true %>
+                                    <%= f.public_send(v[:field], "query[#{k}][#{i}][value]", :name => nil, autofocus: true, class: "query-field-sh hidden", 
+                                        **v[:opts])
+                                    %>
+                                    <div class="posrel">
+                                        <%= f.text_field "query[#{k}][#{i}][value]", autofocus: true, class: "query-field-sh", :to_array => true,
+                                            :f_type => v[:field].to_sym, value:  query_obj.public_send(k.to_sym)["#{i}"][:value], :validator => v[:validator]
+                                        %>
+                                    </div>
+                                    <%= f.hidden_field "query[#{k}][#{i}][multiple]", :value => query_obj.public_send(k.to_sym)["#{i}"][:multiple]%>
+                                <% else %>
+                                    <%= f.public_send(v[:field], "query[#{k}][#{i}][value]", autofocus: true, class: "query-field-sh", 
+                                        value:  query_obj.public_send(k.to_sym)["#{i}"][:value], **v[:opts])
+                                    %>
+                                    <div class="posrel">
+                                        <%= f.text_field "query[#{k}][#{i}][value]", autofocus: true, :name => nil, class: "query-field-sh hidden", 
+                                            :f_type => v[:field].to_sym, :validator => v[:validator]
+                                        %>
+                                    </div>
+
+                                    <%= f.hidden_field "query[#{k}][#{i}][multiple]", :value => query_obj.public_send(k.to_sym)["#{i}"][:multiple]%>
+                                <% end %>
+
+                            <% else %>
+                                <%= f.public_send(v[:field], "query[#{k}][#{i}][value]", autofocus: true, class: "query-field-sh", **v[:opts],
+                                    :validator => v[:validator])
+                                %>
+                                <div class="posrel">
+                                    <%= f.text_field "query[#{k}][#{i}][value]", autofocus: true, :name => nil, class: "query-field-sh hidden", :f_type => v[:field].to_sym,
+                                        :validator => v[:validator]
+                                    %>
+                                </div>
+                                <%= f.hidden_field "query[#{k}][#{i}][multiple]", :value => false%>
+                            <% end %>
+                        </td>
+                    <% end %>
+                    <td >
+                        <% if i == 0 %>
+                            <%= button_tag :delete, :type => :button, :id => :delete, :class => "btn btn-danger btn-sm", :event_handler => :deleteCustomQuery, :style => "display:none"%>
+                        <% else %>
+                            <%= button_tag :delete, :type => :button, :id => :delete, :class => "btn btn-danger btn-sm", :event_handler => :deleteCustomQuery%>
+                        <% end %>
+                    </td>
+                </tr>
+            <% end %>
+        </tbody>
+        <%= f.hidden_field :num_customs, :value => query_obj.num_customs%>
+    </table>
+</div>
+
+<div style="width:100%;">
+    <table class="table table-secondary table-striped" data-sort-order="asc" style="margin-bottom:0;" >
+        <tbody>
+            <tr>
+                <td colspan="<%= field_map.size + 1%>">
+                    <div style="display:flex; justify-content:space-between">
+                        <%= button_tag "Add Row", :type => :button, :event_handler => :addCustomQuery, :class => "btn btn-info btn-md"%>
+    
+                        <%= button_tag "EXECUTE QUERY" , :type => :submit, class: "btn btn-primary btn-md text-white"%>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+

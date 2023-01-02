@@ -1,0 +1,194 @@
+
+<div class="disflxcctr table-wrapper" style="flex:1; width:100%; overflow-x: scroll; padding:2em;">
+    <div style="flex:1; width:100%;">
+        <div style="width:100%">
+            <%= form_with url: query_admin_users_path, method: :post , local: true, html:  {:id => :QueryBuilder} do |f| %> 
+                <%= f.hidden_field :request_format, :value => :html %>
+                <div class="d-flex flex-row bg-secondary table-mgmt nochildlinks" >
+                    <div class="disflxrstart" style="width:fit-content; align-items: center;">
+                        <h3 class="text-white" >Custom Query</h3>
+                    </div>
+
+                    <div class="disflxrctr" style="flex:1; justify-content: flex-end">
+                        <div class="p-2 table-mgmt-opt">
+                            <%= button_tag "Clear Query", :type => :button, :event_handler => :clearCustomQuery, :class => "btn btn-secondary btn-md", :style => "border: solid rgba(0, 0, 0, 0.25) .15em"%>
+                        </div>
+
+                        <div class="p-2 table-mgmt-opt">
+                            <%= button_tag "Export Query (csv)", :type => :submit, :event_handler => :exportQueryCSV, :value => :csv, :class => "btn btn-success btn-md"%>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="better-scroll" style="width:100%; overflow-x:scroll; max-height:25em; overflow-y: scroll; padding-bottom:2.5em; background-color:#e2e3e5">
+                    <table class="table table-secondary table-striped" data-sort-order="asc" style="margin-bottom:0; padding-bottom:10em;" >
+                        <thead>
+                            <tr>
+                                <% @field_map.each do |k, v|%>
+                                    <th> <%= k %> </th>
+                                <% end %>
+                                <th>
+                                    
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% for i in 0..@query_obj.num_customs%>
+                                <tr index="<%= i %>">
+                                    <% @field_map.each do |k, v|%>
+                                        <td>
+                                            <%= f.collection_select "query[#{k}][#{i}][operator]", @operators, :to_s, :to_s, 
+                                                {:selected => @query_obj.public_send(k.to_sym) && @query_obj.public_send(k.to_sym)["#{i}"] ? 
+                                                    @query_obj.public_send(k.to_sym)["#{i}"][:operator] : :equal},
+                                                :event_handler => :handleQueryOpers
+                                            %>
+                                            <% if @query_obj.public_send(k.to_sym) && @query_obj.public_send(k.to_sym)["#{i}"] %>
+                                                
+                                                <% if @query_obj.public_send(k.to_sym)["#{i}"][:multiple].to_sym == :true %>
+                                                    <%= f.public_send(v[:field], "query[#{k}][#{i}][value]", :name => nil, autofocus: true, class: "query-field-sh hidden", 
+                                                        **v[:opts])
+                                                    %>
+                                                    <div class="posrel">
+                                                        <%= f.text_field "query[#{k}][#{i}][value]", autofocus: true, class: "query-field-sh", :to_array => true,
+                                                            :f_type => v[:field].to_sym, value:  @query_obj.public_send(k.to_sym)["#{i}"][:value], :validator => v[:validator]
+                                                        %>
+                                                    </div>
+   
+
+                                                    <%= f.hidden_field "query[#{k}][#{i}][multiple]", :value => @query_obj.public_send(k.to_sym)["#{i}"][:multiple]%>
+
+                                                <% else %>
+                                                    <%= f.public_send(v[:field], "query[#{k}][#{i}][value]", autofocus: true, class: "query-field-sh", 
+                                                        value:  @query_obj.public_send(k.to_sym)["#{i}"][:value], **v[:opts])
+                                                    %>
+                                                    <div class="posrel">
+                                                        <%= f.text_field "query[#{k}][#{i}][value]", autofocus: true, :name => nil, class: "query-field-sh hidden", 
+                                                            :f_type => v[:field].to_sym, :validator => v[:validator]
+                                                        %>
+                                                    </div>
+
+                                                    <%= f.hidden_field "query[#{k}][#{i}][multiple]", :value => @query_obj.public_send(k.to_sym)["#{i}"][:multiple]%>
+                                                <% end %>
+
+                                            <% else %>
+                                                <%= f.public_send(v[:field], "query[#{k}][#{i}][value]", autofocus: true, class: "query-field-sh", **v[:opts],
+                                                    :validator => v[:validator])
+                                                %>
+                                                <div class="posrel">
+                                                    <%= f.text_field "query[#{k}][#{i}][value]", autofocus: true, :name => nil, class: "query-field-sh hidden", :f_type => v[:field].to_sym,
+                                                        :validator => v[:validator]
+                                                    %>
+                                                </div>
+
+
+                                                <%= f.hidden_field "query[#{k}][#{i}][multiple]", :value => false%>
+                                            <% end %>
+
+                                        </td>
+                                    <% end %>
+
+                                    <td >
+                                        <% if i == 0 %>
+                                            <%= button_tag :delete, :type => :button, :id => :delete, :class => "btn btn-danger btn-sm", :event_handler => :deleteCustomQuery, :style => "display:none"%>
+                                        <% else %>
+                                            <%= button_tag :delete, :type => :button, :id => :delete, :class => "btn btn-danger btn-sm", :event_handler => :deleteCustomQuery%>
+                                        <% end %>
+                                    </td>
+                                    
+                                </tr>
+                            <% end %>
+   
+                        </tbody>
+                        <%= f.hidden_field :num_customs, :value => @query_obj.num_customs%>
+                    </table>
+                </div>
+                <div style="width:100%;">
+                    <table class="table table-secondary table-striped" data-sort-order="asc" style="margin-bottom:0;" >
+                        <tbody>
+                            <tr>
+                                <td colspan="<%= @field_map.size + 1%>">
+                                    <div style="display:flex; justify-content:space-between">
+                                        <%= button_tag "Add Row", :type => :button, :event_handler => :addCustomQuery, :class => "btn btn-info btn-md"%>
+                    
+                                        <%= button_tag "EXECUTE QUERY" , :type => :submit, class: "btn btn-primary btn-md text-white"%>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <br/>
+                
+                <div style="display:flex; justify-content: space-between">
+                    <%= f.collection_select :view, [25,50,100], :to_s, :to_s, {:selected => @page_limit}, event_handler: :handleQueryView %>
+                    <%= render 'shared/page_inplinks', {:current_page => @page, :last_page => @last_page, :records => @records} %>
+                <% end %>
+                
+            </div>
+        </div>
+        <br/>
+
+        <div class="d-flex flex-row table-mgmt nochildlinks" >
+            <div class="disflxrstart" style="width:fit-content;">
+                <h2 >User Management View</h2>
+            </div>
+
+            <div class="disflxrctr" style="flex:1; justify-content: flex-end">
+                <div class="p-2 table-mgmt-opt">
+                    <%= button_to "Export Table (csv)", export_admin_users_path(format: :csv), :class => "btn btn-success", :method => :get %>
+                </div>
+                <div class="p-2 table-mgmt-opt" style="padding-right:1em">
+                    <%= button_to "Add Users", new_admin_user_path, :class => "btn btn-success", :method => :get %>
+                </div>
+            </div>
+        </div>
+        
+        <div style="width:100%; overflow-x:scroll">
+            <table class="table table-dark table-striped table-bordered" data-sort-order="asc" style="margin-bottom:0;">
+                <thead>
+                    <tr>
+                        <% @field_map.each do |k, v|%>
+                            <th> <%= k %> </th>
+                        <% end %>
+                        <th></th>
+                    </tr>
+
+                </thead>
+                
+                <tbody>
+                    <% if @records.length > 0 %>
+                        <% @records.each do |entry| %>
+                        <tr>
+                            <% entry.attributes.each do |k, v|%>
+                                <td> <%= v %> </td>
+                            <% end %>
+                            <% if entry.employee %>
+                                <td>
+                                    <%= link_to entry.employee.id, entry.employee %>
+                                </td>
+                                
+                            <% else %>
+                                <td><%= link_to "Set", new_employee_path({:user_id => entry}), method: :get%></td>
+                            <% end %>
+                            <td><%= link_to "Edit", edit_admin_user_path({:id => entry.id})%></td>
+                        </tr>
+                        <% end %>
+                    <% else %>
+                        <tr>
+                            <td colspan= <%= @field_map.keys.size+1%> >No Entries Found</td>
+                        </tr>
+                    <% end %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<% @validators.each do |t, h| %>
+    <% h.each do |f, v| %>
+        <input type="hidden" id="validation[<%= t %>][<%= f %>]" value="<%= v %>" />
+    <% end %>
+<% end %>
+
+<%= javascript_pack_tag "admin/query" %>

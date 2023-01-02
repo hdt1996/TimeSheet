@@ -21,7 +21,7 @@ module CsvHandler
         "User Creation: CSV Upload Complete"
     end
 
-    def set_csv_stream(table)
+    def set_csv_stream(table) #can supply model or query result from model
         export_col_names = table.allowed_columns
         headers.delete("Content-Length")
         headers["Cache-Control"] = "no-cache"

@@ -1,6 +1,11 @@
+
 class EmployeesController < ApplicationController
+
     def new
-        @user = User.find(params[:user_id])
+        @user = User.find(params.require(:user_id))
+        if @user.employee
+            redirect_to @user.employee, :notice => "Employee for #{@user.username} already exists"
+        end
         if params[:errors]
             params[:errors].each do |error|
                 @user.errors.add(error,"")
@@ -26,8 +31,7 @@ class EmployeesController < ApplicationController
         end
         #employee.destroy
         notice = "Success: #{user.username} is now an employee"
-        redirect_to admin_path, notice: notice
-        
+        redirect_to root_path, notice: notice
     end
 
     private
@@ -41,3 +45,4 @@ class EmployeesController < ApplicationController
     end
     
 end
+

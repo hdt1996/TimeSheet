@@ -1,0 +1,41 @@
+
+<div class="disflxcctr table-wrapper" style="flex:1; width:100%; overflow-x: scroll; padding:2em;">
+    <div style="flex:1; width:100%;">
+        <div style="width:100%">
+            <%= form_with url: query_admin_users_path, method: :post , local: true, html:  {:id => :QueryBuilder} do |f| %> 
+                <%= f.hidden_field :request_format, :value => :html %>
+                <div class="d-flex flex-row bg-secondary table-mgmt nochildlinks" >
+                    <div class="disflxrstart" style="width:fit-content; align-items: center;">
+                        <h3 class="text-white" >Custom Query</h3>
+                    </div>
+                    <div class="disflxrctr" style="flex:1; justify-content: flex-end">
+                        <div class="p-2 table-mgmt-opt">
+                            <%= button_tag "Clear Query", :type => :button, :event_handler => :clearCustomQuery, :class => "btn btn-secondary btn-md", :style => "border: solid rgba(0, 0, 0, 0.25) .15em"%>
+                        </div>
+
+                        <div class="p-2 table-mgmt-opt">
+                            <%= button_tag "Export Query (csv)", :id => :export, :type => :submit, :event_handler => :exportQueryCSV, :value => :csv, :class => "btn btn-success btn-md"%>
+                        </div>
+                    </div>
+                </div>
+
+                <%= render 'shared/query/builder', {:f => f, :query_obj => @query_obj, :operators => @operators, :field_map => @field_map} %>
+                <br/>
+                <div style="display:flex; justify-content: space-between">
+                    <%= f.collection_select :view, [25,50,100], :to_s, :to_s, {:selected => @page_limit}, event_handler: :handleQueryView %>
+                    <%= render 'shared/page_inplinks', {:current_page => @page, :last_page => @last_page, :records => @records} %>
+                </div>
+            <% end %>
+        </div>
+        <br/>
+        <%= render 'shared/query/table', {:table_name => @table_name, :records => @records, :field_map => @field_map, :controller => :'admin/users', :associated => [:employee]} %>
+    </div>
+</div>
+
+<% @validators.each do |t, h| %>
+    <% h.each do |f, v| %>
+        <input type="hidden" id="validation[<%= t %>][<%= f %>]" value="<%= v %>" />
+    <% end %>
+<% end %>
+
+<%= javascript_pack_tag "admin/query" %>
