@@ -2,17 +2,16 @@ class Admin::UsersController < Admin::Base
     # this controller is necessary because we need completely different implementations of the actions below compared to Devise
     #can also do module Admin with UserController defined in scope
     include CsvHandler
-    include QueryHandler
-    
     def query
       request_format = params[:request_format]? params[:request_format] : :html
       request.format = request_format
       respond_to do |format|
         format.html{
-         @records, @table_name, @associations, @query_obj, @field_map, @operators, @validators, @page_limit, @page, @last_page = processQuery(User, Query::Users, :associations => [:employee])
+         @records, @table_name, @associations, @query_obj, @field_map, @operators, @validators, @page_limit, @page, @last_page = 
+         QueryHandler.new(User, Query::Users, :associations => [:employee]).render(params)
         }
         format.csv{
-          set_csv_stream(processQuery(User, Query::Users, :associations => [:employee], :all => true)[0])
+          set_csv_stream(QueryHandler.new(User, Query::Users, :associations => [:employee]).call)
         }
       end
     end
