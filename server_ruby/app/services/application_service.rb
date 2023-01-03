@@ -1,5 +1,9 @@
 class ApplicationService
-    def self.call(*args, &block)
-        new(*args, &block).call
-      end
+    def self.collect(params, *args, **opts)
+        return new(*args, **opts).collect(params)
+    end
+
+    def self.render(params, *args, **opts)
+        return new(*args, **opts).render(params)
+    end
 end

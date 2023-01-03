@@ -8,10 +8,10 @@ class Admin::UsersController < Admin::Base
       respond_to do |format|
         format.html{
          @records, @table_name, @associations, @query_obj, @field_map, @operators, @validators, @page_limit, @page, @last_page = 
-         QueryHandler.new(User, Query::Users, :associations => [:employee]).render(params)
+         QueryHandler.render(params, User, Query::Users, :associations => [:employee])
         }
         format.csv{
-          set_csv_stream(QueryHandler.new(User, Query::Users, :associations => [:employee]).call)
+          set_csv_stream(QueryHandler.collect(params, User, Query::Users, :associations => [:employee]))
         }
       end
     end
